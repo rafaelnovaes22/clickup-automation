@@ -1,0 +1,216 @@
+{
+  "version": "0.1",
+  "scope": "tech_only",
+  "purpose": "Repositorio operacional detalhado da area Tech: atividades, plataformas, artefatos, automacoes e progresso.",
+  "principles": [
+    "Toda entrega tecnica precisa estar ligada a um cliente, plataforma e artefato esperado.",
+    "Atividades manuais registram decisao humana; atividades automaticas registram execucao do sistema.",
+    "Codigo, PR, deploy, teste e smoke test devem apontar para a task tecnica correspondente.",
+    "O ClickUp mostra execucao viva; este repositorio define o contrato operacional."
+  ],
+  "activityTypes": ["manual", "automatic", "hybrid"],
+  "statusFlow": ["a fazer", "em desenvolvimento", "em revisao", "bloqueado", "concluido"],
+  "roles": [
+    {
+      "key": "tech_lead",
+      "label": "Tech Lead",
+      "responsibilities": [
+        "definir arquitetura",
+        "validar escopo tecnico do diagnostico",
+        "aprovar promocao de modo",
+        "revisar PRs criticos",
+        "resolver bloqueios tecnicos"
+      ]
+    },
+    {
+      "key": "backend_dev",
+      "label": "Dev backend",
+      "responsibilities": [
+        "implementar endpoints",
+        "integrar APIs externas",
+        "criar testes tecnicos",
+        "instrumentar logs e rastreabilidade",
+        "corrigir bugs de integracao"
+      ]
+    },
+    {
+      "key": "frontend_dev",
+      "label": "Dev frontend",
+      "responsibilities": [
+        "implementar telas e fluxos de usuario",
+        "integrar UI com APIs",
+        "tratar loading, erro, vazio e sucesso",
+        "validar responsividade desktop/mobile",
+        "criar testes E2E de fluxos criticos"
+      ]
+    },
+    {
+      "key": "delivery_engineer",
+      "label": "Delivery tecnico",
+      "responsibilities": [
+        "configurar canais",
+        "rodar smoke tests",
+        "capturar evidencias",
+        "acompanhar SHADOW/ASSISTED",
+        "registrar feedback tecnico"
+      ]
+    }
+  ],
+  "artifacts": [
+    { "key": "api_endpoint_contract", "label": "Contrato de endpoint", "storage": "task_description_or_repo_doc" },
+    { "key": "payload_contract", "label": "Contrato de payload", "storage": "task_description_or_repo_doc" },
+    { "key": "credential_validation_evidence", "label": "Evidencia de credenciais", "storage": "clickup_attachment_or_comment" },
+    { "key": "webhook_url", "label": "URL de webhook", "storage": "task_description" },
+    { "key": "smoke_test_evidence", "label": "Evidencia de smoke test", "storage": "clickup_attachment_or_comment" },
+    { "key": "pull_request_url", "label": "Pull request", "storage": "clickup_comment" },
+    { "key": "commit_sha", "label": "Commit SHA", "storage": "clickup_comment" },
+    { "key": "deploy_url", "label": "Deploy", "storage": "clickup_comment" },
+    { "key": "e2e_test_result", "label": "Resultado de teste E2E", "storage": "clickup_comment" },
+    { "key": "user_flow_spec", "label": "Especificacao de fluxo de usuario", "storage": "repo_doc_or_task_description" },
+    { "key": "ui_screen_implementation", "label": "Implementacao de tela", "storage": "pull_request" },
+    { "key": "responsive_screenshots", "label": "Screenshots desktop/mobile", "storage": "clickup_attachment_or_comment" },
+    { "key": "frontend_e2e_test_result", "label": "Resultado de teste E2E frontend", "storage": "clickup_comment" },
+    { "key": "dashboard_metric_contract", "label": "Contrato de metricas do dashboard", "storage": "repo_doc_or_task_description" },
+    { "key": "dashboard_ui", "label": "UI do dashboard", "storage": "pull_request" },
+    { "key": "observability_dashboard_or_trace", "label": "Trace/log/dashboard", "storage": "clickup_comment" }
+  ],
+  "activities": [
+    {
+      "id": "tech.scope.review",
+      "name": "Revisar escopo tecnico do diagnostico",
+      "type": "manual",
+      "role": "tech_lead",
+      "trigger": "diagnostic_completed",
+      "inputs": ["diagnostic_task_id", "selected_candidate", "technical_platforms"],
+      "outputs": ["technical_scope_approved", "platform_task_plan"],
+      "artifact": "payload_contract",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "Gerar tarefas tech por plataforma apos payload aprovado.",
+        "next": "Validar automaticamente se plataformas do diagnostico existem no catalogo."
+      }
+    },
+    {
+      "id": "tech.task.generate",
+      "name": "Gerar backlog tecnico por plataforma",
+      "type": "automatic",
+      "role": "system",
+      "trigger": "tech_scope_identified",
+      "inputs": ["client_name", "client_task_id", "technical_platforms", "tech_owner", "delivery_due_date"],
+      "outputs": ["clickup_tech_tasks"],
+      "artifact": "platform_task_plan",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "scripts/generate-tech-tasks.mjs",
+        "next": "Expor como endpoint interno POST /admin/tech-scope."
+      }
+    },
+    {
+      "id": "tech.code.link",
+      "name": "Linkar codigo a tarefa tecnica",
+      "type": "hybrid",
+      "role": "backend_dev",
+      "trigger": "commit_or_pr_created",
+      "inputs": ["task_key", "repository_url", "commit_sha", "pull_request_url"],
+      "outputs": ["clickup_comment_with_code_reference"],
+      "artifact": "pull_request_url",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "Manual: dev comenta link do PR/task.",
+        "next": "Webhook GitHub identifica task_key e comenta automaticamente no ClickUp."
+      }
+    },
+    {
+      "id": "tech.progress.read",
+      "name": "Ler progresso tecnico por cliente",
+      "type": "automatic",
+      "role": "system",
+      "trigger": "daily_or_on_demand",
+      "inputs": ["client_name_optional"],
+      "outputs": ["progress_percent", "blocked_tasks", "task_status_summary"],
+      "artifact": "tech_progress_report",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "scripts/read-tech-progress.mjs",
+        "next": "Gerar comentario diario no cliente ou dashboard executivo."
+      }
+    },
+    {
+      "id": "tech.smoke.evidence",
+      "name": "Registrar evidencia de smoke test",
+      "type": "hybrid",
+      "role": "delivery_engineer",
+      "trigger": "smoke_test_completed",
+      "inputs": ["tech_task_id", "test_result", "evidence_url_or_notes"],
+      "outputs": ["clickup_comment", "task_ready_for_review"],
+      "artifact": "smoke_test_evidence",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "Manual: anexar evidencia e mover status.",
+        "next": "Teste automatizado comenta resultado e move status para em revisao/concluido."
+      }
+    },
+    {
+      "id": "tech.frontend.visual.review",
+      "name": "Validar entrega visual frontend",
+      "type": "hybrid",
+      "role": "frontend_dev",
+      "trigger": "frontend_screen_ready",
+      "inputs": ["tech_task_id", "screen_url_or_route", "desktop_screenshot", "mobile_screenshot"],
+      "outputs": ["responsive_review", "task_ready_for_review"],
+      "artifact": "responsive_screenshots",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "Manual: anexar screenshots e mover status.",
+        "next": "Playwright captura screenshots e comenta automaticamente na task."
+      }
+    },
+    {
+      "id": "tech.frontend.e2e",
+      "name": "Validar fluxo frontend com teste E2E",
+      "type": "hybrid",
+      "role": "frontend_dev",
+      "trigger": "frontend_flow_ready",
+      "inputs": ["tech_task_id", "test_command", "test_result"],
+      "outputs": ["frontend_e2e_result", "task_ready_for_review"],
+      "artifact": "frontend_e2e_test_result",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "Manual: rodar teste e comentar resultado.",
+        "next": "CI/Playwright atualiza status da task automaticamente."
+      }
+    }
+  ],
+  "automationBacklog": [
+    {
+      "id": "auto.github.clickup",
+      "name": "Webhook GitHub -> ClickUp",
+      "priority": "high",
+      "description": "Ao abrir PR ou fazer commit com task_key, comentar automaticamente na task [TECH]."
+    },
+    {
+      "id": "auto.tech.scope.endpoint",
+      "name": "Endpoint interno para escopo tech",
+      "priority": "high",
+      "description": "Transformar generate-tech-tasks.mjs em endpoint POST /admin/tech-scope."
+    },
+    {
+      "id": "auto.daily.tech.report",
+      "name": "Relatorio diario tech",
+      "priority": "medium",
+      "description": "Rodar leitura de progresso diariamente e publicar resumo no ClickUp."
+    },
+    {
+      "id": "auto.test.status",
+      "name": "Atualizacao por teste/deploy",
+      "priority": "medium",
+      "description": "Atualizar task [TECH] quando CI, E2E ou deploy mudar de estado."
+    },
+    {
+      "id": "auto.frontend.screenshots",
+      "name": "Screenshots automaticos frontend",
+      "priority": "medium",
+      "description": "Capturar desktop/mobile com Playwright e comentar evidencias na task [TECH]."
+    }
+  ]
+}

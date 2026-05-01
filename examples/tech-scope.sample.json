@@ -1,0 +1,11 @@
+{
+  "client_name": "Cliente Exemplo",
+  "client_task_id": "86xxx",
+  "diagnostic_task_id": "86diag",
+  "technical_platforms": ["frontend_web", "frontend_dashboard"],
+  "tech_owner": "Dev Front",
+  "delivery_due_date": "2026-05-15",
+  "repository_url": "https://github.com/acme/example",
+  "environment": "dev",
+  "notes": "Exemplo de escopo frontend."
+}

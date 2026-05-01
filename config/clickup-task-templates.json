@@ -1,0 +1,276 @@
+{
+  "version": "0.1",
+  "templates": [
+    {
+      "key": "lead_new",
+      "name": "[TEMPLATE] Lead novo",
+      "target": {
+        "space": "01 Pipeline Comercial",
+        "list": "Leads",
+        "desiredStatus": "novo"
+      },
+      "description": [
+        "Entidade: Lead.",
+        "Quando usar: primeiro contato comercial, indicacao, evento ou form externo.",
+        "Objetivo: registrar origem, dor percebida e proximo passo.",
+        "Campos minimos: empresa, contato, origem, contexto, dono comercial.",
+        "Status desejado: novo."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "contact_name", "label": "Contato principal", "type": "text", "required": true, "example": "Maria Silva" },
+        { "key": "contact_email", "label": "Email", "type": "email", "required": false, "example": "maria@acme.com" },
+        { "key": "contact_phone", "label": "Telefone/WhatsApp", "type": "phone", "required": false, "example": "+55 11 99999-9999" },
+        { "key": "source", "label": "Origem", "type": "select", "required": true, "options": ["indicacao", "evento", "outbound", "inbound", "parceiro", "manual"] },
+        { "key": "pain_summary", "label": "Dor percebida", "type": "long_text", "required": true, "example": "Time perde muito tempo qualificando leads manualmente." },
+        { "key": "commercial_owner", "label": "Dono comercial", "type": "person_or_text", "required": true, "example": "Rafael" },
+        { "key": "next_step_date", "label": "Data do proximo passo", "type": "date", "required": false, "example": "2026-05-08" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Lead na lista Leads" },
+        { "trigger": "source=indicacao", "action": "Adicionar tag revisao-humana" },
+        { "trigger": "next_step_date preenchido", "action": "Definir due date da task" }
+      ],
+      "subtasks": [
+        "Registrar origem e contexto do lead",
+        "Definir dono comercial",
+        "Agendar ou tentar primeira conversa"
+      ]
+    },
+    {
+      "key": "diagnostic_sold",
+      "name": "[TEMPLATE] Diagnostico Fase 0 vendido",
+      "target": {
+        "space": "01 Pipeline Comercial",
+        "list": "Diagnosticos Fase 0",
+        "desiredStatus": "vendido"
+      },
+      "description": [
+        "Entidade: Diagnostico Fase 0.",
+        "Quando usar: pagamento ou aceite comercial confirmado.",
+        "Objetivo: conduzir diagnostico pago em 5 dias uteis.",
+        "Resultado esperado: relatorio 5-10pp + sessao de devolucao.",
+        "Status desejado: vendido."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "lead_task_id", "label": "Task do lead", "type": "clickup_task_id", "required": false, "example": "86abc123" },
+        { "key": "diagnostic_fee", "label": "Fee do diagnostico", "type": "currency_brl", "required": true, "example": 8000 },
+        { "key": "payment_confirmed_at", "label": "Pagamento confirmado em", "type": "datetime", "required": true, "example": "2026-05-01T14:00:00-03:00" },
+        { "key": "client_ceo_name", "label": "CEO do cliente", "type": "text", "required": true, "example": "Maria Silva" },
+        { "key": "client_ceo_email", "label": "Email do CEO", "type": "email", "required": false, "example": "maria@acme.com" },
+        { "key": "start_date", "label": "Data de inicio", "type": "date", "required": true, "example": "2026-05-04" },
+        { "key": "delivery_date", "label": "Data de devolucao", "type": "date", "required": true, "example": "2026-05-08" },
+        { "key": "diagnostic_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "Tech Lead" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Diagnostico Fase 0" },
+        { "trigger": "task_created", "action": "Criar 6 subtasks padrao D+1 a D+5" },
+        { "trigger": "lead_task_id preenchido", "action": "Relacionar/linkar task de lead" },
+        { "trigger": "delivery_date preenchido", "action": "Definir due date da devolucao" }
+      ],
+      "subtasks": [
+        "D+1 - Sessao estruturada 90min com CEO",
+        "D+1 - Entrevistas 30min com 2-3 pessoas-chave",
+        "D+2 - Auditoria express de dados e ferramentas",
+        "D+3 - Analise de 3 candidatos e criterios SaaS2",
+        "D+4 - Redacao do relatorio",
+        "D+5 - Sessao de devolucao 1h"
+      ]
+    },
+    {
+      "key": "proposal_sent",
+      "name": "[TEMPLATE] Proposta enviada",
+      "target": {
+        "space": "01 Pipeline Comercial",
+        "list": "Propostas",
+        "desiredStatus": "enviada"
+      },
+      "description": [
+        "Entidade: Proposta.",
+        "Quando usar: cliente aprovou diagnostico e pediu proposta SaaS2.",
+        "Objetivo: negociar escopo, pricing, cap, SLA e clausula de outcome.",
+        "Resultado esperado: assinatura ou rejeicao registrada.",
+        "Status desejado: enviada."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "diagnostic_task_id", "label": "Task do diagnostico", "type": "clickup_task_id", "required": true, "example": "86diag123" },
+        { "key": "sku", "label": "SKU proposto", "type": "text", "required": true, "example": "Qualificacao de Leads SaaS2" },
+        { "key": "platform_fee", "label": "Fee plataforma mensal", "type": "currency_brl", "required": true, "example": 3000 },
+        { "key": "outcome_price", "label": "Preco por outcome", "type": "currency_brl", "required": true, "example": 80 },
+        { "key": "monthly_cap", "label": "Cap mensal", "type": "currency_brl", "required": true, "example": 12000 },
+        { "key": "sla_threshold", "label": "SLA threshold", "type": "percent", "required": true, "example": 90 },
+        { "key": "proposal_url", "label": "Link da proposta", "type": "url", "required": false, "example": "https://..." },
+        { "key": "valid_until", "label": "Validade da proposta", "type": "date", "required": true, "example": "2026-05-20" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Proposta" },
+        { "trigger": "proposal_url preenchido", "action": "Adicionar link na descricao" },
+        { "trigger": "valid_until preenchido", "action": "Definir due date de follow-up" },
+        { "trigger": "status=assinada", "action": "Disparar template setup_created" }
+      ],
+      "subtasks": [
+        "Validar clausula de outcome",
+        "Validar pricing plataforma + outcome + cap",
+        "Enviar proposta final",
+        "Coletar assinatura digital",
+        "Confirmar setup fee"
+      ]
+    },
+    {
+      "key": "setup_created",
+      "name": "[TEMPLATE] Setup tecnico iniciado",
+      "target": {
+        "space": "02 Implantacao",
+        "list": "Setups em andamento",
+        "desiredStatus": "kickoff"
+      },
+      "description": [
+        "Entidade: Setup.",
+        "Quando usar: proposta assinada e setup fee confirmado.",
+        "Objetivo: preparar cliente para SHADOW.",
+        "Resultado esperado: canal conectado, baseline capturado, prompts aprovados e smoke test verde.",
+        "Status desejado: kickoff."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
+        { "key": "proposal_task_id", "label": "Task da proposta", "type": "clickup_task_id", "required": true, "example": "86prop123" },
+        { "key": "setup_fee", "label": "Setup fee", "type": "currency_brl", "required": true, "example": 15000 },
+        { "key": "setup_owner", "label": "Responsavel pelo setup", "type": "person_or_text", "required": true, "example": "Delivery" },
+        { "key": "entry_channel", "label": "Canal de entrada", "type": "select", "required": true, "options": ["whatsapp", "email", "webhook", "form", "outro"] },
+        { "key": "kickoff_date", "label": "Data do kickoff", "type": "datetime", "required": true, "example": "2026-05-06T10:00:00-03:00" },
+        { "key": "target_shadow_date", "label": "Data alvo para SHADOW", "type": "date", "required": true, "example": "2026-05-15" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Setup tecnico" },
+        { "trigger": "task_created", "action": "Criar 6 subtasks padrao de setup" },
+        { "trigger": "target_shadow_date preenchido", "action": "Definir due date do setup" },
+        { "trigger": "status=shadow ligado", "action": "Disparar template shadow_active" }
+      ],
+      "subtasks": [
+        "Kickoff com cliente",
+        "Coletar briefing institucional",
+        "Mapear processo agent-ready",
+        "Conectar canal de entrada",
+        "Capturar baseline cost humano",
+        "Aprovar prompts iniciais e rodar smoke test"
+      ]
+    },
+    {
+      "key": "shadow_active",
+      "name": "[TEMPLATE] SHADOW ativo",
+      "target": {
+        "space": "02 Implantacao",
+        "list": "SHADOWs ativos",
+        "desiredStatus": "calibrando"
+      },
+      "description": [
+        "Entidade: Subscription em SHADOW.",
+        "Quando usar: setup tecnico completo e agente rodando sem materializar output para cliente.",
+        "Objetivo: coletar 30+ outcomes para comparacao humano-vs-agente.",
+        "Resultado esperado: analise concluida e decisao de promocao para ASSISTED.",
+        "Status desejado: calibrando."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "setup_task_id", "label": "Task do setup", "type": "clickup_task_id", "required": true, "example": "86setup123" },
+        { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": true, "example": "sub_123" },
+        { "key": "agent_name", "label": "Nome do agente", "type": "text", "required": true, "example": "Lead Qualifier" },
+        { "key": "shadow_started_at", "label": "SHADOW iniciado em", "type": "datetime", "required": true, "example": "2026-05-15T09:00:00-03:00" },
+        { "key": "target_outcome_count", "label": "Meta de outcomes", "type": "number", "required": true, "example": 30 },
+        { "key": "langfuse_project_url", "label": "Link Langfuse", "type": "url", "required": false, "example": "https://..." }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task SHADOW" },
+        { "trigger": "target_outcome_count atingido", "action": "Criar alerta para analise humano-vs-agente" },
+        { "trigger": "promocao_solicitada", "action": "Disparar task em Promocoes de modo" }
+      ],
+      "subtasks": [
+        "Acompanhar primeiros outcomes diariamente",
+        "Coletar 30+ outcomes",
+        "Comparar decisao humana vs agente",
+        "Calcular concordancia",
+        "Validar unit economics real",
+        "Solicitar promocao para ASSISTED"
+      ]
+    },
+    {
+      "key": "monthly_audit",
+      "name": "[TEMPLATE] Auditoria mensal",
+      "target": {
+        "space": "04 Saude Operacional",
+        "list": "Auditorias mensais",
+        "desiredStatus": "agendada"
+      },
+      "description": [
+        "Entidade: Auditoria.",
+        "Quando usar: inicio de cada mes para cliente em operacao.",
+        "Objetivo: revisar amostra de outcomes e calcular error rate/SLA.",
+        "Resultado esperado: relatorio anexado a fatura do mes.",
+        "Status desejado: agendada."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": true, "example": "86cli123" },
+        { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": true, "example": "sub_123" },
+        { "key": "billing_month", "label": "Mes de referencia", "type": "month", "required": true, "example": "2026-05" },
+        { "key": "sample_size", "label": "Tamanho da amostra", "type": "number", "required": true, "example": 50 },
+        { "key": "sla_threshold", "label": "SLA threshold", "type": "percent", "required": true, "example": 90 },
+        { "key": "invoice_task_id", "label": "Task da fatura", "type": "clickup_task_id", "required": false, "example": "86fat123" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Auditoria mensal" },
+        { "trigger": "auditoria_concluida", "action": "Atualizar task de fatura com relatorio" },
+        { "trigger": "sla_real < sla_threshold", "action": "Disparar task SLA breach" }
+      ],
+      "subtasks": [
+        "Definir sample 5-10%",
+        "Rodar LLM-as-judge",
+        "Revisar amostra humana",
+        "Calcular SLA agregado",
+        "Anexar relatorio a fatura"
+      ]
+    },
+    {
+      "key": "incident_opened",
+      "name": "[TEMPLATE] Incidente operacional",
+      "target": {
+        "space": "04 Saude Operacional",
+        "list": "Incidentes",
+        "desiredStatus": "aberto"
+      },
+      "description": [
+        "Entidade: Incidente.",
+        "Quando usar: falha de pipeline, drift, P1/P2/P3 ou ruptura operacional.",
+        "Objetivo: registrar impacto, mitigacao, causa e follow-up.",
+        "Resultado esperado: resolucao e postmortem quando P1/P2.",
+        "Status desejado: aberto."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": false, "example": "Acme Ltda" },
+        { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
+        { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": false, "example": "sub_123" },
+        { "key": "severity", "label": "Severidade", "type": "select", "required": true, "options": ["P1", "P2", "P3"] },
+        { "key": "incident_source", "label": "Origem do incidente", "type": "select", "required": true, "options": ["pipeline", "drift", "cliente", "auditoria", "manual", "infra"] },
+        { "key": "impact_summary", "label": "Resumo do impacto", "type": "long_text", "required": true, "example": "Outcomes deixaram de ser entregues por 40 minutos." },
+        { "key": "detected_at", "label": "Detectado em", "type": "datetime", "required": true, "example": "2026-05-01T11:30:00-03:00" },
+        { "key": "owner", "label": "Responsavel", "type": "person_or_text", "required": true, "example": "Delivery" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Incidente" },
+        { "trigger": "severity=P1", "action": "Adicionar tag urgente e notificar CEO" },
+        { "trigger": "severity=P1|P2", "action": "Criar subtask de postmortem" },
+        { "trigger": "cliente afetado", "action": "Relacionar/linkar task do cliente" }
+      ],
+      "subtasks": [
+        "Classificar severidade P1/P2/P3",
+        "Registrar impacto e cliente afetado",
+        "Definir responsavel de mitigacao",
+        "Comunicar envolvidos",
+        "Escrever postmortem se P1/P2"
+      ]
+    }
+  ]
+}

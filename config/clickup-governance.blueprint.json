@@ -1,0 +1,159 @@
+{
+  "version": "0.1",
+  "source": "GOVERNANCE.md",
+  "workspaceName": "Acme",
+  "tags": [
+    "ia-gerado",
+    "revisao-humana",
+    "aprovado",
+    "rejeitado",
+    "urgente"
+  ],
+  "spaces": [
+    {
+      "name": "01 Pipeline Comercial",
+      "purpose": "Funil de aquisicao: do lead ao contrato assinado.",
+      "lists": [
+        {
+          "name": "Leads",
+          "entity": "Lead",
+          "statuses": ["novo", "conversa", "qualificado", "perdido"]
+        },
+        {
+          "name": "Diagnosticos Fase 0",
+          "entity": "Diagnostico",
+          "statuses": ["vendido", "em execucao", "entregue", "aguardando decisao", "convertido", "recusado"]
+        },
+        {
+          "name": "Propostas",
+          "entity": "Proposta",
+          "statuses": ["enviada", "em negociacao", "assinada", "rejeitada"]
+        }
+      ]
+    },
+    {
+      "name": "02 Implantacao",
+      "purpose": "Onboarding tecnico do cliente: do contrato ao AUTONOMOUS.",
+      "lists": [
+        {
+          "name": "Setups em andamento",
+          "entity": "Setup",
+          "statuses": ["kickoff", "briefing", "canal conectado", "baseline capturado", "prompts aprovados", "shadow ligado"]
+        },
+        {
+          "name": "SHADOWs ativos",
+          "entity": "Subscription em SHADOW",
+          "statuses": ["calibrando", "30 outcomes coletados", "analise concluida", "promovido para ASSISTED"]
+        },
+        {
+          "name": "ASSISTEDs ativos",
+          "entity": "Subscription em ASSISTED",
+          "statuses": ["operando", "threshold atingido", "promovido para AUTONOMOUS"]
+        }
+      ]
+    },
+    {
+      "name": "03 Clientes",
+      "purpose": "Operacao continua, relacionamento, expansao, renovacao e churn.",
+      "lists": [
+        {
+          "name": "Clientes ativos",
+          "entity": "Cliente",
+          "statuses": ["saudavel", "em alerta", "em risco", "pausado", "encerrado"]
+        },
+        {
+          "name": "Faturamento mensal",
+          "entity": "Fatura",
+          "statuses": ["em curso", "fechado", "emitido", "pago", "inadimplente"]
+        },
+        {
+          "name": "Relacionamento",
+          "entity": "Touchpoint",
+          "statuses": ["proximo", "realizado", "cancelado"]
+        },
+        {
+          "name": "Expansoes",
+          "entity": "Wave ou upsell",
+          "statuses": ["identificada", "proposta", "contratada", "em delivery", "concluida"]
+        },
+        {
+          "name": "Renovacoes",
+          "entity": "Renovacao",
+          "statuses": ["a vencer 90d", "conversa iniciada", "proposta enviada", "renovada", "perdida"]
+        },
+        {
+          "name": "Pos-churn",
+          "entity": "Cliente encerrado",
+          "statuses": ["encerrado", "retencao tentada", "postmortem", "fechado"]
+        }
+      ]
+    },
+    {
+      "name": "04 Saude Operacional",
+      "purpose": "Cockpit reativo: gates, incidentes, auditorias, promocoes e SLA.",
+      "lists": [
+        {
+          "name": "Gates pendentes",
+          "entity": "Gate",
+          "statuses": ["aguardando", "aprovado", "rejeitado", "escalado"]
+        },
+        {
+          "name": "Incidentes",
+          "entity": "Incidente",
+          "statuses": ["aberto", "investigando", "mitigado", "resolvido", "postmortem"]
+        },
+        {
+          "name": "Auditorias mensais",
+          "entity": "Auditoria",
+          "statuses": ["agendada", "em revisao", "concluida", "anexada a fatura"]
+        },
+        {
+          "name": "Promocoes de modo",
+          "entity": "Promocao",
+          "statuses": ["solicitada", "aguardando aprovacao", "aprovada", "rejeitada"]
+        },
+        {
+          "name": "SLA breaches",
+          "entity": "Breach",
+          "statuses": ["detectado", "comunicado ao cliente", "fatura ajustada", "fechado"]
+        }
+      ]
+    },
+    {
+      "name": "05 Institucional Acme",
+      "purpose": "Estrategia, catalogo, decisoes, backlog e time interno.",
+      "lists": [
+        {
+          "name": "Catalogo de SKUs",
+          "entity": "SKU",
+          "statuses": ["dev", "piloto", "producao", "maduro", "depreciado", "sunset"]
+        },
+        {
+          "name": "Decisoes e ADRs",
+          "entity": "Decisao",
+          "statuses": ["em curso", "aguardando aprovacao", "aprovada", "vigente", "superada"]
+        },
+        {
+          "name": "Backlog tecnico",
+          "entity": "Iniciativa",
+          "statuses": ["bloqueado", "em curso", "em revisao", "concluido"]
+        },
+        {
+          "name": "Time Acme",
+          "entity": "Pessoa",
+          "statuses": ["ativo", "onboarding", "offboarding"]
+        },
+        {
+          "name": "Auditoria DeepAgents",
+          "entity": "Relatorio",
+          "statuses": ["em curso", "publicada", "acoes em andamento", "fechada"]
+        }
+      ]
+    }
+  ],
+  "navigationDocTask": {
+    "space": "05 Institucional Acme",
+    "list": "Decisoes e ADRs",
+    "name": "Como navegar este ClickUp"
+  }
+}

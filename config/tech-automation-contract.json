@@ -1,0 +1,53 @@
+{
+  "version": "0.1",
+  "event": "tech_scope_identified",
+  "purpose": "Gerar automaticamente tarefas tecnicas para dev a partir das plataformas identificadas.",
+  "target": {
+    "space": "05 Institucional Acme",
+    "list": "Backlog tecnico"
+  },
+  "requiredFields": [
+    "client_name",
+    "client_task_id",
+    "technical_platforms",
+    "tech_owner",
+    "delivery_due_date"
+  ],
+  "fields": [
+    { "key": "client_name", "type": "text", "required": true },
+    { "key": "client_task_id", "type": "clickup_task_id", "required": true },
+    { "key": "diagnostic_task_id", "type": "clickup_task_id", "required": false },
+    { "key": "setup_task_id", "type": "clickup_task_id", "required": false },
+    { "key": "technical_platforms", "type": "list", "required": true },
+    { "key": "tech_owner", "type": "person_or_text", "required": true },
+    { "key": "delivery_due_date", "type": "date", "required": true },
+    { "key": "repository_url", "type": "url", "required": false },
+    { "key": "environment", "type": "select", "required": true, "options": ["dev", "staging", "prod"] },
+    { "key": "notes", "type": "long_text", "required": false }
+  ],
+  "automationRules": [
+    {
+      "when": "technical_platforms contains platform.key",
+      "action": "Criar uma task tecnica por item do catalogo da plataforma"
+    },
+    {
+      "when": "repository_url preenchido",
+      "action": "Adicionar link do repositorio na descricao de cada task"
+    },
+    {
+      "when": "delivery_due_date preenchido",
+      "action": "Aplicar due date em todas as tasks tecnicas geradas"
+    },
+    {
+      "when": "task criada",
+      "action": "Adicionar tags ia-gerado e revisao-humana"
+    }
+  ],
+  "progressRules": [
+    { "status": "a fazer", "weight": 0 },
+    { "status": "bloqueado", "weight": 0 },
+    { "status": "em desenvolvimento", "weight": 35 },
+    { "status": "em revisao", "weight": 70 },
+    { "status": "concluido", "weight": 100 }
+  ]
+}

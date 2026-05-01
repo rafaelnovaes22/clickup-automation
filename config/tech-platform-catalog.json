@@ -1,0 +1,218 @@
+{
+  "version": "0.1",
+  "purpose": "Catalogo tecnico para gerar tarefas automaticamente a partir das plataformas identificadas no diagnostico/setup.",
+  "statusFlow": ["a fazer", "em desenvolvimento", "em revisao", "bloqueado", "concluido"],
+  "platforms": [
+    {
+      "key": "whatsapp",
+      "label": "WhatsApp",
+      "defaultOwnerRole": "backend",
+      "tasks": [
+        {
+          "key": "whatsapp_credentials",
+          "title": "Validar credenciais WhatsApp",
+          "artifact": "credential_validation_evidence",
+          "doneWhen": "Token, phone number ID e webhook secret validados."
+        },
+        {
+          "key": "whatsapp_webhook",
+          "title": "Configurar webhook WhatsApp",
+          "artifact": "webhook_url",
+          "doneWhen": "Webhook recebe evento real e responde com sucesso."
+        },
+        {
+          "key": "whatsapp_payload_mapping",
+          "title": "Mapear payload WhatsApp",
+          "artifact": "payload_contract",
+          "doneWhen": "Campos de entrada e eventos suportados documentados."
+        },
+        {
+          "key": "whatsapp_smoke_test",
+          "title": "Rodar smoke test WhatsApp",
+          "artifact": "smoke_test_evidence",
+          "doneWhen": "Mensagem teste percorre fluxo end-to-end."
+        }
+      ]
+    },
+    {
+      "key": "email",
+      "label": "Email",
+      "defaultOwnerRole": "backend",
+      "tasks": [
+        {
+          "key": "email_inbound_channel",
+          "title": "Configurar canal de email inbound",
+          "artifact": "inbound_email_config",
+          "doneWhen": "Email de entrada gera evento processavel."
+        },
+        {
+          "key": "email_parser",
+          "title": "Implementar parser de email",
+          "artifact": "email_parser_contract",
+          "doneWhen": "Assunto, remetente, corpo e anexos relevantes sao extraidos."
+        },
+        {
+          "key": "email_delivery_test",
+          "title": "Validar entrega e resposta por email",
+          "artifact": "delivery_test_evidence",
+          "doneWhen": "Fluxo de resposta passa em teste com caixa real."
+        }
+      ]
+    },
+    {
+      "key": "crm",
+      "label": "CRM",
+      "defaultOwnerRole": "backend",
+      "tasks": [
+        {
+          "key": "crm_auth",
+          "title": "Configurar autenticacao CRM",
+          "artifact": "crm_auth_evidence",
+          "doneWhen": "API do CRM autenticada em ambiente de teste."
+        },
+        {
+          "key": "crm_schema_mapping",
+          "title": "Mapear schema CRM",
+          "artifact": "crm_schema_map",
+          "doneWhen": "Campos de lead/deal/contact mapeados para o modelo interno."
+        },
+        {
+          "key": "crm_writeback",
+          "title": "Implementar escrita de resultado no CRM",
+          "artifact": "crm_writeback_evidence",
+          "doneWhen": "Outcome do agente atualiza entidade correta no CRM."
+        }
+      ]
+    },
+    {
+      "key": "node_backend",
+      "label": "Backend Node",
+      "defaultOwnerRole": "backend",
+      "tasks": [
+        {
+          "key": "backend_ingestion_endpoint",
+          "title": "Criar endpoint de ingestao",
+          "artifact": "api_endpoint_contract",
+          "doneWhen": "Endpoint valida payload, autentica origem e registra evento."
+        },
+        {
+          "key": "backend_domain_model",
+          "title": "Implementar modelo de dominio",
+          "artifact": "domain_model_notes",
+          "doneWhen": "Entidades e estados necessarios estao persistidos."
+        },
+        {
+          "key": "backend_observability",
+          "title": "Adicionar logs e rastreabilidade",
+          "artifact": "observability_dashboard_or_trace",
+          "doneWhen": "Evento pode ser auditado de entrada ate outcome."
+        },
+        {
+          "key": "backend_e2e_test",
+          "title": "Criar teste end-to-end tecnico",
+          "artifact": "e2e_test_result",
+          "doneWhen": "Teste cobre fluxo tecnico principal e passa no CI/local."
+        }
+      ]
+    },
+    {
+      "key": "frontend_web",
+      "label": "Frontend Web",
+      "defaultOwnerRole": "frontend",
+      "tasks": [
+        {
+          "key": "frontend_user_flow",
+          "title": "Mapear fluxo de usuario",
+          "artifact": "user_flow_spec",
+          "doneWhen": "Fluxo principal, estados vazios, erros e sucesso estao documentados."
+        },
+        {
+          "key": "frontend_ui_shell",
+          "title": "Implementar estrutura visual da tela",
+          "artifact": "ui_screen_implementation",
+          "doneWhen": "Tela responsiva renderiza layout base sem dados reais."
+        },
+        {
+          "key": "frontend_api_integration",
+          "title": "Integrar frontend com API",
+          "artifact": "api_integration_evidence",
+          "doneWhen": "Tela consome endpoint real ou mock contratual e trata loading/erro/sucesso."
+        },
+        {
+          "key": "frontend_form_validation",
+          "title": "Implementar validacao de formularios",
+          "artifact": "form_validation_rules",
+          "doneWhen": "Campos obrigatorios, mensagens de erro e submissao invalida estao cobertos."
+        },
+        {
+          "key": "frontend_responsive_review",
+          "title": "Validar responsividade desktop/mobile",
+          "artifact": "responsive_screenshots",
+          "doneWhen": "Tela foi verificada em viewport desktop e mobile sem quebra visual."
+        },
+        {
+          "key": "frontend_e2e_test",
+          "title": "Criar teste E2E do fluxo",
+          "artifact": "frontend_e2e_test_result",
+          "doneWhen": "Teste cobre o fluxo principal e passa local/CI."
+        }
+      ]
+    },
+    {
+      "key": "frontend_dashboard",
+      "label": "Dashboard Frontend",
+      "defaultOwnerRole": "frontend",
+      "tasks": [
+        {
+          "key": "dashboard_metric_contract",
+          "title": "Definir contrato das metricas",
+          "artifact": "dashboard_metric_contract",
+          "doneWhen": "Cada card tem fonte, filtro, periodo e estado vazio definidos."
+        },
+        {
+          "key": "dashboard_visual_implementation",
+          "title": "Implementar visualizacao do dashboard",
+          "artifact": "dashboard_ui",
+          "doneWhen": "Dashboard renderiza cards/tabelas/graficos com dados de exemplo."
+        },
+        {
+          "key": "dashboard_data_integration",
+          "title": "Integrar dashboard aos dados reais",
+          "artifact": "dashboard_data_evidence",
+          "doneWhen": "Metricas batem com fonte de dados validada."
+        },
+        {
+          "key": "dashboard_ceo_review",
+          "title": "Validar leitura executiva do dashboard",
+          "artifact": "ceo_review_notes",
+          "doneWhen": "CEO consegue responder a pergunta do dashboard em ate 30 segundos."
+        }
+      ]
+    },
+    {
+      "key": "external_api",
+      "label": "API externa",
+      "defaultOwnerRole": "backend",
+      "tasks": [
+        {
+          "key": "external_api_contract",
+          "title": "Documentar contrato da API externa",
+          "artifact": "external_api_contract",
+          "doneWhen": "Auth, endpoints, rate limits e erros conhecidos documentados."
+        },
+        {
+          "key": "external_api_client",
+          "title": "Implementar client da API externa",
+          "artifact": "api_client_module",
+          "doneWhen": "Client cobre chamadas necessarias com retry e tratamento de erro."
+        },
+        {
+          "key": "external_api_integration_test",
+          "title": "Validar integracao com API externa",
+          "artifact": "integration_test_result",
+          "doneWhen": "Fluxo principal passa contra sandbox ou credencial real autorizada."
+        }
+      ]
+    }
+  ]
+}

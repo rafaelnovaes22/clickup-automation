@@ -1,0 +1,12 @@
+.env
+.venv-whisper/
+node_modules/
+*.log
+
+# Local generated caches
+.cache/
+__pycache__/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

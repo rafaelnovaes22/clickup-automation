@@ -1,0 +1,58 @@
+{
+  "version": "0.1",
+  "event": "diagnostic_completed",
+  "purpose": "Converter achados do Diagnostico Fase 0 em proposta, atividades e artefatos de implantacao.",
+  "requiredFields": [
+    "company_name",
+    "diagnostic_task_id",
+    "selected_candidate.name",
+    "selected_candidate.outcome_definition",
+    "selected_candidate.sku",
+    "selected_candidate.unit_economics",
+    "selected_candidate.recommended_mode",
+    "selected_candidate.technical_platforms",
+    "decision"
+  ],
+  "candidateFields": [
+    { "key": "name", "type": "text", "required": true },
+    { "key": "problem", "type": "long_text", "required": true },
+    { "key": "outcome_definition", "type": "long_text", "required": true },
+    { "key": "input_channel", "type": "select", "required": true, "options": ["whatsapp", "email", "webhook", "form", "outro"] },
+    { "key": "human_cost_baseline", "type": "currency_brl", "required": true },
+    { "key": "estimated_agent_cost", "type": "currency_brl", "required": true },
+    { "key": "price_per_outcome", "type": "currency_brl", "required": true },
+    { "key": "monthly_cap", "type": "currency_brl", "required": true },
+    { "key": "sla_threshold", "type": "percent", "required": true },
+    { "key": "recommended_mode", "type": "select", "required": true, "options": ["SHADOW", "ASSISTED", "AUTONOMOUS"] },
+    { "key": "technical_platforms", "type": "list", "required": true },
+    { "key": "risks", "type": "list", "required": false },
+    { "key": "required_artifacts", "type": "list", "required": true }
+  ],
+  "decisionRules": [
+    {
+      "when": "decision=approved_for_proposal",
+      "create": [
+        "Propostas / Proposta enviada",
+        "Catalogo de SKUs / SKU em dev se SKU ainda nao existir",
+        "Backlog tecnico / tarefas tech por plataforma identificada"
+      ],
+      "artifacts": ["proposal_doc", "unit_economics_model", "diagnostic_report_pdf"]
+    },
+    {
+      "when": "proposal.status=assinada",
+      "create": [
+        "Clientes ativos / Cliente saudavel",
+        "Setups em andamento / Setup tecnico iniciado"
+      ],
+      "artifacts": ["signed_contract", "setup_fee_receipt", "institutional_briefing"]
+    },
+    {
+      "when": "setup.status=shadow ligado",
+      "create": [
+        "SHADOWs ativos / SHADOW ativo",
+        "Auditorias mensais / Auditoria agendada se cliente ja estiver em operacao"
+      ],
+      "artifacts": ["prompt_pack_v1", "smoke_test_evidence"]
+    }
+  ]
+}
