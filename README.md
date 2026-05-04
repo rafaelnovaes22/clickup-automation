@@ -104,6 +104,15 @@ npm run templates:seed
 
 Esses templates sao a ponte para os hooks do backend: cada evento tera uma task pai concisa e subtasks padrao.
 
+Para revisar e criar os campos customizados de entrada operacional, incluindo a lista `05 Institucional Acme / Solicitacoes de agente`:
+
+```bash
+npm run fields:dry
+npm run fields:seed
+```
+
+Com esses campos aplicados, a CEO/comercial cria uma task em `Solicitacoes de agente` e ja encontra os campos de preenchimento: cliente, problema de negocio, outcome esperado, tipo de agente, canal, plataformas tecnicas, autonomia, handoff humano, prazo, responsavel, repositorio e ambiente. Quando o status virar `escopo pronto`, essa task passa a ser a entrada para gerar o backlog tecnico correspondente.
+
 Para regenerar a documentacao dos campos/eventos:
 
 ```bash

@@ -8,6 +8,8 @@
     "bootstrap": "node scripts/bootstrap-clickup.mjs --live",
     "templates:dry": "node scripts/seed-clickup-templates.mjs --dry-run",
     "templates:seed": "node scripts/seed-clickup-templates.mjs --live",
+    "fields:dry": "node scripts/seed-clickup-custom-fields.mjs --dry-run",
+    "fields:seed": "node scripts/seed-clickup-custom-fields.mjs --live",
     "contracts:generate": "node scripts/generate-event-contracts.mjs",
     "validate": "node scripts/validate.mjs",
     "test": "node tests/tech-tasks.test.mjs",

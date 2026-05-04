@@ -134,6 +134,11 @@
           "statuses": ["em curso", "aguardando aprovacao", "aprovada", "vigente", "superada"]
         },
         {
+          "name": "Solicitacoes de agente",
+          "entity": "Solicitacao de agente",
+          "statuses": ["rascunho", "escopo pronto", "gerado", "bloqueado", "cancelado"]
+        },
+        {
           "name": "Backlog tecnico",
           "entity": "Iniciativa",
           "statuses": ["bloqueado", "em curso", "em revisao", "concluido"]

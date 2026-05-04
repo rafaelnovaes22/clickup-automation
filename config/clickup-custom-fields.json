@@ -1,0 +1,104 @@
+{
+  "version": "0.1",
+  "fieldSets": [
+    {
+      "key": "agent_request",
+      "target": {
+        "space": "05 Institucional Acme",
+        "list": "Solicitacoes de agente"
+      },
+      "purpose": "Campos para CEO/comercial criar uma solicitacao de agente sem precisar escrever escopo tecnico.",
+      "fields": [
+        {
+          "key": "client_name",
+          "name": "Cliente",
+          "type": "text",
+          "required": true,
+          "help": "Nome da empresa ou cliente interno."
+        },
+        {
+          "key": "business_problem",
+          "name": "Problema de negocio",
+          "type": "text",
+          "required": true,
+          "help": "Qual dor ou gargalo o agente deve resolver."
+        },
+        {
+          "key": "expected_outcome",
+          "name": "Outcome esperado",
+          "type": "text",
+          "required": true,
+          "help": "Resultado mensuravel que o agente deve entregar."
+        },
+        {
+          "key": "agent_type",
+          "name": "Tipo de agente",
+          "type": "drop_down",
+          "required": true,
+          "options": ["SDR", "suporte", "cobranca", "atendimento", "operacao", "analise", "outro"]
+        },
+        {
+          "key": "primary_channel",
+          "name": "Canal principal",
+          "type": "drop_down",
+          "required": true,
+          "options": ["whatsapp", "email", "crm", "site", "dashboard", "api", "outro"]
+        },
+        {
+          "key": "technical_platforms",
+          "name": "Plataformas tecnicas",
+          "type": "text",
+          "required": true,
+          "help": "Use chaves separadas por virgula. Ex: ai_agent,whatsapp,node_backend."
+        },
+        {
+          "key": "autonomy_level",
+          "name": "Nivel de autonomia",
+          "type": "drop_down",
+          "required": true,
+          "options": ["somente sugerir", "executar com aprovacao", "executar autonomo", "nao sei"]
+        },
+        {
+          "key": "human_handoff_rule",
+          "name": "Quando chamar humano",
+          "type": "text",
+          "required": true,
+          "help": "Regras de escalonamento humano."
+        },
+        {
+          "key": "success_metric",
+          "name": "Metrica de sucesso",
+          "type": "text",
+          "required": false,
+          "help": "Como saberemos que o agente performou bem."
+        },
+        {
+          "key": "delivery_due_date",
+          "name": "Prazo desejado",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "tech_owner",
+          "name": "Responsavel tecnico",
+          "type": "text",
+          "required": true,
+          "help": "Pessoa responsavel por puxar a criacao do backlog tecnico."
+        },
+        {
+          "key": "repository_url",
+          "name": "Repositorio",
+          "type": "url",
+          "required": false
+        },
+        {
+          "key": "environment",
+          "name": "Ambiente",
+          "type": "drop_down",
+          "required": true,
+          "options": ["dev", "staging", "prod"]
+        }
+      ]
+    }
+  ]
+}

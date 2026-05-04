@@ -3,6 +3,44 @@
 Este documento e gerado a partir de `config/clickup-task-templates.json`.
 Ele define os campos que o backend deve receber antes de criar tasks e disparar atividades correspondentes.
 
+## [TEMPLATE] Solicitacao de agente
+
+- Evento: `agent_request`
+- Destino: `05 Institucional Acme / Solicitacoes de agente`
+- Status desejado: `rascunho`
+
+### Campos
+
+| Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
+|---|---|---|---|---|---|
+| `client_name` | Cliente | text | sim |  | Acme Ltda |
+| `business_problem` | Problema de negocio | long_text | sim |  | Comercial demora para qualificar leads e perde timing. |
+| `expected_outcome` | Outcome esperado | long_text | sim |  | Lead qualificado com score e proximo passo sugerido. |
+| `agent_type` | Tipo de agente | select | sim | SDR, suporte, cobranca, atendimento, operacao, analise, outro |  |
+| `primary_channel` | Canal principal | select | sim | whatsapp, email, crm, site, dashboard, api, outro |  |
+| `technical_platforms` | Plataformas tecnicas | text | sim |  | ai_agent,whatsapp,node_backend |
+| `autonomy_level` | Nivel de autonomia | select | sim | somente sugerir, executar com aprovacao, executar autonomo, nao sei |  |
+| `human_handoff_rule` | Quando chamar humano | long_text | sim |  | Quando o lead pedir desconto, contrato ou falar com diretor. |
+| `success_metric` | Metrica de sucesso | text | nao |  | % leads qualificados corretamente |
+| `delivery_due_date` | Prazo desejado | date | sim |  | 2026-05-15 |
+| `tech_owner` | Responsavel tecnico | person_or_text | sim |  | AI Engineer |
+| `repository_url` | Repositorio | url | nao |  | https://github.com/acme/acme |
+| `environment` | Ambiente | select | sim | dev, staging, prod |  |
+
+### Atividades disparadas
+
+- Quando `template_instantiated`: Criar task Solicitacao de agente
+- Quando `custom_fields preenchidos`: Validar escopo minimo
+- Quando `status=escopo pronto`: Gerar payload tecnico e disparar tech.task.generate
+
+### Subtasks padrao
+
+- Preencher cliente, problema e outcome
+- Selecionar tipo de agente e canal principal
+- Definir autonomia e regra de handoff humano
+- Confirmar plataformas tecnicas
+- Marcar status como escopo pronto
+
 ## [TEMPLATE] Lead novo
 
 - Evento: `lead_new`

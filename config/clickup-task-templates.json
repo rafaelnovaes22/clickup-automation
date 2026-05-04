@@ -2,6 +2,49 @@
   "version": "0.1",
   "templates": [
     {
+      "key": "agent_request",
+      "name": "[TEMPLATE] Solicitacao de agente",
+      "target": {
+        "space": "05 Institucional Acme",
+        "list": "Solicitacoes de agente",
+        "desiredStatus": "rascunho"
+      },
+      "description": [
+        "Entidade: Solicitacao de agente.",
+        "Quando usar: CEO/comercial quer iniciar a criacao de um agente de IA.",
+        "Objetivo: capturar escopo de negocio em campos simples, sem exigir linguagem tecnica.",
+        "Resultado esperado: status 'escopo pronto' dispara a geracao do backlog tecnico correspondente.",
+        "Status desejado: rascunho."
+      ],
+      "fields": [
+        { "key": "client_name", "label": "Cliente", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "business_problem", "label": "Problema de negocio", "type": "long_text", "required": true, "example": "Comercial demora para qualificar leads e perde timing." },
+        { "key": "expected_outcome", "label": "Outcome esperado", "type": "long_text", "required": true, "example": "Lead qualificado com score e proximo passo sugerido." },
+        { "key": "agent_type", "label": "Tipo de agente", "type": "select", "required": true, "options": ["SDR", "suporte", "cobranca", "atendimento", "operacao", "analise", "outro"] },
+        { "key": "primary_channel", "label": "Canal principal", "type": "select", "required": true, "options": ["whatsapp", "email", "crm", "site", "dashboard", "api", "outro"] },
+        { "key": "technical_platforms", "label": "Plataformas tecnicas", "type": "text", "required": true, "example": "ai_agent,whatsapp,node_backend" },
+        { "key": "autonomy_level", "label": "Nivel de autonomia", "type": "select", "required": true, "options": ["somente sugerir", "executar com aprovacao", "executar autonomo", "nao sei"] },
+        { "key": "human_handoff_rule", "label": "Quando chamar humano", "type": "long_text", "required": true, "example": "Quando o lead pedir desconto, contrato ou falar com diretor." },
+        { "key": "success_metric", "label": "Metrica de sucesso", "type": "text", "required": false, "example": "% leads qualificados corretamente" },
+        { "key": "delivery_due_date", "label": "Prazo desejado", "type": "date", "required": true, "example": "2026-05-15" },
+        { "key": "tech_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "AI Engineer" },
+        { "key": "repository_url", "label": "Repositorio", "type": "url", "required": false, "example": "https://github.com/acme/acme" },
+        { "key": "environment", "label": "Ambiente", "type": "select", "required": true, "options": ["dev", "staging", "prod"] }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Solicitacao de agente" },
+        { "trigger": "custom_fields preenchidos", "action": "Validar escopo minimo" },
+        { "trigger": "status=escopo pronto", "action": "Gerar payload tecnico e disparar tech.task.generate" }
+      ],
+      "subtasks": [
+        "Preencher cliente, problema e outcome",
+        "Selecionar tipo de agente e canal principal",
+        "Definir autonomia e regra de handoff humano",
+        "Confirmar plataformas tecnicas",
+        "Marcar status como escopo pronto"
+      ]
+    },
+    {
       "key": "lead_new",
       "name": "[TEMPLATE] Lead novo",
       "target": {

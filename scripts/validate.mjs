@@ -6,6 +6,7 @@ import { root } from "./lib/env.mjs";
 
 const jsonFiles = [
   "config/activity-catalog.json",
+  "config/clickup-custom-fields.json",
   "config/clickup-governance.blueprint.json",
   "config/clickup-task-templates.json",
   "config/diagnostic-output-contract.json",
@@ -49,6 +50,8 @@ for (const file of jsonFiles) {
 }
 
 const techContract = parsed.get("config/tech-automation-contract.json");
+const blueprint = parsed.get("config/clickup-governance.blueprint.json");
+const customFields = parsed.get("config/clickup-custom-fields.json");
 const platformCatalog = parsed.get("config/tech-platform-catalog.json");
 const techRepo = parsed.get("config/tech-operational-repository.json");
 const samplePayload = parsed.get("examples/tech-scope.sample.json");
@@ -99,6 +102,32 @@ if (platformCatalog && samplePayload) {
   const platformKeys = new Set((platformCatalog.platforms ?? []).map((platform) => platform.key));
   for (const platform of samplePayload.technical_platforms ?? []) {
     if (!platformKeys.has(platform)) fail(`examples/tech-scope.sample.json: unknown platform ${platform}`);
+  }
+}
+
+if (blueprint) {
+  const listKeys = new Set();
+  for (const space of blueprint.spaces ?? []) {
+    for (const list of space.lists ?? []) {
+      listKeys.add(`${space.name}/${list.name}`);
+    }
+  }
+
+  if (customFields) {
+    for (const fieldSet of customFields.fieldSets ?? []) {
+      const key = `${fieldSet.target?.space}/${fieldSet.target?.list}`;
+      if (!listKeys.has(key)) fail(`clickup-custom-fields ${fieldSet.key}: target list not found in blueprint: ${key}`);
+      assertUnique(fieldSet.fields ?? [], (field) => field.key, `clickup-custom-fields ${fieldSet.key} fields`);
+      assertUnique(fieldSet.fields ?? [], (field) => field.name, `clickup-custom-fields ${fieldSet.key} field names`);
+    }
+  }
+
+  const taskTemplates = parsed.get("config/clickup-task-templates.json");
+  if (taskTemplates) {
+    for (const template of taskTemplates.templates ?? []) {
+      const key = `${template.target?.space}/${template.target?.list}`;
+      if (!listKeys.has(key)) fail(`clickup-task-templates ${template.key}: target list not found in blueprint: ${key}`);
+    }
   }
 }
 
