@@ -134,7 +134,7 @@ npm run tech:dry
 Para gerar tarefas reais no Backlog tecnico, passe um payload JSON:
 
 ```bash
-npm run tech:generate -- --payload="{\"client_name\":\"Acme\",\"client_task_id\":\"86xxx\",\"technical_platforms\":[\"whatsapp\",\"node_backend\"],\"tech_owner\":\"Dev\",\"delivery_due_date\":\"2026-05-15\",\"environment\":\"dev\"}"
+npm run tech:generate -- --payload="{\"client_name\":\"Acme\",\"client_task_id\":\"86xxx\",\"technical_platforms\":[\"ai_agent\",\"whatsapp\",\"node_backend\"],\"tech_owner\":\"AI Engineer\",\"delivery_due_date\":\"2026-05-15\",\"environment\":\"dev\"}"
 ```
 
 No PowerShell, prefira arquivo de payload:
@@ -149,6 +149,38 @@ Para ler a evolucao das tarefas tech:
 npm run tech:progress
 npm run tech:progress -- --client=Acme
 ```
+
+Para sincronizar o status das tarefas tech sem atualizacao manual do time, usando evidencias de GitHub/CI:
+
+```bash
+npm run tech:sync
+npm run tech:sync -- --client=Acme
+npm run tech:sync -- --live --client=Acme
+```
+
+Por padrao o comando roda em dry-run: ele le o ClickUp, consulta o repositorio GitHub indicado na descricao da task e mostra qual status aplicaria. Com `--live`, ele atualiza a task e comenta as evidencias encontradas. O matching procura termos do cliente, `platform_key`, `task_key` e `client_task_id` no titulo/corpo/branch do PR.
+
+Para rodar sem rede e sem credenciais, usando fixture local:
+
+```bash
+npm run tech:sync -- --offline
+```
+
+## Qualidade local
+
+Para validar JSON, consistencia cruzada entre contratos/catalogos e payloads de exemplo:
+
+```bash
+npm run validate
+```
+
+Para rodar os testes unitarios da automacao tech:
+
+```bash
+npm test
+```
+
+Este projeto agora e Node-only. Os arquivos Python gerados por scaffold foram removidos porque nao faziam parte do fluxo operacional.
 
 Para regenerar o modelo operacional especifico da area Tech:
 

@@ -11,7 +11,8 @@
     "client_task_id",
     "technical_platforms",
     "tech_owner",
-    "delivery_due_date"
+    "delivery_due_date",
+    "environment"
   ],
   "fields": [
     { "key": "client_name", "type": "text", "required": true },
@@ -41,6 +42,28 @@
     {
       "when": "task criada",
       "action": "Adicionar tags ia-gerado e revisao-humana"
+    }
+  ],
+  "syncRules": [
+    {
+      "status": "a fazer",
+      "evidence": "Nenhum PR ou branch relacionado encontrado"
+    },
+    {
+      "status": "em desenvolvimento",
+      "evidence": "Branch ou PR relacionado encontrado"
+    },
+    {
+      "status": "em revisao",
+      "evidence": "PR relacionado aberto"
+    },
+    {
+      "status": "bloqueado",
+      "evidence": "CI/checks do PR relacionado falhando"
+    },
+    {
+      "status": "concluido",
+      "evidence": "PR relacionado mergeado e CI sem falha"
     }
   ],
   "progressRules": [

@@ -1,0 +1,12 @@
+{
+  "tasks": [
+    {
+      "id": "fixture-tech-1",
+      "name": "[TECH] Cliente Fixture / Agente de IA / Criar suite de avaliacao do agente",
+      "description": "Cliente: Cliente Fixture\nPlataforma: Agente de IA\nResponsavel tecnico: AI Engineer\nAmbiente: dev\nCliente task: 86fixture\nRepositorio: https://github.com/acme/example\n\nEntrega tecnica: Criar suite de avaliacao do agente\nArtefato esperado: agent_eval_suite\nDone when: Casos felizes, casos limite, criterios de qualidade e regressao automatica estao cobertos.\n\nControle automatico:\nplatform_key=ai_agent\ntask_key=agent_evaluation_suite\nclient_task_id=86fixture\nevidence_source=github\ngithub_match_terms=Cliente Fixture,ai_agent,agent_evaluation_suite,86fixture",
+      "status": {
+        "status": "to do"
+      }
+    }
+  ]
+}

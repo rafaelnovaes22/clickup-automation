@@ -39,6 +39,14 @@ Este documento e gerado a partir de `config/tech-operational-repository.json` e 
 - validar responsividade desktop/mobile
 - criar testes E2E de fluxos criticos
 
+### AI Engineer
+
+- definir comportamento do agente
+- implementar prompts, tools e memoria
+- criar suites de avaliacao
+- instrumentar traces e metricas de IA
+- preparar gates SHADOW e ASSISTED
+
 ### Delivery tecnico
 
 - configurar canais
@@ -133,6 +141,50 @@ Saidas:
 Automacao atual: scripts/read-tech-progress.mjs
 Proxima automacao: Gerar comentario diario no cliente ou dashboard executivo.
 
+### Desenhar agente de IA do produto
+
+- ID: `tech.agent.design`
+- Tipo: `hybrid`
+- Papel: `ai_engineer`
+- Gatilho: `ai_agent_selected`
+- Onde: `05 Institucional Acme / Backlog tecnico`
+- Artefato: `agent_outcome_contract`
+
+Entradas:
+- `client_name`
+- `selected_candidate`
+- `agent_outcome`
+- `technical_platforms`
+
+Saidas:
+- `agent_outcome_contract`
+- `agent_behavior_spec`
+- `agent_tool_contracts`
+
+Automacao atual: Gerar tarefas da plataforma ai_agent pelo catalogo tecnico.
+Proxima automacao: Gerar automaticamente documento de especificacao do agente a partir do Diagnostico Fase 0.
+
+### Avaliar qualidade do agente
+
+- ID: `tech.agent.evaluate`
+- Tipo: `hybrid`
+- Papel: `ai_engineer`
+- Gatilho: `agent_implementation_ready`
+- Onde: `05 Institucional Acme / Backlog tecnico`
+- Artefato: `agent_eval_suite`
+
+Entradas:
+- `agent_task_id`
+- `eval_dataset`
+- `expected_outcomes`
+
+Saidas:
+- `agent_eval_report`
+- `promotion_recommendation`
+
+Automacao atual: Task tecnica exige suite de avaliacao e evidencia de resultado.
+Proxima automacao: Rodar avaliacoes automaticamente no CI e atualizar status no ClickUp.
+
 ### Registrar evidencia de smoke test
 
 - ID: `tech.smoke.evidence`
@@ -202,7 +254,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### WhatsApp
 
 - Key: `whatsapp`
-- Dono padrao: `backend`
+- Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
 |---|---|---|
@@ -214,7 +266,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### Email
 
 - Key: `email`
-- Dono padrao: `backend`
+- Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
 |---|---|---|
@@ -225,7 +277,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### CRM
 
 - Key: `crm`
-- Dono padrao: `backend`
+- Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
 |---|---|---|
@@ -236,7 +288,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### Backend Node
 
 - Key: `node_backend`
-- Dono padrao: `backend`
+- Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
 |---|---|---|
@@ -245,10 +297,28 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 | Adicionar logs e rastreabilidade | `observability_dashboard_or_trace` | Evento pode ser auditado de entrada ate outcome. |
 | Criar teste end-to-end tecnico | `e2e_test_result` | Teste cobre fluxo tecnico principal e passa no CI/local. |
 
+### Agente de IA
+
+- Key: `ai_agent`
+- Dono padrao: `ai_engineer`
+
+| Task | Artefato | Done when |
+|---|---|---|
+| Definir contrato de outcome do agente | `agent_outcome_contract` | Outcome, entradas, saidas, limites de responsabilidade e criterio de sucesso estao definidos. |
+| Especificar comportamento e politica de decisao | `agent_behavior_spec` | Instrucoes, tom, regras de escalonamento, recusas e criterios de decisao estao documentados. |
+| Mapear ferramentas e integracoes do agente | `agent_tool_contracts` | Cada tool/API necessaria tem contrato, permissao, erro esperado e fallback definidos. |
+| Implementar contexto e memoria operacional | `agent_context_memory_design` | Fontes de contexto, janela, recuperacao, retencao e isolamento por cliente estao implementados. |
+| Versionar prompts e configuracoes do agente | `agent_prompt_version` | Prompt, modelo, parametros e changelog estao versionados e rastreaveis por deploy. |
+| Criar suite de avaliacao do agente | `agent_eval_suite` | Casos felizes, casos limite, criterios de qualidade e regressao automatica estao cobertos. |
+| Implementar guardrails e escalonamento humano | `agent_guardrail_policy` | Regras de seguranca, validacao de output, handoff humano e bloqueios criticos funcionam. |
+| Instrumentar traces e metricas do agente | `agent_observability_trace` | Cada execucao registra input, decisao, tool calls, output, latencia, custo e resultado. |
+| Rodar piloto SHADOW do agente | `agent_shadow_report` | Minimo de 30 outcomes comparados com humano e gaps priorizados. |
+| Preparar promocao para ASSISTED | `agent_assisted_gate` | Threshold de qualidade, SLA, riscos e checklist de aprovacao para ASSISTED estao fechados. |
+
 ### Frontend Web
 
 - Key: `frontend_web`
-- Dono padrao: `frontend`
+- Dono padrao: `frontend_dev`
 
 | Task | Artefato | Done when |
 |---|---|---|
@@ -262,7 +332,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### Dashboard Frontend
 
 - Key: `frontend_dashboard`
-- Dono padrao: `frontend`
+- Dono padrao: `frontend_dev`
 
 | Task | Artefato | Done when |
 |---|---|---|
@@ -274,7 +344,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### API externa
 
 - Key: `external_api`
-- Dono padrao: `backend`
+- Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
 |---|---|---|

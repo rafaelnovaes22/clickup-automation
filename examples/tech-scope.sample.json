@@ -2,10 +2,10 @@
   "client_name": "Cliente Exemplo",
   "client_task_id": "86xxx",
   "diagnostic_task_id": "86diag",
-  "technical_platforms": ["frontend_web", "frontend_dashboard"],
-  "tech_owner": "Dev Front",
+  "technical_platforms": ["ai_agent", "frontend_web", "frontend_dashboard"],
+  "tech_owner": "AI Engineer",
   "delivery_due_date": "2026-05-15",
   "repository_url": "https://github.com/acme/example",
   "environment": "dev",
-  "notes": "Exemplo de escopo frontend."
+  "notes": "Exemplo de escopo com agente de IA como produto."
 }

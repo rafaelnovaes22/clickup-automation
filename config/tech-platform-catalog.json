@@ -6,7 +6,7 @@
     {
       "key": "whatsapp",
       "label": "WhatsApp",
-      "defaultOwnerRole": "backend",
+      "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
           "key": "whatsapp_credentials",
@@ -37,7 +37,7 @@
     {
       "key": "email",
       "label": "Email",
-      "defaultOwnerRole": "backend",
+      "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
           "key": "email_inbound_channel",
@@ -62,7 +62,7 @@
     {
       "key": "crm",
       "label": "CRM",
-      "defaultOwnerRole": "backend",
+      "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
           "key": "crm_auth",
@@ -87,7 +87,7 @@
     {
       "key": "node_backend",
       "label": "Backend Node",
-      "defaultOwnerRole": "backend",
+      "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
           "key": "backend_ingestion_endpoint",
@@ -116,9 +116,76 @@
       ]
     },
     {
+      "key": "ai_agent",
+      "label": "Agente de IA",
+      "defaultOwnerRole": "ai_engineer",
+      "tasks": [
+        {
+          "key": "agent_outcome_contract",
+          "title": "Definir contrato de outcome do agente",
+          "artifact": "agent_outcome_contract",
+          "doneWhen": "Outcome, entradas, saidas, limites de responsabilidade e criterio de sucesso estao definidos."
+        },
+        {
+          "key": "agent_behavior_spec",
+          "title": "Especificar comportamento e politica de decisao",
+          "artifact": "agent_behavior_spec",
+          "doneWhen": "Instrucoes, tom, regras de escalonamento, recusas e criterios de decisao estao documentados."
+        },
+        {
+          "key": "agent_tool_contracts",
+          "title": "Mapear ferramentas e integracoes do agente",
+          "artifact": "agent_tool_contracts",
+          "doneWhen": "Cada tool/API necessaria tem contrato, permissao, erro esperado e fallback definidos."
+        },
+        {
+          "key": "agent_context_memory",
+          "title": "Implementar contexto e memoria operacional",
+          "artifact": "agent_context_memory_design",
+          "doneWhen": "Fontes de contexto, janela, recuperacao, retencao e isolamento por cliente estao implementados."
+        },
+        {
+          "key": "agent_prompt_versioning",
+          "title": "Versionar prompts e configuracoes do agente",
+          "artifact": "agent_prompt_version",
+          "doneWhen": "Prompt, modelo, parametros e changelog estao versionados e rastreaveis por deploy."
+        },
+        {
+          "key": "agent_evaluation_suite",
+          "title": "Criar suite de avaliacao do agente",
+          "artifact": "agent_eval_suite",
+          "doneWhen": "Casos felizes, casos limite, criterios de qualidade e regressao automatica estao cobertos."
+        },
+        {
+          "key": "agent_guardrails",
+          "title": "Implementar guardrails e escalonamento humano",
+          "artifact": "agent_guardrail_policy",
+          "doneWhen": "Regras de seguranca, validacao de output, handoff humano e bloqueios criticos funcionam."
+        },
+        {
+          "key": "agent_observability",
+          "title": "Instrumentar traces e metricas do agente",
+          "artifact": "agent_observability_trace",
+          "doneWhen": "Cada execucao registra input, decisao, tool calls, output, latencia, custo e resultado."
+        },
+        {
+          "key": "agent_shadow_pilot",
+          "title": "Rodar piloto SHADOW do agente",
+          "artifact": "agent_shadow_report",
+          "doneWhen": "Minimo de 30 outcomes comparados com humano e gaps priorizados."
+        },
+        {
+          "key": "agent_assisted_promotion",
+          "title": "Preparar promocao para ASSISTED",
+          "artifact": "agent_assisted_gate",
+          "doneWhen": "Threshold de qualidade, SLA, riscos e checklist de aprovacao para ASSISTED estao fechados."
+        }
+      ]
+    },
+    {
       "key": "frontend_web",
       "label": "Frontend Web",
-      "defaultOwnerRole": "frontend",
+      "defaultOwnerRole": "frontend_dev",
       "tasks": [
         {
           "key": "frontend_user_flow",
@@ -161,7 +228,7 @@
     {
       "key": "frontend_dashboard",
       "label": "Dashboard Frontend",
-      "defaultOwnerRole": "frontend",
+      "defaultOwnerRole": "frontend_dev",
       "tasks": [
         {
           "key": "dashboard_metric_contract",
@@ -192,7 +259,7 @@
     {
       "key": "external_api",
       "label": "API externa",
-      "defaultOwnerRole": "backend",
+      "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
           "key": "external_api_contract",

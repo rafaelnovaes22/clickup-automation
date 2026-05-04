@@ -45,6 +45,17 @@
       ]
     },
     {
+      "key": "ai_engineer",
+      "label": "AI Engineer",
+      "responsibilities": [
+        "definir comportamento do agente",
+        "implementar prompts, tools e memoria",
+        "criar suites de avaliacao",
+        "instrumentar traces e metricas de IA",
+        "preparar gates SHADOW e ASSISTED"
+      ]
+    },
+    {
       "key": "delivery_engineer",
       "label": "Delivery tecnico",
       "responsibilities": [
@@ -62,17 +73,41 @@
     { "key": "credential_validation_evidence", "label": "Evidencia de credenciais", "storage": "clickup_attachment_or_comment" },
     { "key": "webhook_url", "label": "URL de webhook", "storage": "task_description" },
     { "key": "smoke_test_evidence", "label": "Evidencia de smoke test", "storage": "clickup_attachment_or_comment" },
+    { "key": "inbound_email_config", "label": "Configuracao de email inbound", "storage": "repo_doc_or_task_description" },
+    { "key": "email_parser_contract", "label": "Contrato de parser de email", "storage": "repo_doc_or_task_description" },
+    { "key": "delivery_test_evidence", "label": "Evidencia de entrega", "storage": "clickup_attachment_or_comment" },
+    { "key": "crm_auth_evidence", "label": "Evidencia de autenticacao CRM", "storage": "clickup_attachment_or_comment" },
+    { "key": "crm_schema_map", "label": "Mapa de schema CRM", "storage": "repo_doc_or_task_description" },
+    { "key": "crm_writeback_evidence", "label": "Evidencia de escrita no CRM", "storage": "clickup_comment" },
+    { "key": "domain_model_notes", "label": "Notas do modelo de dominio", "storage": "repo_doc_or_task_description" },
     { "key": "pull_request_url", "label": "Pull request", "storage": "clickup_comment" },
     { "key": "commit_sha", "label": "Commit SHA", "storage": "clickup_comment" },
     { "key": "deploy_url", "label": "Deploy", "storage": "clickup_comment" },
     { "key": "e2e_test_result", "label": "Resultado de teste E2E", "storage": "clickup_comment" },
     { "key": "user_flow_spec", "label": "Especificacao de fluxo de usuario", "storage": "repo_doc_or_task_description" },
     { "key": "ui_screen_implementation", "label": "Implementacao de tela", "storage": "pull_request" },
+    { "key": "api_integration_evidence", "label": "Evidencia de integracao com API", "storage": "clickup_comment" },
+    { "key": "form_validation_rules", "label": "Regras de validacao de formulario", "storage": "repo_doc_or_task_description" },
     { "key": "responsive_screenshots", "label": "Screenshots desktop/mobile", "storage": "clickup_attachment_or_comment" },
     { "key": "frontend_e2e_test_result", "label": "Resultado de teste E2E frontend", "storage": "clickup_comment" },
     { "key": "dashboard_metric_contract", "label": "Contrato de metricas do dashboard", "storage": "repo_doc_or_task_description" },
     { "key": "dashboard_ui", "label": "UI do dashboard", "storage": "pull_request" },
-    { "key": "observability_dashboard_or_trace", "label": "Trace/log/dashboard", "storage": "clickup_comment" }
+    { "key": "dashboard_data_evidence", "label": "Evidencia de dados do dashboard", "storage": "clickup_comment" },
+    { "key": "ceo_review_notes", "label": "Notas de validacao executiva", "storage": "clickup_comment_or_doc" },
+    { "key": "observability_dashboard_or_trace", "label": "Trace/log/dashboard", "storage": "clickup_comment" },
+    { "key": "external_api_contract", "label": "Contrato da API externa", "storage": "repo_doc_or_task_description" },
+    { "key": "api_client_module", "label": "Modulo client de API", "storage": "pull_request" },
+    { "key": "integration_test_result", "label": "Resultado de teste de integracao", "storage": "clickup_comment" },
+    { "key": "agent_outcome_contract", "label": "Contrato de outcome do agente", "storage": "repo_doc_or_task_description" },
+    { "key": "agent_behavior_spec", "label": "Especificacao comportamental do agente", "storage": "repo_doc_or_task_description" },
+    { "key": "agent_tool_contracts", "label": "Contratos de tools do agente", "storage": "repo_doc_or_task_description" },
+    { "key": "agent_context_memory_design", "label": "Desenho de contexto e memoria", "storage": "repo_doc_or_task_description" },
+    { "key": "agent_prompt_version", "label": "Versao de prompt/configuracao", "storage": "pull_request_or_registry" },
+    { "key": "agent_eval_suite", "label": "Suite de avaliacao do agente", "storage": "repo_tests_or_eval_platform" },
+    { "key": "agent_guardrail_policy", "label": "Politica de guardrails", "storage": "repo_doc_or_task_description" },
+    { "key": "agent_observability_trace", "label": "Trace de execucao do agente", "storage": "observability_tool_or_clickup_comment" },
+    { "key": "agent_shadow_report", "label": "Relatorio SHADOW do agente", "storage": "clickup_comment_or_doc" },
+    { "key": "agent_assisted_gate", "label": "Gate de promocao ASSISTED", "storage": "clickup_comment_or_doc" }
   ],
   "activities": [
     {
@@ -133,6 +168,36 @@
       "automation": {
         "current": "scripts/read-tech-progress.mjs",
         "next": "Gerar comentario diario no cliente ou dashboard executivo."
+      }
+    },
+    {
+      "id": "tech.agent.design",
+      "name": "Desenhar agente de IA do produto",
+      "type": "hybrid",
+      "role": "ai_engineer",
+      "trigger": "ai_agent_selected",
+      "inputs": ["client_name", "selected_candidate", "agent_outcome", "technical_platforms"],
+      "outputs": ["agent_outcome_contract", "agent_behavior_spec", "agent_tool_contracts"],
+      "artifact": "agent_outcome_contract",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "Gerar tarefas da plataforma ai_agent pelo catalogo tecnico.",
+        "next": "Gerar automaticamente documento de especificacao do agente a partir do Diagnostico Fase 0."
+      }
+    },
+    {
+      "id": "tech.agent.evaluate",
+      "name": "Avaliar qualidade do agente",
+      "type": "hybrid",
+      "role": "ai_engineer",
+      "trigger": "agent_implementation_ready",
+      "inputs": ["agent_task_id", "eval_dataset", "expected_outcomes"],
+      "outputs": ["agent_eval_report", "promotion_recommendation"],
+      "artifact": "agent_eval_suite",
+      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "automation": {
+        "current": "Task tecnica exige suite de avaliacao e evidencia de resultado.",
+        "next": "Rodar avaliacoes automaticamente no CI e atualizar status no ClickUp."
       }
     },
     {
