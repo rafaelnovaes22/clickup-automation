@@ -191,6 +191,40 @@ npm test
 
 Este projeto agora e Node-only. Os arquivos Python gerados por scaffold foram removidos porque nao faziam parte do fluxo operacional.
 
+## Backend de webhook
+
+Para rodar localmente o backend que recebe eventos do ClickUp:
+
+```bash
+npm start
+```
+
+Endpoints:
+
+- `GET /health`
+- `POST /webhooks/clickup`
+
+Fluxo automatizado:
+
+1. Usuario cria task em `05 Institucional Acme / Solicitacoes de agente`.
+2. Usuario preenche os campos customizados.
+3. Usuario muda status para `escopo pronto`.
+4. Webhook recebe o evento, le a task, gera o backlog tecnico em `Backlog tecnico` e muda a solicitacao para `gerado`.
+
+Variaveis necessarias no Railway:
+
+```bash
+ACME_INTERNAL_CLICKUP_TOKEN=pk_xxx
+ACME_INTERNAL_WORKSPACE_ID=90171198309
+CLICKUP_WEBHOOK_SECRET=...
+```
+
+Depois de publicar no Railway, registre o webhook do ClickUp com:
+
+```bash
+npm run webhook:register -- --url=https://sua-url.up.railway.app
+```
+
 Para regenerar o modelo operacional especifico da area Tech:
 
 ```bash

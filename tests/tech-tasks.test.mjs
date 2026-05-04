@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { agentRequestToPayload } from "../scripts/lib/agent-request.mjs";
 import { decideStatus } from "../scripts/lib/github-evidence.mjs";
 import { canonicalStatus, parseTechTask, selectedPlatforms, taskDescription, taskName, validatePayload } from "../scripts/lib/tech-tasks.mjs";
 
@@ -84,6 +85,29 @@ test("decideStatus maps evidence to operational status", () => {
   assert.equal(decideStatus({ prs: [{ state: "open", updated_at: "2026-05-01T00:00:00Z" }], branches: [], ci: null }), "em revisao");
   assert.equal(decideStatus({ prs: [{ state: "open", updated_at: "2026-05-01T00:00:00Z" }], branches: [], ci: { state: "failing" } }), "bloqueado");
   assert.equal(decideStatus({ prs: [{ state: "closed", merged_at: "2026-05-01T00:00:00Z", updated_at: "2026-05-01T00:00:00Z" }], branches: [], ci: { state: "passing" } }), "concluido");
+});
+
+test("agentRequestToPayload converts ClickUp custom fields into tech payload", () => {
+  const date = Date.parse("2026-05-15T00:00:00.000Z");
+  const payloadFromTask = agentRequestToPayload({
+    id: "86request",
+    name: "Criar agente SDR",
+    custom_fields: [
+      { name: "Cliente", type: "text", value: "Acme" },
+      { name: "Plataformas tecnicas", type: "text", value: "ai_agent,whatsapp,node_backend" },
+      { name: "Responsavel tecnico", type: "text", value: "AI Engineer" },
+      { name: "Prazo desejado", type: "date", value: String(date) },
+      { name: "Ambiente", type: "drop_down", value: 0, type_config: { options: [{ name: "dev", orderindex: 0 }] } },
+      { name: "Outcome esperado", type: "text", value: "Lead qualificado" }
+    ]
+  });
+
+  assert.equal(payloadFromTask.client_name, "Acme");
+  assert.deepEqual(payloadFromTask.technical_platforms, ["ai_agent", "whatsapp", "node_backend"]);
+  assert.equal(payloadFromTask.client_task_id, "86request");
+  assert.equal(payloadFromTask.delivery_due_date, "2026-05-15");
+  assert.equal(payloadFromTask.environment, "dev");
+  assert.match(payloadFromTask.notes, /Lead qualificado/);
 });
 
 let passed = 0;
