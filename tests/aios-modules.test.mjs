@@ -241,40 +241,61 @@ test("collectAiosEvidence detects review approval and blocker", () => {
   }
 });
 
-test("decideStatusFromAiosEvidence returns concluido on review approved + merged PR", () => {
+test("decideStatusFromAiosEvidence returns complete on review approved + merged PR + CI passing", () => {
   const evidence = { found: true, stage: "review", reviewApproved: true, reviewBlocked: false };
   const githubEvidence = {
     prs: [{ state: "closed", merged_at: "2026-05-01T00:00:00Z", updated_at: "2026-05-01T00:00:00Z" }],
     branches: [],
     ci: { state: "passing" }
   };
-  assert.equal(decideStatusFromAiosEvidence(evidence, githubEvidence), "concluido");
+  assert.equal(decideStatusFromAiosEvidence(evidence, githubEvidence), "complete");
 });
 
-test("decideStatusFromAiosEvidence returns em andamento on BLOCKER review (status simplificado)", () => {
+test("decideStatusFromAiosEvidence returns bloqueado on BLOCKER review", () => {
   const evidence = { found: true, stage: "review", reviewApproved: false, reviewBlocked: true };
-  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "em andamento");
+  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "bloqueado");
 });
 
-test("decideStatusFromAiosEvidence returns em andamento when artefato existe sem review", () => {
+test("decideStatusFromAiosEvidence returns bloqueado when CI is failing", () => {
+  const evidence = { found: true, stage: "tests", reviewApproved: false, reviewBlocked: false };
+  assert.equal(
+    decideStatusFromAiosEvidence(evidence, { prs: [{ state: "open", updated_at: "2026-05-01T00:00:00Z" }], branches: [], ci: { state: "failing" } }),
+    "bloqueado"
+  );
+});
+
+test("decideStatusFromAiosEvidence returns em revisão on review stage with artefato sem aprovacao", () => {
+  const evidence = { found: true, stage: "review", reviewApproved: false, reviewBlocked: false };
+  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "em revisão");
+});
+
+test("decideStatusFromAiosEvidence returns em desenvolvimento when artefato exists para stage de codigo", () => {
   const evidence = { found: true, stage: "spec", reviewApproved: false, reviewBlocked: false };
-  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "em andamento");
+  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "em desenvolvimento");
 });
 
-test("decideStatusFromAiosEvidence returns pendente when nothing exists", () => {
+test("decideStatusFromAiosEvidence returns to do when nothing exists", () => {
   const evidence = { found: false, stage: "spec", reason: "ausente" };
-  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "pendente");
+  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "to do");
 });
 
-test("decideStatusForManualTask uses GitHub-only signals (3 estados)", () => {
-  assert.equal(decideStatusForManualTask({ prs: [], branches: [], ci: null }), "pendente");
+test("decideStatusForManualTask uses GitHub-only signals (5 estados)", () => {
+  assert.equal(decideStatusForManualTask({ prs: [], branches: [], ci: null }), "to do");
   assert.equal(
     decideStatusForManualTask({
       prs: [{ state: "closed", merged_at: "2026-05-01T00:00:00Z", updated_at: "2026-05-01T00:00:00Z" }],
       branches: [],
       ci: { state: "passing" }
     }),
-    "concluido"
+    "complete"
+  );
+  assert.equal(
+    decideStatusForManualTask({
+      prs: [{ state: "open", updated_at: "2026-05-01T00:00:00Z" }],
+      branches: [],
+      ci: { state: "passing" }
+    }),
+    "em revisão"
   );
   assert.equal(
     decideStatusForManualTask({
@@ -282,7 +303,7 @@ test("decideStatusForManualTask uses GitHub-only signals (3 estados)", () => {
       branches: [],
       ci: { state: "failing" }
     }),
-    "em andamento"
+    "bloqueado"
   );
 });
 
@@ -292,39 +313,58 @@ test("isBlockedSignal flags BLOCKER review or failing CI", () => {
   assert.equal(isBlockedSignal({}, { ci: { state: "passing" } }), false);
 });
 
-test("canonicalAiosStatus maps legacy aliases to 3 estados", () => {
-  assert.equal(canonicalAiosStatus("to do"), "pendente");
-  assert.equal(canonicalAiosStatus("a fazer"), "pendente");
-  assert.equal(canonicalAiosStatus("in progress"), "em andamento");
-  assert.equal(canonicalAiosStatus("em desenvolvimento"), "em andamento");
-  assert.equal(canonicalAiosStatus("em revisao"), "em andamento");
-  assert.equal(canonicalAiosStatus("bloqueado"), "em andamento");
-  assert.equal(canonicalAiosStatus("complete"), "concluido");
-  assert.equal(canonicalAiosStatus("CONCLUÍDO"), "concluido");
+test("canonicalAiosStatus maps aliases to 5 estados (alinhado com a list do ClickUp)", () => {
+  assert.equal(canonicalAiosStatus("to do"), "to do");
+  assert.equal(canonicalAiosStatus("a fazer"), "to do");
+  assert.equal(canonicalAiosStatus("pendente"), "to do");
+  assert.equal(canonicalAiosStatus("em desenvolvimento"), "em desenvolvimento");
+  assert.equal(canonicalAiosStatus("in progress"), "em desenvolvimento");
+  assert.equal(canonicalAiosStatus("em revisao"), "em revisão");
+  assert.equal(canonicalAiosStatus("em revisão"), "em revisão");
+  assert.equal(canonicalAiosStatus("bloqueado"), "bloqueado");
+  assert.equal(canonicalAiosStatus("blocked"), "bloqueado");
+  assert.equal(canonicalAiosStatus("complete"), "complete");
+  assert.equal(canonicalAiosStatus("concluido"), "complete");
+  assert.equal(canonicalAiosStatus("CONCLUÍDO"), "complete");
 });
 
-test("rollupParentStatus aggregates subtask statuses", () => {
-  assert.equal(rollupParentStatus([{ status: "concluido" }, { status: "concluido" }]), "concluido");
-  assert.equal(rollupParentStatus([{ status: "pendente" }, { status: "pendente" }]), "pendente");
-  assert.equal(rollupParentStatus([{ status: "pendente" }, { status: "em andamento" }, { status: "concluido" }]), "em andamento");
-  assert.equal(rollupParentStatus([{ status: "concluido" }, { status: "em andamento" }]), "em andamento");
+test("rollupParentStatus prioritizes bloqueado then completion then progress", () => {
+  assert.equal(rollupParentStatus([{ status: "complete" }, { status: "complete" }]), "complete");
+  assert.equal(rollupParentStatus([{ status: "to do" }, { status: "to do" }]), "to do");
+  assert.equal(rollupParentStatus([{ status: "to do" }, { status: "bloqueado" }]), "bloqueado");
+  assert.equal(rollupParentStatus([{ status: "complete" }, { status: "em revisão" }]), "em revisão");
+  assert.equal(rollupParentStatus([{ status: "to do" }, { status: "em desenvolvimento" }]), "em desenvolvimento");
 });
 
-test("currentStageFromSubtasks returns the in-progress stage", () => {
+test("currentStageFromSubtasks prioritizes blocked, then review, then development", () => {
   assert.equal(
     currentStageFromSubtasks([
-      { stageKey: "spec", status: "concluido" },
-      { stageKey: "backend", status: "em andamento" },
-      { stageKey: "frontend", status: "pendente" }
+      { stageKey: "spec", status: "complete" },
+      { stageKey: "backend", status: "em desenvolvimento" },
+      { stageKey: "frontend", status: "to do" }
     ]),
     "backend"
   );
   assert.equal(
     currentStageFromSubtasks([
-      { stageKey: "spec", status: "concluido" },
-      { stageKey: "merge", status: "concluido" }
+      { stageKey: "spec", status: "complete" },
+      { stageKey: "review", status: "em revisão" }
     ]),
-    "concluido"
+    "review"
+  );
+  assert.equal(
+    currentStageFromSubtasks([
+      { stageKey: "spec", status: "complete" },
+      { stageKey: "tests", status: "bloqueado" }
+    ]),
+    "tests"
+  );
+  assert.equal(
+    currentStageFromSubtasks([
+      { stageKey: "spec", status: "complete" },
+      { stageKey: "merge", status: "complete" }
+    ]),
+    "complete"
   );
 });
 

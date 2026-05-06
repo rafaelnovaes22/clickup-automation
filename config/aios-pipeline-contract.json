@@ -54,14 +54,18 @@
     { "when": "task criada",      "action": "Adicionar tags ia-gerado, revisao-humana, projeto:edix, tier:{tier}" }
   ],
   "syncRules": [
-    { "status": "pendente",      "evidence": "nenhum artefato AIOS encontrado E nenhum PR/branch" },
-    { "status": "em andamento",  "evidence": "artefato AIOS existe OU PR/branch aberto OU review sem aprovacao OU BLOCKER detectado" },
-    { "status": "concluido",     "evidence": "review aprovado + PR mergeado em main + CI verde" }
+    { "status": "to do",              "evidence": "nenhum artefato AIOS encontrado E nenhum PR/branch" },
+    { "status": "em desenvolvimento", "evidence": "artefato AIOS existe OU branch/PR criado, sem PR aberto pra review" },
+    { "status": "em revisão",         "evidence": "PR aberto OU stage=review com artefato gerado mas ainda nao aprovado" },
+    { "status": "bloqueado",          "evidence": "_review_*.md contem BLOCKER OU CI esta failing" },
+    { "status": "complete",           "evidence": "review aprovado (APROVADO PARA MERGE: Sim) + PR mergeado em main + CI verde" }
   ],
   "progressRules": [
-    { "status": "pendente",      "weight": 0 },
-    { "status": "em andamento",  "weight": 50 },
-    { "status": "concluido",     "weight": 100 }
+    { "status": "to do",              "weight": 0 },
+    { "status": "bloqueado",          "weight": 0 },
+    { "status": "em desenvolvimento", "weight": 35 },
+    { "status": "em revisão",         "weight": 70 },
+    { "status": "complete",           "weight": 100 }
   ],
-  "blockerSignal": "Quando review contem BLOCKER ou CI esta failing, status fica em andamento mas o sync deixa um comentario explicito com a evidencia para visibilidade da CEO."
+  "blockerSignal": "Quando review contem BLOCKER ou CI esta failing, sync seta status como 'bloqueado' e tambem deixa um comentario explicito com a evidencia para a CEO conseguir clicar e entender o motivo."
 }

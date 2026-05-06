@@ -1,7 +1,7 @@
 {
   "version": "0.1",
   "purpose": "Catalogo de stages do pipeline AIOS para gerar tarefas por modulo de plataforma SaaS multi-tenant.",
-  "statusFlow": ["pendente", "em andamento", "concluido"],
+  "statusFlow": ["to do", "em desenvolvimento", "em revisão", "bloqueado", "complete"],
   "stages": [
     {
       "key": "spec",

@@ -1,7 +1,9 @@
 export const DEFAULT_LIST_STATUSES = [
-  { status: "pendente", color: "#87909e", type: "open" },
-  { status: "em andamento", color: "#4194f6", type: "custom" },
-  { status: "concluido", color: "#2ecd6f", type: "closed" }
+  { status: "to do", color: "#87909e", type: "open" },
+  { status: "em desenvolvimento", color: "#4194f6", type: "custom" },
+  { status: "em revisão", color: "#f9c513", type: "custom" },
+  { status: "bloqueado", color: "#e50000", type: "custom" },
+  { status: "complete", color: "#2ecd6f", type: "closed" }
 ];
 
 async function findSpace(clickUp, teamId, spaceName) {
@@ -80,16 +82,27 @@ export function rollupParentStatus(subtaskInfos) {
   if (!subtaskInfos.length) return null;
 
   const statuses = subtaskInfos.map((info) => info.status);
-  if (statuses.every((s) => s === "concluido")) return "concluido";
-  if (statuses.every((s) => s === "pendente" || s === "")) return "pendente";
-  // Qualquer mistura ou presenca de "em andamento" rola para "em andamento"
-  return "em andamento";
+
+  // BLOCKER tem prioridade absoluta
+  if (statuses.includes("bloqueado")) return "bloqueado";
+  // Tudo concluido => parent complete
+  if (statuses.every((s) => s === "complete")) return "complete";
+  // Tudo pendente => to do
+  if (statuses.every((s) => s === "to do" || s === "")) return "to do";
+  // Algum em revisao e nada anterior progredindo => em revisão
+  if (statuses.includes("em revisão")) return "em revisão";
+  // Caso geral: alguma coisa em andamento
+  return "em desenvolvimento";
 }
 
 export function currentStageFromSubtasks(subtaskInfos) {
-  const inProgress = subtaskInfos.find((info) => info.status === "em andamento");
+  const blocked = subtaskInfos.find((info) => info.status === "bloqueado");
+  if (blocked) return blocked.stageKey;
+  const reviewing = subtaskInfos.find((info) => info.status === "em revisão");
+  if (reviewing) return reviewing.stageKey;
+  const inProgress = subtaskInfos.find((info) => info.status === "em desenvolvimento");
   if (inProgress) return inProgress.stageKey;
-  const allDone = subtaskInfos.every((info) => info.status === "concluido");
-  if (allDone) return "concluido";
+  const allDone = subtaskInfos.every((info) => info.status === "complete");
+  if (allDone) return "complete";
   return null;
 }

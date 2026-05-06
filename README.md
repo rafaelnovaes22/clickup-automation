@@ -210,17 +210,19 @@ Para projetos onde 1 cliente = **plataforma SaaS multi-tenant com varios modulos
 | [`docs/AIOS_SYNC_PATTERN.md`](./docs/AIOS_SYNC_PATTERN.md) | Por que ClickUp puxa estado em vez de o AIOS empurrar |
 | [`examples/edix-modules.payload.json`](./examples/edix-modules.payload.json) | Payload pronto para gerar os 15 modulos da plataforma SchoolPlatform |
 
-### Status flow simplificado (3 estados)
+### Status flow (5 estados)
 
-A lista usa apenas tres statuses para nao poluir o painel da CEO:
+A list `Modulos` usa cinco statuses, dando granularidade pra CEO ver exatamente onde cada modulo esta:
 
-- `pendente` - nada comecou (default)
-- `em andamento` - artefato AIOS existe, branch/PR aberto, review sem aprovacao **OU** BLOCKER detectado
-- `concluido` - review aprovado + PR mergeado em main + CI verde
+- `to do` - nada comecou (default ClickUp, mapeado de `pendente`/`a fazer`)
+- `em desenvolvimento` - artefato AIOS existe / branch / PR aberto sem review
+- `em revisão` - PR aberto em review **OU** stage `review` com `_review_*.md` gerado mas sem aprovacao
+- `bloqueado` - `_review_*.md` contem `BLOCKER` **OU** CI failing
+- `complete` - review aprovado (`APROVADO PARA MERGE: Sim`) + PR mergeado em main + CI verde (default ClickUp, mapeado de `concluido`)
 
-Quando ha BLOCKER (review com `BLOCKER` ou CI failing), o status fica em `em andamento` mas o sync deixa um **comentario explicito** na task com a evidencia, para a CEO conseguir abrir e entender o problema sem precisar de mais um status.
+> **Setup uma vez por list:** `to do` e `complete` ja existem por default no ClickUp. Para os 3 intermediarios (`em desenvolvimento`, `em revisão`, `bloqueado`), click direito na list `Modulos` -> Statuses -> adicionar manualmente. A API do ClickUp nao permite isso de forma confiavel em todos os planos.
 
-> **Setup uma vez por list:** os 3 statuses precisam ser configurados manualmente no UI da list (a API do ClickUp nao permite isso de forma confiavel em todos os planos). Click direito na list `Modulos` -> Statuses -> adicionar `pendente` (open), `em andamento` (custom, azul) e `concluido` (closed, verde).
+Quando o sync detecta `bloqueado`, alem de mover o status, deixa um **comentario explicito** na task com a evidencia (ex: trecho do BLOCKER, link do PR, estado do CI) para a CEO conseguir clicar e entender o motivo sem precisar abrir o repo.
 
 ### Regras de tier
 

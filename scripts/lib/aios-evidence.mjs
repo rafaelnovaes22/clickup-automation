@@ -10,27 +10,32 @@ const STAGE_TO_PATH = {
 };
 
 const AIOS_STATUS_ALIASES = new Map([
-  ["", "pendente"],
-  ["to do", "pendente"],
-  ["a fazer", "pendente"],
-  ["pendente", "pendente"],
-  ["open", "pendente"],
-  ["new", "pendente"],
-  ["in progress", "em andamento"],
-  ["em andamento", "em andamento"],
-  ["em desenvolvimento", "em andamento"],
-  ["em revisao", "em andamento"],
-  ["em revisão", "em andamento"],
-  ["review", "em andamento"],
-  ["in review", "em andamento"],
-  ["bloqueado", "em andamento"],
-  ["blocked", "em andamento"],
-  ["complete", "concluido"],
-  ["completed", "concluido"],
-  ["closed", "concluido"],
-  ["done", "concluido"],
-  ["concluido", "concluido"],
-  ["concluído", "concluido"]
+  // pendente / to do
+  ["", "to do"],
+  ["to do", "to do"],
+  ["a fazer", "to do"],
+  ["pendente", "to do"],
+  ["open", "to do"],
+  ["new", "to do"],
+  // em desenvolvimento
+  ["em desenvolvimento", "em desenvolvimento"],
+  ["em andamento", "em desenvolvimento"],
+  ["in progress", "em desenvolvimento"],
+  // em revisao (com e sem acento)
+  ["em revisao", "em revisão"],
+  ["em revisão", "em revisão"],
+  ["review", "em revisão"],
+  ["in review", "em revisão"],
+  // bloqueado
+  ["bloqueado", "bloqueado"],
+  ["blocked", "bloqueado"],
+  // complete / concluido
+  ["complete", "complete"],
+  ["completed", "complete"],
+  ["closed", "complete"],
+  ["done", "complete"],
+  ["concluido", "complete"],
+  ["concluído", "complete"]
 ]);
 
 export function canonicalAiosStatus(status) {
@@ -94,32 +99,50 @@ function latestPr(githubEvidence) {
 export function decideStatusFromAiosEvidence(evidence, githubEvidence) {
   const pr = latestPr(githubEvidence);
   const merged = Boolean(pr?.merged_at);
+  const prOpen = pr?.state === "open";
+  const ciFailing = githubEvidence?.ci?.state === "failing";
   const ciPassing = githubEvidence?.ci?.state === "passing" || githubEvidence?.ci == null;
   const hasBranchOrPr = Boolean(githubEvidence?.branches?.length || githubEvidence?.prs?.length);
 
-  // concluido: review aprovado + merge + CI ok (ou stage merge com merge confirmado)
+  // BLOCKER tem prioridade absoluta
+  if (evidence.reviewBlocked || ciFailing) return "bloqueado";
+
+  // stage merge: depende quase so de PR/CI
   if (evidence.stage === "merge") {
-    return merged && ciPassing ? "concluido" : (hasBranchOrPr || merged) ? "em andamento" : "pendente";
+    if (merged && ciPassing) return "complete";
+    if (prOpen) return "em revisão";
+    if (hasBranchOrPr || merged) return "em desenvolvimento";
+    return "to do";
   }
 
-  if (evidence.reviewApproved && merged && ciPassing) return "concluido";
+  // stage review: terminado quando aprovado + merge + CI ok; senao em revisao se artefato existe
+  if (evidence.stage === "review") {
+    if (evidence.reviewApproved && merged && ciPassing) return "complete";
+    if (evidence.found || prOpen) return "em revisão";
+    if (hasBranchOrPr) return "em desenvolvimento";
+    return "to do";
+  }
 
-  // em andamento: qualquer sinal de trabalho em curso (artefato existe, PR aberto/mergeado, branch, ou BLOCKER)
-  if (evidence.found || evidence.reviewBlocked || hasBranchOrPr || merged) return "em andamento";
-
-  // pendente: nada comecou
-  return "pendente";
+  // demais stages
+  if (evidence.reviewApproved && merged && ciPassing) return "complete";
+  if (prOpen) return "em revisão";
+  if (evidence.found || hasBranchOrPr || merged) return "em desenvolvimento";
+  return "to do";
 }
 
 export function decideStatusForManualTask(githubEvidence) {
   const pr = latestPr(githubEvidence);
   const merged = Boolean(pr?.merged_at);
+  const prOpen = pr?.state === "open";
+  const ciFailing = githubEvidence?.ci?.state === "failing";
   const ciPassing = githubEvidence?.ci?.state === "passing" || githubEvidence?.ci == null;
   const hasBranchOrPr = Boolean(githubEvidence?.branches?.length || githubEvidence?.prs?.length);
 
-  if (merged && ciPassing) return "concluido";
-  if (hasBranchOrPr || merged) return "em andamento";
-  return "pendente";
+  if (ciFailing) return "bloqueado";
+  if (merged && ciPassing) return "complete";
+  if (prOpen) return "em revisão";
+  if (hasBranchOrPr) return "em desenvolvimento";
+  return "to do";
 }
 
 export function isBlockedSignal(evidence, githubEvidence) {
@@ -134,7 +157,7 @@ export function formatAiosEvidenceComment(info, evidence, githubEvidence, nextSt
   const lines = [
     blocked ? "BLOCKER detectado pelo sync AIOS:" : "Atualizacao automatica AIOS:",
     `- Status calculado: ${nextStatus}`,
-    blocked ? `- ATENCAO: revisar imediatamente - sync nao avanca status enquanto bloqueador estiver presente` : null,
+    blocked ? `- ATENCAO: revisar imediatamente - sync mantem status bloqueado ate evidencia ser limpa` : null,
     `- Cliente: ${info.clientName}`,
     `- Modulo: ${info.moduleKey}${info.moduleTier ? ` (tier ${info.moduleTier})` : ""}`,
     `- Stage: ${info.stageKey ?? "(desconhecido)"}`,
