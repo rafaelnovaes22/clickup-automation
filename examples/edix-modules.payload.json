@@ -1,7 +1,7 @@
 {
   "client_name": "SchoolPlatform",
-  "client_task_id": "TBD_apos_criar_task_no_clickup",
-  "diagnostic_task_id": "TBD_apos_criar_diag_no_clickup",
+  "platform_name": "Plataforma SchoolPlatform",
+  "list_name": "Modulos",
   "modules": [
     { "key": "schema",            "tier": "C", "week": 1 },
     { "key": "cadastros",         "tier": "A", "week": 3 },
@@ -21,7 +21,7 @@
   ],
   "tech_owner": "Rafael Novaes",
   "delivery_due_date": "2026-07-15",
-  "repository_url": "https://github.com/rafael-novaes/school-platform",
+  "repository_url": "https://github.com/acme-startup/school-platform",
   "project_root": "c:/Users/Rafael/Projetos/SchoolPlatform",
   "environment": "dev",
   "notes": "Plataforma EDIX - 15 modulos via AIOS Server. Tier C nao passa pelo pipeline."

@@ -1,0 +1,255 @@
+{
+  "version": "0.1",
+  "purpose": "Mapeamento de cada modulo da Plataforma SchoolPlatform para suas funcionalidades de produto. Fonte: c:/Users/Rafael/Projetos/SchoolPlatform/funcionalidades-edix.md.",
+  "modules": {
+    "schema": {
+      "title": "Modelo de dados (Prisma) e isolamento multi-tenant",
+      "summary": "Fundacao da plataforma: schema relacional com isolamento por unidade, autenticacao e perfis de acesso. Pre-requisito para todos os outros modulos.",
+      "features": [
+        "Schema Prisma com modelos para usuario, unidade, jovem, contrato, parcela, etc.",
+        "Isolamento multi-tenant por unidade (todas as queries filtram por unidade do usuario)",
+        "Autenticacao com email/senha e perfil de acesso",
+        "Migrations versionadas e seed inicial",
+        "Estrutura organizacional: grupo de unidades, regiao, departamentos"
+      ]
+    },
+    "cadastros": {
+      "title": "Cadastros gerais (equipes, turnos, perfis, departamentos)",
+      "summary": "Tabelas mestre que sustentam o resto do sistema. Quem nao existe aqui nao opera em nenhum outro modulo.",
+      "features": [
+        "Cadastro de equipes com configuracao de premiacao diaria, semanal e mensal",
+        "Cadastro de turnos (horario de expediente dos operadores por equipe/setor)",
+        "Cadastro de perfis do sistema com parametrizacao de direitos de acesso e copia de acessos para novos usuarios",
+        "Cadastro de tipos de funcao (habilita colaboradores em rankings e relatorios gerenciais)",
+        "Cadastro de ano escolar atribuido aos jovens",
+        "Cadastro de instituicoes de ensino vinculadas ao jovem",
+        "Cadastro de departamentos (setores da unidade para vinculo ao funcionario)",
+        "Grupo de unidades, regiao por unidade, grupos"
+      ]
+    },
+    "jovens": {
+      "title": "Jovens e leads (cadastro, consulta, vinculos)",
+      "summary": "Entidade central do negocio: registro de cada jovem com seus dados pessoais e os vinculos com contrato, CRM, tele-pesquisa e tele-projeto.",
+      "features": [
+        "Listagem de jovens/leads com paginacao e filtros",
+        "Cadastro de jovem/lead com dados pessoais",
+        "Consulta por id ou nome",
+        "Exibicao de idade, responsavel, telefone, endereco, status/acompanhamento CRM e contrato",
+        "Exportacao de listagem (Excel/PDF)",
+        "Vinculo entre jovem, contrato, CRM, tele-pesquisa e tele-projeto"
+      ]
+    },
+    "tele_pesquisa": {
+      "title": "Tele-pesquisa (cadastro de leads com produtividade do operador)",
+      "summary": "Recepcao de leads via telefone. Operadores cadastram jovens, sistema mede produtividade e gera relatorios para o tele-projeto agendar.",
+      "features": [
+        "Cadastro de jovem com validacao por DDD/telefone (evita duplicidade)",
+        "Abas: dados principais, endereco e observacoes gerais",
+        "Geracao de ID do jovem usado pelo Tele-Projeto para agendamento",
+        "Indice de produtividade por operador e hora (acumulado e media por hora)",
+        "Alerta de jovens cadastrados fora do horario do turno",
+        "Listagem e bloqueio de telefones (com responsavel, data e hora)",
+        "Relatorio de cadastro para tele-projeto (filtros: idade, bairro, periodo)",
+        "Relatorio de cadastros por operador (resumido/detalhado, dentro/fora do turno)",
+        "Exportacao Excel/PDF de relatorios"
+      ]
+    },
+    "crm": {
+      "title": "CRM e gestao de leads (funis de venda)",
+      "summary": "Funil comercial: do lead novo ate a matricula. Etapas, campanhas, importacao em massa e dashboards de conversao.",
+      "features": [
+        "Lancamento de etapas no lead (busca por nome/id)",
+        "Acompanhamento de leads",
+        "Funil de vendas, funil organico, funil de conversao",
+        "Filtros por campanha, origem, funcionario de tele-pesquisa e periodo",
+        "Importacao de leads por CSV (download de modelo, selecao de layout, verificacao do arquivo, associacao de campanha/origem/funcionario)",
+        "Cadastro/listagem de campanhas",
+        "Cadastro/listagem de origens",
+        "Cadastro/listagem de etapas"
+      ]
+    },
+    "tele_projeto": {
+      "title": "Tele-projeto e recepcao (agendamentos e atendimento OEDU)",
+      "summary": "Agenda visitas dos jovens cadastrados na tele-pesquisa. Controla recepcao, atendimento OEDU e justificativa de nao comparecimento.",
+      "features": [
+        "Novo agendamento por id do jovem ou busca pelo nome",
+        "Confirmacao dos dados do jovem no agendamento",
+        "Atribuicao da operadora de Tele-Projeto",
+        "Definicao de status, data e horario",
+        "Recepcao: registro de chegada, devolucao da ficha, liberacao da visita, acionamento/campainha",
+        "Atendimento OEDU (codigo do orientador, selecao de turma)",
+        "Cadastro de jovem indicado no ato do comparecimento",
+        "Captura de foto do jovem por webcam",
+        "Justificativa de agendamentos em aberto (categoria, complemento, reagendamento)",
+        "Indice de produtividade do Tele-Projeto (operador, dia, semana, periodo)",
+        "Controle de motivo de nao aceite",
+        "Relatorios: agendamentos, atendimentos, agendados x desistencias"
+      ]
+    },
+    "comercial": {
+      "title": "Comercial (contratos, OEDU, treinamento, premiacoes)",
+      "summary": "Conversao do agendamento em contrato. Atendimento OEDU, impressao de contrato, controle de treinamento Formando Campeoes, fechamentos diarios e premiacoes.",
+      "features": [
+        "Atendimento OEDU libera o jovem para emissao de contrato e finalizacao da venda",
+        "Selecao de turma liberada pelo Pedagogico, plano de curso (Projeto/Irmao) e turma de reuniao de pais",
+        "Status: Fechamento, Fechamento com Sinal, Matriculado",
+        "Definicao da data de integralizacao da matricula (parametro de ate 7 dias)",
+        "Impressao de contratos",
+        "Busca de contrato por jovem id",
+        "Treinamento Formando Campeoes: turma, primeiro/segundo dia, pagamento (dinheiro, cheque, cartao, a pagar)",
+        "Fechamentos comerciais diario, semanal e mensal",
+        "Controle Comercial Diario em tempo real (alimentado por Pesquisa, Projeto e Divulgacao)",
+        "Premiacoes e comissoes (CRUD, filtros, exportacao)",
+        "Relatorio por tempo de espera (chegada, devolucao da ficha, liberacao, atendimento)"
+      ]
+    },
+    "financeiro_basico": {
+      "title": "Financeiro basico (contas, fluxo de caixa, relatorios)",
+      "summary": "Operacao financeira do dia a dia da unidade. Cobranca escritural CNAB e em modulo separado por risco.",
+      "features": [
+        "Contas a receber: lancamento, listagem, filtros (periodo, cliente, conta, status)",
+        "Contas a pagar: lancamento, listagem, filtros (fornecedor, periodo, conta)",
+        "Baixa de parcelas via cartao (selecionar contrato/aluno, baixar varias parcelas de uma vez, registro do numero do cartao, bandeira, parcelas)",
+        "Transferencias entre contas (Caixa Interno x Conta Corrente)",
+        "Cobranca por contrato/nome",
+        "Fechamento financeiro diario por data (impede alteracoes retroativas)",
+        "Reabertura do dia, troca de conta bancaria/master",
+        "Conta financeira como planilha orcamentaria com pai/subcontas (centro de custo)",
+        "Digitacao de previsao financeira por ano/mes (liberacao/bloqueio)",
+        "Fluxo de caixa por periodo e conta bancaria",
+        "Extrato financeiro (definitivo/provisorio, combinando Caixa Interno e Conta Corrente)",
+        "Relatorios: conta financeira, orcamentario, cartao, lucro corporativo, faturamento, arrecadacao, faturamento x fluxo real"
+      ]
+    },
+    "administrativo": {
+      "title": "Administrativo (cancelamento, transferencia, retencao, metas)",
+      "summary": "Operacoes pos-matricula: trancamento, cancelamento com calculo de multa, transferencia entre unidades, controle de retencao e metas de parcelas.",
+      "features": [
+        "Consulta de aluno/contrato com filtros completos (contrato, nome, responsavel, CPF/CNPJ, RG, telefone, matricula, turma, status)",
+        "Consulta exibe dados pessoais, dados do curso, situacao financeira, historicos por departamento",
+        "Trancamento de contrato (data inicio/fim, regra: ate 90 dias)",
+        "Cancelamento com calculo de multa por atraso, juros diarios, multa contratual e valor do cancelamento (a vista ou parcelado)",
+        "Aluno reaparecido/reiniciado (ativa contratos de desaparecidos ou nao iniciados)",
+        "Negativar aluno (registro local, sem transmissao automatica externa)",
+        "Aluno concluido (encerra contrato com modulos pedagogicos cumpridos)",
+        "Crescimento da escola e calculo de retencao (novas matriculas, cancelamentos, retornos, percentual)",
+        "Metas de parcelas v2 (segmentadas por carteiras: Segunda Parcela, Parcela Mes, Super Ativos)",
+        "Solicitacao de transferencia entre unidades (somente apos 1a aula, impede com parcelas em atraso)",
+        "Transferencia migra parcelas e historicos para a nova unidade",
+        "Layout para carteirinha estudantil",
+        "Relatorios: filtro de parcelas, cobranca (com cartas e etiquetas), ranking administrativo"
+      ]
+    },
+    "pedagogico_pt1": {
+      "title": "Pedagogico pt1 (pautas, calendario, dashboard)",
+      "summary": "Nucleo do pedagogico: pauta de chamada aula a aula, calendario escolar, gravacao de notas, dashboard pedagogico. Modulo mais complexo do sistema.",
+      "features": [
+        "Pauta de chamada: controle central de presenca aula a aula e turma a turma",
+        "Abertura semiautomatica de pautas (libera pautas do dia por turma, disciplina, professor, inicio, termino, sala)",
+        "Abertura/edicao manual de pautas",
+        "Consulta de pautas por data",
+        "Indicacao visual de presenca/falta com cores",
+        "Pauta de reuniao de pais (turmas vinculadas no ato da matricula)",
+        "Calendario escolar com digitacao dia a dia",
+        "Calendario pedagogico permite conciliar duas ou mais atividades no mesmo dia",
+        "Atividades com cor especifica no calendario",
+        "Gravacao de notas",
+        "Setar cena (exige contrato, senha e confirmacao)",
+        "Dashboard pedagogico",
+        "Resultados de metricas pedagogicas"
+      ]
+    },
+    "pedagogico_pt2": {
+      "title": "Pedagogico pt2 (ligacoes, reposicoes, trainee, relatorios)",
+      "summary": "Controles pedagogicos auxiliares: ligacoes para pais e alunos, reposicoes, liberacao de turmas, alunos especiais (trainee, desaparecidos).",
+      "features": [
+        "Controle de ligacoes (3 rotinas): reuniao de pais, boas-vindas para alunos novos, alunos faltantes",
+        "Ligacao para reuniao de pais (titulares conforme dias parametrizados, matriculas dos ultimos 30 dias, status Ativo a Iniciar)",
+        "Ligacao de boas-vindas (matriculas do dia anterior + pendencias, dados cadastrais, data/hora reuniao)",
+        "Ligacao para alunos faltantes (lista diaria de ativos que faltaram no dia anterior)",
+        "Reposicao vinculada a falta especifica (filtros: data falta, data reposicao, nome do jovem)",
+        "Reposicao agenda aluno em turma criada para essa finalidade",
+        "Liberacao de turmas (controla vagas para Orientacao Educacional)",
+        "Bloqueio/liberacao de turmas com horarios especificos",
+        "Aluno trainee com validacao de regras (acima de 16 anos, mais de 6 meses de curso)",
+        "Alunos desaparecidos (X dias parametrizados, regra padrao: 8 faltas consecutivas)",
+        "Digitacao de motivo de alunos nao ativos (grava no historico)",
+        "Impressao de etiquetas de aniversariantes (por nome ou dia/mes)",
+        "Relatorios: frequencia e reposicao (detalhado/resumido), pautas (por aluno/turma/ciclo), turma de treinamento"
+      ]
+    },
+    "cnab": {
+      "title": "Cobranca escritural / CNAB (alto risco, sem agentes)",
+      "summary": "Integracao com bancos via arquivos CNAB. Modulo de maior risco tecnico do projeto - implementacao 100% manual, sem suporte de agentes AIOS.",
+      "features": [
+        "Importacao de arquivos bancarios",
+        "Pre-visualizacao de arquivo de cobranca escritural",
+        "Validacao de pendencias de arquivo bancario",
+        "Envio de arquivos de cobranca escritural",
+        "Geracao/download de arquivo bancario",
+        "Reenvio de boletos aguardando retorno",
+        "Status de documentos da cobranca escritural",
+        "Controle de documentos enviados/retornados",
+        "Baixa manual em cobranca escritural",
+        "Importacao apresenta totais (titulos, valor principal, registros no sistema, registros fora)",
+        "Cadastro de banco, conta corrente, ocorrencias bancarias e classificacao financeira"
+      ]
+    },
+    "rh": {
+      "title": "Recursos humanos (empresas, vagas, encaminhamentos)",
+      "summary": "Encaminhamento dos jovens egressos para empresas parceiras. Cadastro de vagas, controle de entrevistas e resultado.",
+      "features": [
+        "Cadastro/listagem de empresas (CNPJ, nome fantasia, razao social, contatos, site)",
+        "Cadastro/listagem de vagas (empresa, titulo, status, data, quantidade, escolaridade)",
+        "Cadastro/listagem de encaminhamentos (jovem para empresa/vaga)",
+        "Controle de resposta do encaminhamento",
+        "Data de resposta, data de inicio, data/hora de entrevista",
+        "Status do encaminhamento e resultado",
+        "Listagem de encaminhamentos com filtros"
+      ]
+    },
+    "utilitarios": {
+      "title": "Utilitarios (usuarios, sessoes, backup, layouts)",
+      "summary": "Funcoes de administracao do sistema: gestao de usuarios e sessoes, backup, troca de senha, layouts e funcoes utilitarias diversas.",
+      "features": [
+        "Cadastro/listagem de usuarios (login, funcionario, nome, perfil)",
+        "Filtros por login, funcionario, nome e perfil",
+        "Controle de perfil e expiracao de senha",
+        "Consulta de sessoes de usuarios",
+        "Filial",
+        "Backup (download e listagem de backups)",
+        "Verifica agendamentos",
+        "Meta de parcelas v2 - verifica",
+        "Reprocessar controle comercial diario",
+        "Layout do contrato",
+        "Transferencia manual",
+        "Troca de senha"
+      ]
+    },
+    "parametros": {
+      "title": "Parametros configuraveis do sistema",
+      "summary": "Painel de regras de negocio configuraveis: regras de agendamento, metas, prazos, regras pedagogicas e financeiras.",
+      "features": [
+        "Aceitar apenas hora cheia (agendamentos)",
+        "Ultima hora do dia para agendamentos",
+        "Quantidade de agendamentos por hora",
+        "Dias permitidos para reagendamento",
+        "Dias permitidos para agendamentos sem justificativa/comparecimento",
+        "Meta diaria de cadastros",
+        "Meta diaria de agendamentos",
+        "Dia inicial da semana, dias uteis considerados, dia de inicio do mes",
+        "Regras de boleto da primeira parcela",
+        "Vencimento da segunda parcela",
+        "Prazo maximo para trancamento",
+        "Faltas consecutivas para considerar aluno desaparecido",
+        "Numero maximo de parcelas para cancelamento",
+        "Percentual minimo do primeiro pagamento do cancelamento",
+        "Periodicidade de parcelas do cancelamento",
+        "Regras de cobranca escritural",
+        "Bloqueio de digitacao de previsao financeira",
+        "Regras de pauta, presenca, reposicao, trainee e alunos desaparecidos",
+        "Baixa da primeira parcela com conta de divida perdoada"
+      ]
+    }
+  }
+}

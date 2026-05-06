@@ -9,6 +9,35 @@ const STAGE_TO_PATH = {
   review: (m) => `docs/specs/_review_${m}.md`
 };
 
+const AIOS_STATUS_ALIASES = new Map([
+  ["", "pendente"],
+  ["to do", "pendente"],
+  ["a fazer", "pendente"],
+  ["pendente", "pendente"],
+  ["open", "pendente"],
+  ["new", "pendente"],
+  ["in progress", "em andamento"],
+  ["em andamento", "em andamento"],
+  ["em desenvolvimento", "em andamento"],
+  ["em revisao", "em andamento"],
+  ["em revisão", "em andamento"],
+  ["review", "em andamento"],
+  ["in review", "em andamento"],
+  ["bloqueado", "em andamento"],
+  ["blocked", "em andamento"],
+  ["complete", "concluido"],
+  ["completed", "concluido"],
+  ["closed", "concluido"],
+  ["done", "concluido"],
+  ["concluido", "concluido"],
+  ["concluído", "concluido"]
+]);
+
+export function canonicalAiosStatus(status) {
+  const normalized = String(status ?? "").toLowerCase().trim();
+  return AIOS_STATUS_ALIASES.get(normalized) ?? normalized;
+}
+
 export function collectAiosEvidence({ module, stage, projectRoot }) {
   if (!STAGE_TO_PATH[stage]) {
     return {
@@ -56,54 +85,56 @@ export function collectAiosEvidence({ module, stage, projectRoot }) {
   };
 }
 
+function latestPr(githubEvidence) {
+  const prs = githubEvidence?.prs ?? [];
+  if (!prs.length) return null;
+  return [...prs].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
+}
+
 export function decideStatusFromAiosEvidence(evidence, githubEvidence) {
-  const ciFailing = githubEvidence?.ci?.state === "failing";
-  const latestPr = githubEvidence?.prs && githubEvidence.prs.length
-    ? [...githubEvidence.prs].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))[0]
-    : null;
-  const merged = Boolean(latestPr?.merged_at);
-  const prOpen = latestPr?.state === "open";
+  const pr = latestPr(githubEvidence);
+  const merged = Boolean(pr?.merged_at);
+  const ciPassing = githubEvidence?.ci?.state === "passing" || githubEvidence?.ci == null;
   const hasBranchOrPr = Boolean(githubEvidence?.branches?.length || githubEvidence?.prs?.length);
 
-  if (evidence.reviewBlocked || ciFailing) return "bloqueado";
-
+  // concluido: review aprovado + merge + CI ok (ou stage merge com merge confirmado)
   if (evidence.stage === "merge") {
-    return merged ? "concluido" : prOpen ? "em revisao" : hasBranchOrPr ? "em desenvolvimento" : "a fazer";
+    return merged && ciPassing ? "concluido" : (hasBranchOrPr || merged) ? "em andamento" : "pendente";
   }
 
-  if (evidence.reviewApproved && merged) return "concluido";
-  if (evidence.reviewApproved) return "em revisao";
+  if (evidence.reviewApproved && merged && ciPassing) return "concluido";
 
-  if (evidence.found) {
-    if (evidence.stage === "review") return "em revisao";
-    return "em desenvolvimento";
-  }
+  // em andamento: qualquer sinal de trabalho em curso (artefato existe, PR aberto/mergeado, branch, ou BLOCKER)
+  if (evidence.found || evidence.reviewBlocked || hasBranchOrPr || merged) return "em andamento";
 
-  if (prOpen) return "em revisao";
-  if (hasBranchOrPr) return "em desenvolvimento";
-  return "a fazer";
+  // pendente: nada comecou
+  return "pendente";
 }
 
 export function decideStatusForManualTask(githubEvidence) {
-  const latestPr = githubEvidence?.prs && githubEvidence.prs.length
-    ? [...githubEvidence.prs].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))[0]
-    : null;
+  const pr = latestPr(githubEvidence);
+  const merged = Boolean(pr?.merged_at);
+  const ciPassing = githubEvidence?.ci?.state === "passing" || githubEvidence?.ci == null;
+  const hasBranchOrPr = Boolean(githubEvidence?.branches?.length || githubEvidence?.prs?.length);
 
-  if (githubEvidence?.ci?.state === "failing") return "bloqueado";
-  if (latestPr?.merged_at) return "concluido";
-  if (latestPr?.state === "open") return "em revisao";
-  if (githubEvidence?.branches?.length || githubEvidence?.prs?.length) return "em desenvolvimento";
-  return "a fazer";
+  if (merged && ciPassing) return "concluido";
+  if (hasBranchOrPr || merged) return "em andamento";
+  return "pendente";
 }
 
-export function formatAiosEvidenceComment(info, evidence, githubEvidence, nextStatus) {
-  const latestPr = githubEvidence?.prs && githubEvidence.prs.length
-    ? [...githubEvidence.prs].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))[0]
-    : null;
+export function isBlockedSignal(evidence, githubEvidence) {
+  if (evidence?.reviewBlocked) return true;
+  if (githubEvidence?.ci?.state === "failing") return true;
+  return false;
+}
 
-  return [
-    "Atualizacao automatica AIOS:",
+export function formatAiosEvidenceComment(info, evidence, githubEvidence, nextStatus, { blocked = false } = {}) {
+  const pr = latestPr(githubEvidence);
+
+  const lines = [
+    blocked ? "BLOCKER detectado pelo sync AIOS:" : "Atualizacao automatica AIOS:",
     `- Status calculado: ${nextStatus}`,
+    blocked ? `- ATENCAO: revisar imediatamente - sync nao avanca status enquanto bloqueador estiver presente` : null,
     `- Cliente: ${info.clientName}`,
     `- Modulo: ${info.moduleKey}${info.moduleTier ? ` (tier ${info.moduleTier})` : ""}`,
     `- Stage: ${info.stageKey ?? "(desconhecido)"}`,
@@ -111,13 +142,15 @@ export function formatAiosEvidenceComment(info, evidence, githubEvidence, nextSt
       ? `- Artefato AIOS: ${evidence.path} (${evidence.sizeBytes ?? "?"} bytes)`
       : `- Artefato AIOS: ${evidence.reason ?? "nao encontrado"}`,
     evidence.reviewApproved ? "- Review: APROVADO PARA MERGE" : null,
-    evidence.reviewBlocked ? "- Review: BLOCKER detectado" : null,
+    evidence.reviewBlocked ? "- Review: BLOCKER detectado no _review_*.md" : null,
     githubEvidence?.repo
       ? `- Repositorio: ${githubEvidence.repo.owner}/${githubEvidence.repo.repo}`
       : "- Repositorio: nao identificado",
-    latestPr ? `- PR: #${latestPr.number} ${latestPr.state}${latestPr.merged_at ? " / merged" : ""}` : "- PR: nao encontrado",
+    pr ? `- PR: #${pr.number} ${pr.state}${pr.merged_at ? " / merged" : ""}` : "- PR: nao encontrado",
     `- Branches encontradas: ${githubEvidence?.branches?.length ?? 0}`,
-    githubEvidence?.ci ? `- CI: ${githubEvidence.ci.state}` : "- CI: nao avaliado",
+    githubEvidence?.ci ? `- CI: ${githubEvidence.ci.state}${githubEvidence.ci.state === "failing" ? " (BLOCKER)" : ""}` : "- CI: nao avaliado",
     githubEvidence?.errors?.length ? `- Observacoes: ${githubEvidence.errors.join(" | ")}` : null
-  ].filter((line) => line !== null).join("\n");
+  ];
+
+  return lines.filter((line) => line !== null).join("\n");
 }

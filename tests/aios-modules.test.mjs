@@ -4,18 +4,24 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { readFile } from "node:fs/promises";
 import {
-  aiosTaskDescription,
-  aiosTaskName,
-  aiosTaskTags,
+  moduleParentName,
+  moduleParentDescription,
+  moduleParentTags,
   parseAiosTask,
   planTasksForModule,
+  stageSubtaskName,
+  stageSubtaskDescription,
+  stageSubtaskTags,
   validateAiosPayload
 } from "../scripts/lib/aios-modules.mjs";
 import {
+  canonicalAiosStatus,
   collectAiosEvidence,
   decideStatusForManualTask,
-  decideStatusFromAiosEvidence
+  decideStatusFromAiosEvidence,
+  isBlockedSignal
 } from "../scripts/lib/aios-evidence.mjs";
+import { rollupParentStatus, currentStageFromSubtasks } from "../scripts/lib/aios-platform.mjs";
 import { root } from "../scripts/lib/env.mjs";
 
 const tests = [];
@@ -29,12 +35,20 @@ const edixPayload = JSON.parse(await readFile(resolve(root, "examples/edix-modul
 
 const validPayload = {
   client_name: "SchoolPlatform",
+  platform_name: "Plataforma SchoolPlatform",
+  list_name: "Modulos",
   client_task_id: "86abc",
   modules: [{ key: "cadastros", tier: "A", week: 3 }],
   tech_owner: "Rafael",
   delivery_due_date: "2026-07-15",
   project_root: "c:/Users/Rafael/Projetos/SchoolPlatform",
   environment: "dev"
+};
+
+const cadastrosInfo = {
+  title: "Cadastros gerais",
+  summary: "Tabelas mestre",
+  features: ["Cadastro de equipes"]
 };
 
 test("validateAiosPayload accepts a complete payload", () => {
@@ -60,6 +74,11 @@ test("validateAiosPayload rejects module without numeric week", () => {
 test("validateAiosPayload rejects missing required field project_root", () => {
   const broken = { ...validPayload, project_root: "" };
   assert.throws(() => validateAiosPayload(broken, contract), /project_root/);
+});
+
+test("validateAiosPayload rejects missing required field platform_name", () => {
+  const broken = { ...validPayload, platform_name: "" };
+  assert.throws(() => validateAiosPayload(broken, contract), /platform_name/);
 });
 
 test("planTasksForModule returns 6 stages for tier A", () => {
@@ -96,41 +115,63 @@ test("EDIX payload generates exactly 70 tasks", () => {
   assert.equal(total, 70);
 });
 
-test("aiosTaskName uses [AIOS] prefix for tier A and [MANUAL] for tier C", () => {
-  const tierAPlans = planTasksForModule({ key: "cadastros", tier: "A", week: 3 }, catalog);
-  const tierCPlans = planTasksForModule({ key: "cnab", tier: "C", week: 9 }, catalog);
-
-  assert.match(aiosTaskName(validPayload, tierAPlans[0]), /^\[AIOS\] SchoolPlatform \/ cadastros \/ Spec/);
-  assert.match(aiosTaskName(validPayload, tierCPlans[0]), /^\[MANUAL\] SchoolPlatform \/ cnab \/ Implementacao Rafael$/);
+test("moduleParentName combines key with feature title", () => {
+  const module = { key: "cadastros", tier: "A", week: 3 };
+  assert.equal(moduleParentName(module, cadastrosInfo), "cadastros · Cadastros gerais");
 });
 
-test("aiosTaskTags includes tier and special tags for cnab", () => {
-  const cnabPlan = planTasksForModule({ key: "cnab", tier: "C", week: 9 }, catalog)[0];
-  const tags = aiosTaskTags(cnabPlan);
-  assert.ok(tags.includes("ia-gerado"));
-  assert.ok(tags.includes("revisao-humana"));
+test("moduleParentTags includes tier, week and projeto:edix", () => {
+  const tags = moduleParentTags({ key: "cadastros", tier: "A", week: 3 });
   assert.ok(tags.includes("projeto:edix"));
-  assert.ok(tags.includes("tier:C"));
+  assert.ok(tags.includes("tier:A"));
+  assert.ok(tags.includes("semana:3"));
+});
+
+test("moduleParentTags adds rafael-implementa and bloqueador-cnab for cnab", () => {
+  const tags = moduleParentTags({ key: "cnab", tier: "C", week: 9 });
   assert.ok(tags.includes("rafael-implementa"));
   assert.ok(tags.includes("bloqueador-cnab"));
 });
 
-test("aiosTaskDescription embeds module/stage/tier/project_root for parsing", () => {
-  const plan = planTasksForModule({ key: "cadastros", tier: "A", week: 3 }, catalog)[0];
-  const description = aiosTaskDescription(validPayload, plan);
+test("moduleParentDescription includes key features and parser fields", () => {
+  const module = { key: "cadastros", tier: "A", week: 3 };
+  const description = moduleParentDescription(validPayload, module, cadastrosInfo);
+  assert.match(description, /Cadastros gerais/);
+  assert.match(description, /Cadastro de equipes/);
   assert.match(description, /module_key=cadastros/);
-  assert.match(description, /module_tier=A/);
+  assert.match(description, /module_role=parent/);
+});
+
+test("stageSubtaskName uses descriptive labels", () => {
+  assert.equal(stageSubtaskName({ key: "spec" }), "Spec - Definicao executavel");
+  assert.equal(stageSubtaskName({ key: "manual_implementation" }), "Implementacao manual (Rafael)");
+});
+
+test("stageSubtaskDescription embeds module/stage/parent for parsing", () => {
+  const plan = planTasksForModule({ key: "cadastros", tier: "A", week: 3 }, catalog)[0];
+  const description = stageSubtaskDescription(validPayload, plan, "86parent", cadastrosInfo);
+  assert.match(description, /module_key=cadastros/);
   assert.match(description, /stage_key=spec/);
-  assert.match(description, /project_root=c:\/Users\/Rafael\/Projetos\/SchoolPlatform/);
+  assert.match(description, /parent_task_id=86parent/);
+  assert.match(description, /module_role=stage/);
   assert.match(description, /artifact_path=docs\/specs\/cadastros\.md/);
 });
 
-test("parseAiosTask round-trips name + description into structured info", () => {
+test("stageSubtaskTags adds rafael-implementa and bloqueador-cnab for cnab", () => {
+  const plan = planTasksForModule({ key: "cnab", tier: "C", week: 9 }, catalog)[0];
+  const tags = stageSubtaskTags(plan);
+  assert.ok(tags.includes("rafael-implementa"));
+  assert.ok(tags.includes("bloqueador-cnab"));
+  assert.ok(tags.includes("stage:manual_implementation"));
+});
+
+test("parseAiosTask reads role/module/stage from description", () => {
   const plan = planTasksForModule({ key: "cadastros", tier: "A", week: 3 }, catalog)[1];
   const task = {
     id: "86xyz",
-    name: aiosTaskName(validPayload, plan),
-    description: aiosTaskDescription(validPayload, plan),
+    name: stageSubtaskName({ key: plan.stage.key }),
+    description: stageSubtaskDescription(validPayload, plan, "86parent", cadastrosInfo),
+    parent: "86parent",
     status: { status: "to do" }
   };
   const parsed = parseAiosTask(task);
@@ -139,15 +180,19 @@ test("parseAiosTask round-trips name + description into structured info", () => 
   assert.equal(parsed.moduleTier, "A");
   assert.equal(parsed.stageKey, "backend");
   assert.equal(parsed.projectRoot, "c:/Users/Rafael/Projetos/SchoolPlatform");
+  assert.equal(parsed.isStage, true);
+  assert.equal(parsed.isModuleParent, false);
   assert.equal(parsed.isManual, false);
+  assert.equal(parsed.parentTaskId, "86parent");
 });
 
-test("parseAiosTask flags [MANUAL] tasks as manual", () => {
+test("parseAiosTask flags manual_implementation as manual", () => {
   const plan = planTasksForModule({ key: "cnab", tier: "C", week: 9 }, catalog)[0];
   const task = {
     id: "86manual",
-    name: aiosTaskName(validPayload, plan),
-    description: aiosTaskDescription(validPayload, plan),
+    name: stageSubtaskName({ key: "manual_implementation" }),
+    description: stageSubtaskDescription(validPayload, plan, "86parent", null),
+    parent: "86parent",
     status: { status: "to do" }
   };
   const parsed = parseAiosTask(task);
@@ -206,23 +251,23 @@ test("decideStatusFromAiosEvidence returns concluido on review approved + merged
   assert.equal(decideStatusFromAiosEvidence(evidence, githubEvidence), "concluido");
 });
 
-test("decideStatusFromAiosEvidence returns bloqueado on BLOCKER review", () => {
+test("decideStatusFromAiosEvidence returns em andamento on BLOCKER review (status simplificado)", () => {
   const evidence = { found: true, stage: "review", reviewApproved: false, reviewBlocked: true };
-  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "bloqueado");
+  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "em andamento");
 });
 
-test("decideStatusFromAiosEvidence returns em desenvolvimento when artefato existe sem review", () => {
+test("decideStatusFromAiosEvidence returns em andamento when artefato existe sem review", () => {
   const evidence = { found: true, stage: "spec", reviewApproved: false, reviewBlocked: false };
-  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "em desenvolvimento");
+  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "em andamento");
 });
 
-test("decideStatusFromAiosEvidence returns a fazer when nothing exists", () => {
+test("decideStatusFromAiosEvidence returns pendente when nothing exists", () => {
   const evidence = { found: false, stage: "spec", reason: "ausente" };
-  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "a fazer");
+  assert.equal(decideStatusFromAiosEvidence(evidence, { prs: [], branches: [], ci: null }), "pendente");
 });
 
-test("decideStatusForManualTask uses GitHub-only signals", () => {
-  assert.equal(decideStatusForManualTask({ prs: [], branches: [], ci: null }), "a fazer");
+test("decideStatusForManualTask uses GitHub-only signals (3 estados)", () => {
+  assert.equal(decideStatusForManualTask({ prs: [], branches: [], ci: null }), "pendente");
   assert.equal(
     decideStatusForManualTask({
       prs: [{ state: "closed", merged_at: "2026-05-01T00:00:00Z", updated_at: "2026-05-01T00:00:00Z" }],
@@ -237,7 +282,49 @@ test("decideStatusForManualTask uses GitHub-only signals", () => {
       branches: [],
       ci: { state: "failing" }
     }),
-    "bloqueado"
+    "em andamento"
+  );
+});
+
+test("isBlockedSignal flags BLOCKER review or failing CI", () => {
+  assert.equal(isBlockedSignal({ reviewBlocked: true }, {}), true);
+  assert.equal(isBlockedSignal({}, { ci: { state: "failing" } }), true);
+  assert.equal(isBlockedSignal({}, { ci: { state: "passing" } }), false);
+});
+
+test("canonicalAiosStatus maps legacy aliases to 3 estados", () => {
+  assert.equal(canonicalAiosStatus("to do"), "pendente");
+  assert.equal(canonicalAiosStatus("a fazer"), "pendente");
+  assert.equal(canonicalAiosStatus("in progress"), "em andamento");
+  assert.equal(canonicalAiosStatus("em desenvolvimento"), "em andamento");
+  assert.equal(canonicalAiosStatus("em revisao"), "em andamento");
+  assert.equal(canonicalAiosStatus("bloqueado"), "em andamento");
+  assert.equal(canonicalAiosStatus("complete"), "concluido");
+  assert.equal(canonicalAiosStatus("CONCLUÍDO"), "concluido");
+});
+
+test("rollupParentStatus aggregates subtask statuses", () => {
+  assert.equal(rollupParentStatus([{ status: "concluido" }, { status: "concluido" }]), "concluido");
+  assert.equal(rollupParentStatus([{ status: "pendente" }, { status: "pendente" }]), "pendente");
+  assert.equal(rollupParentStatus([{ status: "pendente" }, { status: "em andamento" }, { status: "concluido" }]), "em andamento");
+  assert.equal(rollupParentStatus([{ status: "concluido" }, { status: "em andamento" }]), "em andamento");
+});
+
+test("currentStageFromSubtasks returns the in-progress stage", () => {
+  assert.equal(
+    currentStageFromSubtasks([
+      { stageKey: "spec", status: "concluido" },
+      { stageKey: "backend", status: "em andamento" },
+      { stageKey: "frontend", status: "pendente" }
+    ]),
+    "backend"
+  );
+  assert.equal(
+    currentStageFromSubtasks([
+      { stageKey: "spec", status: "concluido" },
+      { stageKey: "merge", status: "concluido" }
+    ]),
+    "concluido"
   );
 });
 

@@ -4,11 +4,12 @@
   "purpose": "Gerar tarefas AIOS por modulo de plataforma SaaS multi-tenant.",
   "target": {
     "space": "05 Institucional Acme",
-    "list": "Backlog tecnico"
+    "folder": "{platform_name}",
+    "list": "{list_name}"
   },
   "requiredFields": [
     "client_name",
-    "client_task_id",
+    "platform_name",
     "modules",
     "tech_owner",
     "delivery_due_date",
@@ -17,7 +18,12 @@
   ],
   "fields": [
     { "key": "client_name",        "type": "text",            "required": true },
-    { "key": "client_task_id",     "type": "clickup_task_id", "required": true },
+    { "key": "platform_name",      "type": "text",            "required": true,
+      "description": "Nome da Folder no ClickUp. Ex: 'Plataforma SchoolPlatform'." },
+    { "key": "list_name",          "type": "text",            "required": false,
+      "description": "Nome da List dentro da Folder. Default: 'Modulos'." },
+    { "key": "client_task_id",     "type": "clickup_task_id", "required": false,
+      "description": "Opcional - referencia a uma task externa (ex: diagnostico)." },
     { "key": "diagnostic_task_id", "type": "clickup_task_id", "required": false },
     {
       "key": "modules",
@@ -48,17 +54,14 @@
     { "when": "task criada",      "action": "Adicionar tags ia-gerado, revisao-humana, projeto:edix, tier:{tier}" }
   ],
   "syncRules": [
-    { "status": "a fazer",           "evidence": "nenhum artefato AIOS encontrado E nenhum PR" },
-    { "status": "em desenvolvimento","evidence": "artefato AIOS do stage existe OU branch/PR aberto" },
-    { "status": "em revisao",        "evidence": "PR aberto OU _review_*.md existe sem aprovacao" },
-    { "status": "bloqueado",         "evidence": "_review_*.md contem BLOCKER OU CI falhando" },
-    { "status": "concluido",         "evidence": "doneEvidence do stage atendida" }
+    { "status": "pendente",      "evidence": "nenhum artefato AIOS encontrado E nenhum PR/branch" },
+    { "status": "em andamento",  "evidence": "artefato AIOS existe OU PR/branch aberto OU review sem aprovacao OU BLOCKER detectado" },
+    { "status": "concluido",     "evidence": "review aprovado + PR mergeado em main + CI verde" }
   ],
   "progressRules": [
-    { "status": "a fazer",           "weight": 0 },
-    { "status": "bloqueado",         "weight": 0 },
-    { "status": "em desenvolvimento","weight": 35 },
-    { "status": "em revisao",        "weight": 70 },
-    { "status": "concluido",         "weight": 100 }
-  ]
+    { "status": "pendente",      "weight": 0 },
+    { "status": "em andamento",  "weight": 50 },
+    { "status": "concluido",     "weight": 100 }
+  ],
+  "blockerSignal": "Quando review contem BLOCKER ou CI esta failing, status fica em andamento mas o sync deixa um comentario explicito com a evidencia para visibilidade da CEO."
 }

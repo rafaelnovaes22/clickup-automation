@@ -25,9 +25,9 @@
     "tech:model": "node scripts/generate-tech-operating-doc.mjs",
     "aios:dry": "node scripts/generate-aios-modules.mjs --dry-run",
     "aios:generate": "node scripts/generate-aios-modules.mjs --live",
-    "aios:sync": "node scripts/sync-aios-status.mjs --dry-run",
-    "aios:sync:live": "node scripts/sync-aios-status.mjs --live",
-    "aios:daemon": "node scripts/aios-sync-daemon.mjs"
+    "aios:sync": "node scripts/sync-aios-status.mjs --dry-run --platform=\"Plataforma SchoolPlatform\"",
+    "aios:sync:live": "node scripts/sync-aios-status.mjs --live --platform=\"Plataforma SchoolPlatform\"",
+    "aios:daemon": "node scripts/aios-sync-daemon.mjs --platform=\"Plataforma SchoolPlatform\""
   },
   "engines": {
     "node": ">=18"

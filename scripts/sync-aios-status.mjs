@@ -2,17 +2,25 @@
 
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { createClickUpClient, findListByTarget, listTasks } from "./lib/clickup.mjs";
+import { createClickUpClient } from "./lib/clickup.mjs";
 import { clickUpCredentials, githubToken, loadLocalEnv, root } from "./lib/env.mjs";
 import { collectEvidence, createGitHubClient } from "./lib/github-evidence.mjs";
 import {
+  canonicalAiosStatus,
   collectAiosEvidence,
   decideStatusForManualTask,
   decideStatusFromAiosEvidence,
-  formatAiosEvidenceComment
+  formatAiosEvidenceComment,
+  isBlockedSignal
 } from "./lib/aios-evidence.mjs";
 import { parseAiosTask } from "./lib/aios-modules.mjs";
-import { canonicalStatus } from "./lib/tech-tasks.mjs";
+import {
+  currentStageFromSubtasks,
+  findOrCreatePlatformFolder,
+  indexSubtasksByParent,
+  listAllTasks,
+  rollupParentStatus
+} from "./lib/aios-platform.mjs";
 
 const contractPath = resolve(root, "config/aios-pipeline-contract.json");
 
@@ -21,11 +29,11 @@ const live = args.includes("--live");
 const dryRun = !live || args.includes("--dry-run");
 const offline = args.includes("--offline");
 const commentAlways = args.includes("--comment-always");
-const clientArg = args.find((arg) => arg.startsWith("--client="));
+const platformArg = args.find((arg) => arg.startsWith("--platform="));
 const moduleArg = args.find((arg) => arg.startsWith("--module="));
 const fixtureArg = args.find((arg) => arg.startsWith("--fixture="));
 
-const clientFilter = clientArg ? clientArg.slice("--client=".length).toLowerCase() : null;
+const platformOverride = platformArg ? platformArg.slice("--platform=".length) : null;
 const moduleFilter = moduleArg ? moduleArg.slice("--module=".length).toLowerCase() : null;
 const fixturePath = fixtureArg ? resolve(root, fixtureArg.slice("--fixture=".length)) : null;
 
@@ -46,27 +54,45 @@ if (!offline && (!token || !teamId)) {
   process.exit(1);
 }
 
-async function loadTasks() {
+async function loadPlatformTasks() {
   if (offline) {
-    if (!fixturePath) {
-      throw new Error("--offline requires --fixture=<path>");
-    }
+    if (!fixturePath) throw new Error("--offline requires --fixture=<path>");
     const fixture = JSON.parse(await readFile(fixturePath, "utf8"));
     return {
       source: `fixture ${fixturePath}`,
-      tasks: fixture.tasks ?? []
+      tasks: fixture.tasks ?? [],
+      listId: null
     };
   }
 
-  const list = await findListByTarget(clickUp, teamId, contract.target);
+  const spaceName = contract.target?.space ?? "05 Institucional Acme";
+  const folderName = platformOverride;
+  if (!folderName) {
+    throw new Error("--platform=<folder name> e obrigatorio em modo online (ex: --platform=\"Plataforma SchoolPlatform\")");
+  }
+
+  const folderResult = await findOrCreatePlatformFolder(clickUp, teamId, spaceName, folderName);
+  if (folderResult.created) {
+    throw new Error(`Folder "${folderName}" nao existe ainda - rode aios:generate primeiro`);
+  }
+
+  // Find the only list inside (or first one named "Modulos")
+  const lists = await clickUp.request("GET", `/folder/${folderResult.folder.id}/list?archived=false`);
+  const list = (lists.lists ?? []).find((l) => l.name === "Modulos") ?? (lists.lists ?? [])[0];
+  if (!list) {
+    throw new Error(`Nenhuma list encontrada na folder "${folderName}"`);
+  }
+
   return {
-    source: `${contract.target.space} / ${contract.target.list}`,
-    tasks: await listTasks(clickUp, list.id)
+    source: `${spaceName} / ${folderName} / ${list.name}`,
+    tasks: await listAllTasks(clickUp, list.id),
+    listId: list.id
   };
 }
 
-async function syncTask(task) {
+async function syncSubtask(task) {
   const info = parseAiosTask(task);
+
   const evidence = info.isManual
     ? { found: false, stage: "manual_implementation", module: info.moduleKey, reason: "tarefa manual - sem artefato AIOS" }
     : collectAiosEvidence({ module: info.moduleKey, stage: info.stageKey, projectRoot: info.projectRoot });
@@ -86,20 +112,29 @@ async function syncTask(task) {
     ? decideStatusForManualTask(githubEvidence)
     : decideStatusFromAiosEvidence(evidence, githubEvidence);
 
-  const shouldUpdateStatus = canonicalStatus(info.status) !== nextStatus;
-  const shouldComment = commentAlways || shouldUpdateStatus;
-  const comment = formatAiosEvidenceComment(info, evidence, githubEvidence, nextStatus);
+  const blocked = isBlockedSignal(evidence, githubEvidence);
+  const shouldUpdateStatus = canonicalAiosStatus(info.status) !== nextStatus;
+  const shouldComment = commentAlways || shouldUpdateStatus || blocked;
+  const comment = formatAiosEvidenceComment(info, evidence, githubEvidence, nextStatus, { blocked });
 
-  console.log(`${dryRun ? "[dry-run]" : "[live]"} ${info.name}`);
+  console.log(`${dryRun ? "[dry-run]" : "[live]"} ${task.name}`);
   console.log(`  ${info.status || "sem status"} -> ${nextStatus}`);
 
   if (dryRun) {
     console.log(comment.split("\n").map((line) => `  ${line}`).join("\n"));
-    return;
+    return { taskId: info.id, parentId: info.parentTaskId, info, nextStatus };
   }
 
   if (shouldUpdateStatus) {
-    await clickUp.request("PUT", `/task/${info.id}`, { status: nextStatus });
+    try {
+      await clickUp.request("PUT", `/task/${info.id}`, { status: nextStatus });
+    } catch (error) {
+      if (error.message.includes("STATUS_001") || /status.*not found/i.test(error.message)) {
+        console.warn(`     ! status "${nextStatus}" nao existe na list - configurar via UI. Mantendo status atual.`);
+      } else {
+        throw error;
+      }
+    }
   }
 
   if (shouldComment) {
@@ -108,26 +143,75 @@ async function syncTask(task) {
       notify_all: false
     });
   }
+
+  return { taskId: info.id, parentId: info.parentTaskId, info, nextStatus };
 }
 
-const { source, tasks } = await loadTasks();
-const aiosTasks = tasks
-  .filter((task) => task.name.startsWith("[AIOS]") || task.name.startsWith("[MANUAL]"))
-  .filter((task) => {
-    const parsed = parseAiosTask(task);
-    if (clientFilter && !parsed.clientName.toLowerCase().includes(clientFilter)) return false;
-    if (moduleFilter && (!parsed.moduleKey || !parsed.moduleKey.toLowerCase().includes(moduleFilter))) return false;
-    return true;
-  });
+async function rollupParent(parent, subtaskResults) {
+  const parentInfo = parseAiosTask(parent);
+  if (!subtaskResults.length) return;
+
+  const subtaskInfos = subtaskResults.map((r) => ({ stageKey: r.info.stageKey, status: r.nextStatus }));
+  const newStatus = rollupParentStatus(subtaskInfos);
+  const currentStage = currentStageFromSubtasks(subtaskInfos);
+  const currentStatus = canonicalAiosStatus(parentInfo.status);
+
+  if (newStatus === null || newStatus === currentStatus) {
+    console.log(`  parent ${parent.name}: ${currentStatus || "sem status"} (sem mudanca)`);
+    return;
+  }
+
+  console.log(`${dryRun ? "[dry-run]" : "[live]"} parent ${parent.name}`);
+  console.log(`  ${currentStatus || "sem status"} -> ${newStatus}${currentStage ? ` (stage atual: ${currentStage})` : ""}`);
+
+  if (dryRun) return;
+  await clickUp.request("PUT", `/task/${parent.id}`, { status: newStatus });
+}
+
+const { source, tasks, listId } = await loadPlatformTasks();
+const parents = tasks.filter((task) => !task.parent);
+const subtasks = tasks.filter((task) => task.parent);
+
+const filtered = subtasks.filter((task) => {
+  const info = parseAiosTask(task);
+  if (moduleFilter && (!info.moduleKey || !info.moduleKey.toLowerCase().includes(moduleFilter))) return false;
+  return true;
+});
 
 console.log(`AIOS status sync ${dryRun ? "(dry-run)" : "(live)"}`);
 console.log(`Fonte: ${source}`);
-console.log(`Tarefas: ${aiosTasks.length}\n`);
+console.log(`Parents: ${parents.length} | Subtasks alvo: ${filtered.length}\n`);
 
-for (const task of aiosTasks) {
-  await syncTask(task);
+const subtaskResults = [];
+for (const task of filtered) {
+  const result = await syncSubtask(task);
+  subtaskResults.push(result);
 }
 
-if (!aiosTasks.length) {
-  console.log("Nenhuma tarefa [AIOS] ou [MANUAL] encontrada para o filtro informado.");
+// Rollup parents
+const subsByParent = indexSubtasksByParent([...filtered, ...subtaskResults.map((r) => ({ id: r.taskId, parent: r.parentId }))]);
+const resultsByParent = new Map();
+for (const r of subtaskResults) {
+  if (!r.parentId) continue;
+  const list = resultsByParent.get(r.parentId) ?? [];
+  list.push(r);
+  resultsByParent.set(r.parentId, list);
+}
+
+console.log(`\nRollup de status nos parents:`);
+for (const parent of parents) {
+  if (moduleFilter) {
+    const info = parseAiosTask(parent);
+    if (!info.moduleKey || !info.moduleKey.toLowerCase().includes(moduleFilter)) continue;
+  }
+  const childResults = resultsByParent.get(parent.id) ?? [];
+  await rollupParent(parent, childResults);
+}
+
+if (!filtered.length) {
+  console.log("Nenhuma subtask AIOS encontrada para o filtro informado.");
+}
+
+if (listId) {
+  console.log(`\nURL: https://app.clickup.com/${teamId}/v/li/${listId}`);
 }
