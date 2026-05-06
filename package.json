@@ -14,7 +14,7 @@
     "webhook:register": "node scripts/register-clickup-webhook.mjs",
     "contracts:generate": "node scripts/generate-event-contracts.mjs",
     "validate": "node scripts/validate.mjs",
-    "test": "node tests/tech-tasks.test.mjs",
+    "test": "node tests/tech-tasks.test.mjs && node tests/aios-modules.test.mjs",
     "model:generate": "node scripts/generate-operating-model-docs.mjs",
     "activities:dry": "node scripts/seed-activities.mjs --dry-run",
     "activities:seed": "node scripts/seed-activities.mjs --live",
@@ -22,7 +22,12 @@
     "tech:generate": "node scripts/generate-tech-tasks.mjs --live",
     "tech:progress": "node scripts/read-tech-progress.mjs",
     "tech:sync": "node scripts/sync-tech-status.mjs",
-    "tech:model": "node scripts/generate-tech-operating-doc.mjs"
+    "tech:model": "node scripts/generate-tech-operating-doc.mjs",
+    "aios:dry": "node scripts/generate-aios-modules.mjs --dry-run",
+    "aios:generate": "node scripts/generate-aios-modules.mjs --live",
+    "aios:sync": "node scripts/sync-aios-status.mjs --dry-run",
+    "aios:sync:live": "node scripts/sync-aios-status.mjs --live",
+    "aios:daemon": "node scripts/aios-sync-daemon.mjs"
   },
   "engines": {
     "node": ">=18"

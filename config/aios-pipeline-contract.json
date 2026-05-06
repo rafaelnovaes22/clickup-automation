@@ -1,0 +1,64 @@
+{
+  "version": "0.1",
+  "event": "saas_platform_planned",
+  "purpose": "Gerar tarefas AIOS por modulo de plataforma SaaS multi-tenant.",
+  "target": {
+    "space": "05 Institucional Acme",
+    "list": "Backlog tecnico"
+  },
+  "requiredFields": [
+    "client_name",
+    "client_task_id",
+    "modules",
+    "tech_owner",
+    "delivery_due_date",
+    "project_root",
+    "environment"
+  ],
+  "fields": [
+    { "key": "client_name",        "type": "text",            "required": true },
+    { "key": "client_task_id",     "type": "clickup_task_id", "required": true },
+    { "key": "diagnostic_task_id", "type": "clickup_task_id", "required": false },
+    {
+      "key": "modules",
+      "type": "list_of_objects",
+      "required": true,
+      "itemFields": [
+        { "key": "key",  "type": "text",   "required": true },
+        { "key": "tier", "type": "select", "required": true, "options": ["A", "B", "C"] },
+        { "key": "week", "type": "number", "required": true }
+      ]
+    },
+    { "key": "tech_owner",        "type": "person_or_text", "required": true },
+    { "key": "delivery_due_date", "type": "date",           "required": true },
+    { "key": "repository_url",    "type": "url",            "required": false },
+    {
+      "key": "project_root",
+      "type": "text",
+      "required": true,
+      "description": "Caminho local do projeto consumidor - usado pelo sync para ler artefatos AIOS."
+    },
+    { "key": "environment", "type": "select", "required": true, "options": ["dev", "staging", "prod"] },
+    { "key": "notes",       "type": "long_text", "required": false }
+  ],
+  "automationRules": [
+    { "when": "tier=A or tier=B", "action": "Criar 6 tasks (uma por stage AIOS) com depends_on encadeado" },
+    { "when": "tier=C",           "action": "Criar 1 task manual_implementation com tag rafael-implementa" },
+    { "when": "module.key=cnab",  "action": "Sobrescrever - criar 1 task manual_implementation sem subtarefas AIOS" },
+    { "when": "task criada",      "action": "Adicionar tags ia-gerado, revisao-humana, projeto:edix, tier:{tier}" }
+  ],
+  "syncRules": [
+    { "status": "a fazer",           "evidence": "nenhum artefato AIOS encontrado E nenhum PR" },
+    { "status": "em desenvolvimento","evidence": "artefato AIOS do stage existe OU branch/PR aberto" },
+    { "status": "em revisao",        "evidence": "PR aberto OU _review_*.md existe sem aprovacao" },
+    { "status": "bloqueado",         "evidence": "_review_*.md contem BLOCKER OU CI falhando" },
+    { "status": "concluido",         "evidence": "doneEvidence do stage atendida" }
+  ],
+  "progressRules": [
+    { "status": "a fazer",           "weight": 0 },
+    { "status": "bloqueado",         "weight": 0 },
+    { "status": "em desenvolvimento","weight": 35 },
+    { "status": "em revisao",        "weight": 70 },
+    { "status": "concluido",         "weight": 100 }
+  ]
+}

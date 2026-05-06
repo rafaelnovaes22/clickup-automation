@@ -1,0 +1,28 @@
+{
+  "client_name": "SchoolPlatform",
+  "client_task_id": "TBD_apos_criar_task_no_clickup",
+  "diagnostic_task_id": "TBD_apos_criar_diag_no_clickup",
+  "modules": [
+    { "key": "schema",            "tier": "C", "week": 1 },
+    { "key": "cadastros",         "tier": "A", "week": 3 },
+    { "key": "jovens",            "tier": "B", "week": 3 },
+    { "key": "tele_pesquisa",     "tier": "B", "week": 3 },
+    { "key": "crm",               "tier": "A", "week": 3 },
+    { "key": "tele_projeto",      "tier": "B", "week": 4 },
+    { "key": "comercial",         "tier": "A", "week": 5 },
+    { "key": "financeiro_basico", "tier": "B", "week": 5 },
+    { "key": "administrativo",    "tier": "C", "week": 6 },
+    { "key": "pedagogico_pt1",    "tier": "C", "week": 8 },
+    { "key": "pedagogico_pt2",    "tier": "B", "week": 8 },
+    { "key": "cnab",              "tier": "C", "week": 9 },
+    { "key": "rh",                "tier": "A", "week": 11 },
+    { "key": "utilitarios",       "tier": "A", "week": 11 },
+    { "key": "parametros",        "tier": "A", "week": 11 }
+  ],
+  "tech_owner": "Rafael Novaes",
+  "delivery_due_date": "2026-07-15",
+  "repository_url": "https://github.com/rafael-novaes/school-platform",
+  "project_root": "c:/Users/Rafael/Projetos/SchoolPlatform",
+  "environment": "dev",
+  "notes": "Plataforma EDIX - 15 modulos via AIOS Server. Tier C nao passa pelo pipeline."
+}

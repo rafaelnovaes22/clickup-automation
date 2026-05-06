@@ -1,0 +1,68 @@
+{
+  "version": "0.1",
+  "purpose": "Catalogo de stages do pipeline AIOS para gerar tarefas por modulo de plataforma SaaS multi-tenant.",
+  "statusFlow": ["a fazer", "em desenvolvimento", "em revisao", "bloqueado", "concluido"],
+  "stages": [
+    {
+      "key": "spec",
+      "title": "Spec gerada (spec_agent)",
+      "agent": "spec_agent",
+      "artifactPath": "docs/specs/{module}.md",
+      "doneEvidence": "arquivo existe e foi revisado por Rafael",
+      "depends_on": []
+    },
+    {
+      "key": "backend",
+      "title": "Backend gerado (backend_agent)",
+      "agent": "backend_agent",
+      "artifactPath": "docs/specs/_backend_{module}.md",
+      "doneEvidence": "arquivo existe + PR de backend aberto",
+      "depends_on": ["spec"]
+    },
+    {
+      "key": "frontend",
+      "title": "Frontend gerado (frontend_agent)",
+      "agent": "frontend_agent",
+      "artifactPath": "docs/specs/_frontend_{module}.md",
+      "doneEvidence": "arquivo existe + PR de frontend aberto",
+      "depends_on": ["spec"]
+    },
+    {
+      "key": "tests",
+      "title": "Tests gerados (test_agent)",
+      "agent": "test_agent",
+      "artifactPath": "docs/specs/_tests_{module}.md",
+      "doneEvidence": "arquivo existe + CI verde",
+      "depends_on": ["backend", "frontend"]
+    },
+    {
+      "key": "review",
+      "title": "Review aprovado (review_agent)",
+      "agent": "review_agent",
+      "artifactPath": "docs/specs/_review_{module}.md",
+      "doneEvidence": "arquivo contem 'APROVADO PARA MERGE: Sim'",
+      "depends_on": ["tests"]
+    },
+    {
+      "key": "merge",
+      "title": "Merge para src/{module}",
+      "agent": "manual",
+      "artifactPath": "src/{module}/",
+      "doneEvidence": "PR mergeado em main + CI verde",
+      "depends_on": ["review"]
+    }
+  ],
+  "tierRules": {
+    "A": { "stages": ["spec", "backend", "frontend", "tests", "review", "merge"] },
+    "B": { "stages": ["spec", "backend", "frontend", "tests", "review", "merge"] },
+    "C": { "stages": ["manual_implementation"] }
+  },
+  "manualStages": [
+    {
+      "key": "manual_implementation",
+      "title": "Implementacao manual (Rafael)",
+      "doneEvidence": "PR mergeado em main + CI verde",
+      "depends_on": []
+    }
+  ]
+}

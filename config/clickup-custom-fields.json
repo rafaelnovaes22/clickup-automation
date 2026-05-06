@@ -2,6 +2,50 @@
   "version": "0.1",
   "fieldSets": [
     {
+      "key": "aios_backlog_tecnico",
+      "target": {
+        "space": "05 Institucional Acme",
+        "list": "Backlog tecnico"
+      },
+      "purpose": "Campos auxiliares preenchidos pelo gerador AIOS para que o sync identifique modulo, stage, tier e localizacao do projeto.",
+      "fields": [
+        {
+          "key": "module_key",
+          "name": "Modulo",
+          "type": "text",
+          "required": false,
+          "help": "Chave do modulo de plataforma SaaS. Ex: cadastros, crm, cnab."
+        },
+        {
+          "key": "module_tier",
+          "name": "Tier do modulo",
+          "type": "drop_down",
+          "required": false,
+          "options": ["A", "B", "C"]
+        },
+        {
+          "key": "stage_key",
+          "name": "Stage AIOS",
+          "type": "drop_down",
+          "required": false,
+          "options": ["spec", "backend", "frontend", "tests", "review", "merge", "manual_implementation"]
+        },
+        {
+          "key": "week",
+          "name": "Semana planejada",
+          "type": "number",
+          "required": false
+        },
+        {
+          "key": "project_root",
+          "name": "Project root local",
+          "type": "text",
+          "required": false,
+          "help": "Caminho absoluto do projeto consumidor. Ex: c:/Users/Rafael/Projetos/SchoolPlatform."
+        }
+      ]
+    },
+    {
       "key": "agent_request",
       "target": {
         "space": "05 Institucional Acme",

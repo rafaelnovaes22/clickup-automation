@@ -6,6 +6,8 @@ import { root } from "./lib/env.mjs";
 
 const jsonFiles = [
   "config/activity-catalog.json",
+  "config/aios-module-catalog.json",
+  "config/aios-pipeline-contract.json",
   "config/clickup-custom-fields.json",
   "config/clickup-governance.blueprint.json",
   "config/clickup-task-templates.json",
@@ -14,6 +16,7 @@ const jsonFiles = [
   "config/tech-operational-repository.json",
   "config/tech-platform-catalog.json",
   "examples/clickup-tech-tasks.fixture.json",
+  "examples/edix-modules.payload.json",
   "examples/tech-scope.sample.json"
 ];
 
@@ -128,6 +131,73 @@ if (blueprint) {
       const key = `${template.target?.space}/${template.target?.list}`;
       if (!listKeys.has(key)) fail(`clickup-task-templates ${template.key}: target list not found in blueprint: ${key}`);
     }
+  }
+}
+
+const aiosCatalog = parsed.get("config/aios-module-catalog.json");
+const aiosContract = parsed.get("config/aios-pipeline-contract.json");
+const aiosPayload = parsed.get("examples/edix-modules.payload.json");
+
+if (aiosCatalog) {
+  assertUnique(aiosCatalog.stages ?? [], (stage) => stage.key, "aios-module-catalog stages");
+
+  const stageKeys = new Set((aiosCatalog.stages ?? []).map((stage) => stage.key));
+  for (const stage of aiosCatalog.stages ?? []) {
+    for (const dependency of stage.depends_on ?? []) {
+      if (!stageKeys.has(dependency)) {
+        fail(`aios-module-catalog ${stage.key}: depends_on ${dependency} not found in stages`);
+      }
+    }
+  }
+
+  const tierRules = aiosCatalog.tierRules ?? {};
+  const manualKeys = new Set((aiosCatalog.manualStages ?? []).map((stage) => stage.key));
+  for (const [tier, rules] of Object.entries(tierRules)) {
+    for (const stageKey of rules.stages ?? []) {
+      if (!stageKeys.has(stageKey) && !manualKeys.has(stageKey)) {
+        fail(`aios-module-catalog tierRules ${tier}: unknown stage ${stageKey}`);
+      }
+    }
+  }
+}
+
+if (aiosContract) {
+  const fields = aiosContract.fields ?? [];
+  const fieldKeys = new Set(fields.map((field) => field.key));
+  const requiredFromFields = fields.filter((field) => field.required).map((field) => field.key);
+  const requiredFields = aiosContract.requiredFields ?? [];
+
+  for (const field of requiredFields) {
+    if (!fieldKeys.has(field)) fail(`aios-pipeline-contract: requiredFields contains unknown field ${field}`);
+  }
+
+  for (const field of requiredFromFields) {
+    if (!requiredFields.includes(field)) {
+      fail(`aios-pipeline-contract: field ${field} is required=true but missing from requiredFields`);
+    }
+  }
+}
+
+if (aiosCatalog && aiosPayload) {
+  const tierKeys = new Set(Object.keys(aiosCatalog.tierRules ?? {}));
+  for (const module of aiosPayload.modules ?? []) {
+    if (!module.key) fail(`examples/edix-modules.payload.json: module without key`);
+    if (!tierKeys.has(module.tier)) {
+      fail(`examples/edix-modules.payload.json: module ${module.key} has unknown tier ${module.tier}`);
+    }
+    if (typeof module.week !== "number") {
+      fail(`examples/edix-modules.payload.json: module ${module.key} week must be a number`);
+    }
+  }
+}
+
+if (aiosContract && aiosPayload) {
+  const requiredFields = aiosContract.requiredFields ?? [];
+  for (const field of requiredFields) {
+    const value = aiosPayload[field];
+    const empty = value === undefined || value === null || value === "" ||
+      (Array.isArray(value) && value.length === 0);
+    if (empty) fail(`examples/edix-modules.payload.json: missing required field ${field}`);
   }
 }
 

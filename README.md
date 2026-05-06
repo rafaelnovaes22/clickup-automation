@@ -175,6 +175,62 @@ Para rodar sem rede e sem credenciais, usando fixture local:
 npm run tech:sync -- --offline
 ```
 
+## Automacao de plataformas SaaS multi-modulo (AIOS)
+
+Para projetos onde 1 cliente = **plataforma SaaS multi-tenant com varios modulos** (ex: SchoolPlatform/EDIX), o fluxo e diferente do `tech:*`. Em vez de gerar tarefas por **plataforma tecnica**, geramos por **modulo de dominio** orquestrado pelo pipeline AIOS (spec -> backend -> frontend -> tests -> review -> merge).
+
+| Arquivo | Para que serve |
+|---|---|
+| [`config/aios-module-catalog.json`](./config/aios-module-catalog.json) | Catalogo das 6 stages do pipeline AIOS + regras de tier (A/B/C) |
+| [`config/aios-pipeline-contract.json`](./config/aios-pipeline-contract.json) | Contrato de entrada (modules[], project_root, tier, week, ...) |
+| [`scripts/generate-aios-modules.mjs`](./scripts/generate-aios-modules.mjs) | Gera tasks `[AIOS]` (tier A/B) ou `[MANUAL]` (tier C / cnab) com dependencias encadeadas |
+| [`scripts/lib/aios-evidence.mjs`](./scripts/lib/aios-evidence.mjs) | Le artefatos AIOS (`docs/specs/{module}.md`, `_review_*.md`, etc) do projeto consumidor |
+| [`scripts/sync-aios-status.mjs`](./scripts/sync-aios-status.mjs) | Sincroniza status no ClickUp combinando evidencias AIOS + GitHub |
+| [`scripts/aios-sync-daemon.mjs`](./scripts/aios-sync-daemon.mjs) | Roda o sync em loop (default: a cada 15 min) |
+| [`docs/AIOS_SYNC_PATTERN.md`](./docs/AIOS_SYNC_PATTERN.md) | Por que ClickUp puxa estado em vez de o AIOS empurrar |
+| [`examples/edix-modules.payload.json`](./examples/edix-modules.payload.json) | Payload pronto para gerar os 15 modulos da plataforma EDIX (70 tasks) |
+
+### Regras de tier
+
+- **Tier A**: agente AIOS gera tudo, Rafael revisa -> 6 tasks `[AIOS]` encadeadas
+- **Tier B**: agente AIOS gera, Rafael itera -> 6 tasks `[AIOS]` encadeadas
+- **Tier C**: Rafael implementa, agentes apenas assistem -> 1 task `[MANUAL]`
+- `module.key === "cnab"`: forca rota manual mesmo se tier mudar (modulo de risco) + tag `bloqueador-cnab`
+
+### Revisar antes de criar
+
+```bash
+npm run aios:dry -- --payload-file=examples/edix-modules.payload.json
+```
+
+Esse comando imprime as 70 tasks que seriam criadas (66 AIOS + 4 manuais), inclusive as dependencias `depends_on` entre stages.
+
+### Aplicar no ClickUp
+
+```bash
+npm run aios:generate -- --payload-file=examples/edix-modules.payload.json
+```
+
+### Sincronizar status
+
+O sync le artefatos do filesystem do projeto consumidor (caminho vem do campo `project_root` do payload, replicado em cada task) e combina com evidencias do GitHub.
+
+```bash
+npm run aios:sync                  # dry-run, mostra o que mudaria
+npm run aios:sync:live             # aplica status + comenta evidencia no ClickUp
+npm run aios:sync -- --client=SchoolPlatform --module=cadastros
+```
+
+Para deixar o sync rodando continuamente em background:
+
+```bash
+npm run aios:daemon                # dry-run a cada 15 min
+npm run aios:daemon -- --live      # live a cada 15 min
+npm run aios:daemon -- --live --interval-ms=300000  # a cada 5 min
+```
+
+A `docs/AIOS_SYNC_PATTERN.md` explica por que o ClickUp puxa estado em vez de receber webhook do AIOS.
+
 ## Qualidade local
 
 Para validar JSON, consistencia cruzada entre contratos/catalogos e payloads de exemplo:
