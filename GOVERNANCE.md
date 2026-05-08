@@ -1,24 +1,32 @@
 # ClickUp Acme — Governança Operacional
 
-> **Versão**: 0.1 — 2026-05-01
+> **Versão**: 0.2 — 2026-05-08
 > **Audiência**: você (decisor técnico) + CEO (decisor executivo)
-> **Status**: proposta inicial, aguardando revisão
+> **Status**: proposta v0.2 — multi-delivery (agentic_saas + platform + automation + hybrid)
 
 ---
 
 ## 1. Sumário executivo
 
-A Acme opera no modelo **Service-as-a-Software (SaaS²)**: vende outcomes entregues por agentes de IA, não software para o cliente operar. O cliente paga por leads qualificados, tickets resolvidos, propostas geradas — não por licenças.
+O ClickUp Acme é a **governança operacional interna para múltiplos tipos de entrega** que a Acme conduz. Nem todo cliente recebe um agente de IA. Alguns recebem uma plataforma SaaS operacional; outros recebem automações pontuais; outros, uma combinação.
 
-Isso muda como o time da Acme precisa se organizar internamente. O ciclo completo do time tem **8 fases** (do primeiro lead ao churn) e cada fase produz atividades específicas que precisam de rastro auditável.
+Para refletir isso, o sistema reconhece quatro **tipos de entrega** (`delivery_type`):
 
-O ClickUp é o **journey log canônico** desse trabalho. Não é onde o cliente loga (o cliente nunca loga). É onde o time Acme prova o que aconteceu, em ordem, com quem fez, quando, e qual foi o resultado.
+- `agentic_saas` — outcomes vendidos por agente de IA (modelo SaaS², com SHADOW/ASSISTED/AUTONOMOUS).
+- `platform` — plataforma SaaS multi-módulo que substitui um sistema legado ou atende uma operação inteira (lifecycle DRAFT → STAGING → PILOT → CANONICAL → DEPRECATED).
+- `automation` — script/integração ou robô RPA pontual; entrega pequena, sem ciclo de vida de plataforma.
+- `hybrid` — combina dois ou mais tipos no mesmo cliente (ex: plataforma com módulo agentic embutido).
+
+O modelo **Service-as-a-Software (SaaS²)** continua suportado e é a forma natural do `agentic_saas`: vender outcomes entregues por agentes de IA, não software para o cliente operar. Mas ele é **um caso suportado, não o único default**.
+
+O ClickUp continua sendo o **journey log canônico** desse trabalho. Não é onde o cliente loga (o cliente nunca loga). É onde o time Acme prova o que aconteceu, em ordem, com quem fez, quando, e qual foi o resultado — independente do tipo de entrega.
 
 Este documento descreve como o ClickUp deve ser estruturado para que:
 
 - A CEO consiga, em 1 dashboard, responder "estamos vendendo? entregando? operando bem?"
 - O time consiga, em 1 lugar, ver "o que precisa de mim agora?"
 - Um novo membro do time entenda, em 1 hora, "como o trabalho flui aqui"
+- Cada cliente seja modelado pelo `delivery_type` certo, sem forçar ritos agentic em entregas de plataforma.
 
 ---
 
@@ -26,10 +34,85 @@ Este documento descreve como o ClickUp deve ser estruturado para que:
 
 1. **ClickUp é interno.** Cliente final nunca acessa.
 2. **Reflete a jornada, não a tabela.** A estrutura segue o caminho do cliente, não o schema do banco.
-3. **Uma entidade vive em uma única lista.** Lead, Diagnóstico, Cliente, Subscription são entidades distintas em listas distintas — não viram pasta-por-cliente.
+3. **Uma entidade vive em uma única lista.** Lead, Diagnóstico, Cliente, Subscription/Plataforma são entidades distintas em listas distintas — não viram pasta-por-cliente.
 4. **Atividades padrão nascem com a entidade.** Quando um Diagnóstico é vendido, suas 6 atividades padrão (sessão CEO, entrevistas, auditoria, análise, redação, devolução) já aparecem.
-5. **Status conta a história.** O ciclo de vida de cada entidade está nos status da lista, lido como fluxograma.
+5. **Status conta a história.** O ciclo de vida de cada entidade está nos status da lista, lido como fluxograma. O lifecycle escolhido depende do `delivery_type`.
 6. **Começa simples, expande por demanda.** Custom fields, automações, dashboards entram quando o time pede — não preventivamente.
+
+---
+
+## 2.A — Tipos de entrega (`delivery_type`)
+
+Toda entrega da Acme é classificada em **um e apenas um** dos quatro tipos abaixo. Esse campo determina:
+
+- qual **lifecycle** a entrega segue (ver §2.B);
+- quais **listas** do ClickUp são usadas;
+- quais **atividades** são obrigatórias;
+- quais **artefatos** (prompts, evals, smoke tests, aceite operacional) precisam existir antes de promover de fase.
+
+| `delivery_type` | Quando usar | Exemplo | Lifecycle |
+|---|---|---|---|
+| `agentic_saas` | Vendemos outcomes entregues por **agente de IA** com cobrança por evento (SaaS²). Cliente paga por lead qualificado, ticket resolvido, etc. | "Qualificador de leads B2B" para Acme | SHADOW → ASSISTED → AUTONOMOUS |
+| `platform` | Entregamos uma **plataforma SaaS multi-módulo** que substitui sistema legado ou cobre uma operação inteira. Pode ter ou não módulos com IA. | SchoolPlatform (operação escolar), Aicfo (CFO-IA self-serve) | DRAFT → STAGING → PILOT → CANONICAL → DEPRECATED |
+| `automation` | Script, integração ou robô **pontual** — entrega pequena, sem evolução em fases. | "Importar planilha mensal de comissões para o ERP" | a fazer → em desenvolvimento → em revisão → bloqueado → concluído |
+| `hybrid` | A mesma entrega combina dois ou mais tipos. Cada bloco (módulo, agente) declara o **próprio** `delivery_type`; o pai herda `hybrid`. | Plataforma SchoolPlatform com módulo `tele_pesquisa` em modo agentic_saas | Lifecycle por bloco |
+
+### Campos obrigatórios por tipo
+
+| Campo | `agentic_saas` | `platform` | `automation` | `hybrid` |
+|---|---|---|---|---|
+| `recommended_agentic_mode` (SHADOW/ASSISTED/AUTONOMOUS) | obrigatório | n/a | n/a | só nos blocos agentic |
+| `recommended_platform_stage` (DRAFT/STAGING/PILOT/CANONICAL/DEPRECATED) | n/a | obrigatório | n/a | só nos blocos platform |
+| `prompts` versionados, `agent_eval_suite`, `unit_economics` de inferência | obrigatório | só se `ai_enabled: true` | só se `ai_enabled: true` | conforme bloco |
+| Langfuse/observabilidade de inferência | obrigatório | só se `ai_enabled: true` | só se `ai_enabled: true` | conforme bloco |
+| Critérios de aceite operacional + smoke test do módulo | recomendado | obrigatório | obrigatório | obrigatório |
+| Promoção formal por aceite humano antes de virar fonte canônica | n/a | obrigatório (PILOT → CANONICAL) | n/a | só nos blocos platform |
+
+> **Regra de leitura**: `agentic_saas` é otimizado para **outcomes vendidos por evento**. `platform` é otimizado para **operação contínua que substitui um sistema**. Se a frase "vendemos lead/ticket/proposta" descreve a entrega, use `agentic_saas`. Se a frase "essa plataforma vai virar a fonte da verdade da operação X" descreve, use `platform`.
+
+---
+
+## 2.B — Lifecycle por tipo de entrega
+
+### `agentic_saas` — SaaS² clássico
+
+```
+SHADOW → ASSISTED → AUTONOMOUS
+```
+
+- **SHADOW**: agente roda mas não materializa output para o cliente. Calibração — mínimo 30 outcomes comparados com humano antes de promover. Cobrança variável **não acontece** ainda.
+- **ASSISTED**: cada outcome do agente passa por aprovação humana antes de ir ao cliente. Cobrança variável começa quando contratualmente definido. Threshold típico para promover: ~90% de aprovação humana.
+- **AUTONOMOUS**: agente entrega outcomes diretamente; humano audita amostra mensal (LLM-as-judge + revisão humana 5–10%).
+
+**Exigências obrigatórias** para `agentic_saas`: prompts versionados, `agent_eval_suite`, observabilidade de inferência (Langfuse ou equivalente), unit economics de inferência (custo por outcome ≤ 25% do preço por outcome), guardrails e regra de handoff humano.
+
+### `platform` — plataforma operacional multi-módulo
+
+```
+DRAFT → STAGING → PILOT → CANONICAL → DEPRECATED
+```
+
+- **DRAFT**: spec do módulo escrita, código inicial pode estar em desenvolvimento. Sem ambiente.
+- **STAGING**: módulo está implantado em ambiente isolado (staging), passou em smoke test técnico, mas **ainda não** roda contra dados reais do cliente.
+- **PILOT**: módulo é exposto a usuários reais (geralmente internos do cliente, em paralelo ao sistema legado). Coleta de evidência operacional. **Aceite humano obrigatório** antes de avançar. Para módulos `ai_enabled: true`, evals e observabilidade de inferência também são obrigatórios aqui.
+- **CANONICAL**: módulo é a **fonte canônica da verdade** para aquela operação. Sistema legado pode ser desligado. Incidentes vão direto para a operação real.
+- **DEPRECATED**: módulo está sendo desativado (sucessor existe ou função saiu de escopo). Ainda em produção apenas para leitura/migração.
+
+**"PILOT antes de virar fonte canônica"** é a regra equivalente, em `platform`, ao "SHADOW antes de cobrar" do `agentic_saas`. Em ambos os casos, é o gate humano que valida que o sistema é confiável o suficiente para assumir responsabilidade real.
+
+**Exigências obrigatórias** para `platform`: critérios de aceite operacional documentados, smoke test por módulo, comparação **dados legado vs plataforma** quando há substituição, registro de aceite humano, monitoramento de incidentes pós-CANONICAL.
+
+### `automation` — entrega pontual
+
+```
+a fazer → em desenvolvimento → em revisão → bloqueado → concluído
+```
+
+Sem fases extras. Critério de pronto: rodou contra dados reais 1×, evidência registrada, dono identificado se quebrar.
+
+### `hybrid`
+
+Não tem lifecycle próprio — cada bloco interno declara seu próprio `delivery_type` e roda no lifecycle correspondente. A task pai serve só de aglutinador.
 
 ---
 
@@ -60,23 +143,37 @@ Este documento descreve como o ClickUp deve ser estruturado para que:
                                     │
                                     ▼
    ╔══════════════════════════════════════════════════════════════╗
-   ║   2. IMPLANTAÇÃO                                              ║
+   ║   2. IMPLANTAÇÃO  (rota varia por delivery_type)              ║
    ║   ─────────────                                                ║
+   ║   delivery_type=agentic_saas:                                  ║
    ║   • Setup técnico  (briefing, canal, baseline)                ║
    ║   • SHADOW         (calibração, mín 30 outcomes)              ║
    ║   • ASSISTED       (gates humanos, time aprova cada outcome)  ║
    ║                                                               ║
-   ║   ▼ atinge SLA + concordância humano-vs-agente                ║
+   ║   delivery_type=platform:                                      ║
+   ║   • DRAFT          (spec executável + setup ambiente)         ║
+   ║   • STAGING        (smoke test técnico, sem dados reais)      ║
+   ║   • PILOT          (usuários reais, paralelo ao legado)       ║
+   ║                                                               ║
+   ║   ▼ agentic_saas: atinge SLA + concordância humano-vs-agente  ║
+   ║   ▼ platform: aceite operacional + comparação legado×nova     ║
    ╚══════════════════════════════════════════════════════════════╝
                                     │
                                     ▼
    ╔══════════════════════════════════════════════════════════════╗
    ║   3. OPERAÇÃO CONTÍNUA                                        ║
    ║   ────────────────────                                         ║
+   ║   delivery_type=agentic_saas:                                  ║
    ║   • AUTONOMOUS                                                 ║
    ║   • Auditoria mensal (LLM-as-judge + amostra humana)          ║
    ║   • Faturamento mensal (plataforma + outcomes — cap, SLA)     ║
-   ║   • Check-in mensal com cliente                               ║
+   ║                                                               ║
+   ║   delivery_type=platform:                                      ║
+   ║   • CANONICAL (módulo é fonte da verdade da operação)         ║
+   ║   • Monitoramento de incidentes pós-canonical                 ║
+   ║   • Auditoria operacional (não LLM-as-judge por padrão)       ║
+   ║                                                               ║
+   ║   • Check-in mensal com cliente (em ambos os casos)           ║
    ║                                                               ║
    ║   ▼ tempo passa                                                ║
    ╚══════════════════════════════════════════════════════════════╝
@@ -168,38 +265,57 @@ Propostas:       enviada  →  em negociação  →  assinada  →  rejeitada
 
 ### 4.3 — 🛠️ Space 2: Implantação
 
-Cobre **setup técnico + SHADOW + ASSISTED**, ou seja, do contrato assinado até o cliente entrar em operação autônoma.
+Cobre **setup técnico + ramp-up até produção**. O caminho difere por `delivery_type`:
+
+- `agentic_saas`: Setup → SHADOW → ASSISTED → (entra em AUTONOMOUS no Space 3).
+- `platform`: Rollout → STAGING → PILOT → (entra em CANONICAL no Space 3).
+- `automation`: Setup → execução → entrega.
 
 #### Listas
 
-| Lista | Entidade | O que mora aqui |
-|---|---|---|
-| **Setups em andamento** | Setup | 1 task pai por cliente em onboarding, com sub-tasks de cada passo do setup |
-| **SHADOWs ativos** | Subscription em SHADOW | 1 task por subscription rodando em modo SHADOW |
-| **ASSISTEDs ativos** | Subscription em ASSISTED | 1 task por subscription rodando em modo ASSISTED |
+| Lista | Entidade | `delivery_type` aplicável | O que mora aqui |
+|---|---|---|---|
+| **Setups em andamento** | Setup (genérico) | qualquer | 1 task pai por cliente/entrega em onboarding, com sub-tasks de cada passo. |
+| **Rollouts em andamento** | Rollout de plataforma | `platform`, `hybrid` | 1 task pai por plataforma sendo implantada. Cobre DRAFT → STAGING. |
+| **SHADOWs ativos** | Subscription em SHADOW | **só** `agentic_saas` | 1 task por subscription rodando em modo SHADOW. |
+| **ASSISTEDs ativos** | Subscription em ASSISTED | **só** `agentic_saas` | 1 task por subscription em modo ASSISTED. |
+| **Pilotos ativos** | Módulo/plataforma em PILOT | `platform`, `hybrid` | 1 task por plataforma/módulo rodando em piloto contra usuários reais. |
+
+> **Importante**: as listas `SHADOWs ativos` e `ASSISTEDs ativos` só recebem entregas com `delivery_type: agentic_saas`. Não force entregas tipo `platform` para essas listas — use `Rollouts em andamento` e `Pilotos ativos`.
 
 #### Status por lista
 
 ```
-Setups:        kickoff  →  briefing  →  canal conectado  →  baseline capturado  →  prompts aprovados  →  shadow ligado
-                                                                                                              │
-                                                                                                              ▼
+Setups:        kickoff  →  briefing  →  canal conectado  →  baseline capturado  →  prompts aprovados  →  shadow ligado / staging pronto
+
+# delivery_type: agentic_saas
 SHADOWs:       calibrando  →  30 outcomes coletados  →  análise concluída  →  promovido para ASSISTED
                                                                                           │
                                                                                           ▼
 ASSISTEDs:    operando  →  threshold atingido  →  promovido para AUTONOMOUS
                                                           │
                                                           ▼
-                                               [vai para Space 3, Operação contínua]
+                                               [vai para Space 3, Clientes ativos / AUTONOMOUS]
+
+# delivery_type: platform
+Rollouts:      draft  →  ambiente provisionado  →  smoke test verde  →  staging  →  promovido para PILOT
+                                                                                            │
+                                                                                            ▼
+Pilotos:       piloto aberto  →  comparação legado×nova rodando  →  aceite humano coletado  →  promovido para CANONICAL
+                                                          │
+                                                          ▼
+                                               [vai para Space 3, Fontes canônicas]
 ```
 
 #### O que aparece automaticamente quando…
 
-- **Cliente novo nasce** (proposta assinada): cria 1 task pai "Setup [cliente]" com 6 sub-tasks padrão (briefing, canal, baseline, prompts, ativação shadow, smoke test)
-- **Setup completo**: vira task em "SHADOWs ativos / calibrando"
-- **30 outcomes coletados**: notificação automática ao time pra analisar
-- **Promoção SHADOW→ASSISTED aprovada**: task se move pra lista ASSISTEDs, registrada em "Promoções de Modo" (Space 4)
-- **Promoção ASSISTED→AUTONOMOUS aprovada**: subscription vira task em "Clientes ativos" (Space 3) e some daqui
+- **Cliente novo nasce** (proposta assinada): cria 1 task pai "Setup [cliente]" com sub-tasks padrão. Quando `delivery_type: agentic_saas`, sub-tasks incluem briefing, canal, baseline, prompts, ativação shadow, smoke test. Quando `delivery_type: platform`, sub-tasks incluem ambiente, migrations, smoke test técnico, dados de homologação.
+- **Setup completo (`agentic_saas`)**: vira task em "SHADOWs ativos / calibrando".
+- **Setup completo (`platform`)**: vira task em "Rollouts em andamento / staging" e, quando o módulo passa em smoke test e tem aceite técnico, vira task em "Pilotos ativos".
+- **30 outcomes coletados (`agentic_saas`)**: notificação automática ao time pra analisar.
+- **Promoção SHADOW→ASSISTED aprovada**: task se move pra lista ASSISTEDs, registrada em "Promoções de Modo" (Space 4).
+- **Promoção ASSISTED→AUTONOMOUS aprovada**: subscription vira task em "Clientes ativos" (Space 3) e some daqui.
+- **Aceite operacional do PILOT registrado (`platform`)**: módulo é promovido para "Fontes canônicas" no Space 3 e some de "Pilotos ativos".
 
 ---
 
@@ -209,14 +325,15 @@ Cobre **operação contínua + relacionamento + expansão + renovação + churn*
 
 #### Listas
 
-| Lista | Entidade | O que mora aqui |
-|---|---|---|
-| **Clientes ativos** | Cliente | 1 task por cliente em operação (qualquer modo SaaS²). Status reflete saúde geral do cliente. |
-| **Faturamento mensal** | Fatura | 1 task por (cliente × mês). Nasce no fechamento do mês. |
-| **Relacionamento** | Touchpoint | Reuniões, check-ins, QBRs, NPS — 1 task por evento de contato |
-| **Expansões** | Wave / upsell | 1 task por nova Wave ou upsell de SKU em andamento |
-| **Renovações** | Renovação | 1 task por renovação anual em curso |
-| **Pós-churn** | Cliente encerrado | 1 task por cliente que saiu — com motivo e post-mortem |
+| Lista | Entidade | `delivery_type` aplicável | O que mora aqui |
+|---|---|---|---|
+| **Clientes ativos** | Cliente | qualquer | 1 task por cliente em operação (qualquer `delivery_type`). Status reflete saúde geral do cliente. |
+| **Fontes canônicas** | Plataforma/módulo em CANONICAL | `platform`, `hybrid` | 1 task por plataforma/módulo que assumiu o papel de fonte da verdade — substituiu sistema legado. |
+| **Faturamento mensal** | Fatura | qualquer | 1 task por (cliente × mês). Nasce no fechamento do mês. |
+| **Relacionamento** | Touchpoint | qualquer | Reuniões, check-ins, QBRs, NPS — 1 task por evento de contato |
+| **Expansões** | Wave / upsell / novo módulo | qualquer | 1 task por nova Wave, upsell de SKU ou novo módulo em delivery |
+| **Renovações** | Renovação | qualquer | 1 task por renovação anual em curso |
+| **Pós-churn** | Cliente encerrado | qualquer | 1 task por cliente que saiu — com motivo e post-mortem |
 
 #### Status principais
 
@@ -246,17 +363,18 @@ Renovações:         a vencer 90d  →  conversa iniciada  →  proposta enviad
 
 ### 4.5 — 🚨 Space 4: Saúde Operacional
 
-Cobre **gates pendentes + incidentes + auditorias + breaches**. É o cockpit reativo do time. **Acompanha** Spaces 2 e 3 — qualquer cliente em operação pode gerar atividade aqui.
+Cobre **gates + incidentes + auditorias + breaches + aceites operacionais**. É o cockpit reativo do time. **Acompanha** Spaces 2 e 3 — qualquer entrega em operação pode gerar atividade aqui, em qualquer `delivery_type`.
 
 #### Listas
 
-| Lista | Entidade | O que mora aqui |
-|---|---|---|
-| **Gates pendentes** | Gate | 1 task por outcome em modo ASSISTED esperando decisão humana — ou AUTONOMOUS abaixo do threshold de confiança |
-| **Incidentes** | Incidente | 1 task por incidente operacional (P1/P2/P3) |
-| **Auditorias mensais** | Auditoria | 1 task por (cliente × mês) — gerada com sample size e error rate |
-| **Promoções de modo** | Promoção | 1 task por promoção SHADOW→ASSISTED ou ASSISTED→AUTONOMOUS |
-| **SLA breaches** | Breach | 1 task por mês em que cliente não atingiu SLA contratual (variável não cobrado) |
+| Lista | Entidade | `delivery_type` aplicável | O que mora aqui |
+|---|---|---|---|
+| **Gates pendentes** | Gate | **só** `agentic_saas` (e blocos agentic em `hybrid`) | 1 task por outcome em modo ASSISTED esperando decisão humana — ou AUTONOMOUS abaixo do threshold de confiança |
+| **Aceites operacionais** | Aceite | `platform`, `automation`, `hybrid` | 1 task por aceite operacional pendente: validação de critérios de aceite por usuário interno do cliente, comparação legado×nova, registro de assinatura humana antes de promover PILOT → CANONICAL |
+| **Incidentes** | Incidente | qualquer | 1 task por incidente operacional (P1/P2/P3). Em `agentic_saas`: pode ser drift do agente. Em `platform`: pode ser dado divergente do legado. |
+| **Auditorias mensais** | Auditoria | qualquer | 1 task por (cliente × mês). Em `agentic_saas`: LLM-as-judge + amostra humana. Em `platform`: auditoria operacional / consistência canonical vs legado em paralelo. |
+| **Promoções de modo** | Promoção | qualquer | 1 task por promoção. `agentic_saas`: SHADOW→ASSISTED ou ASSISTED→AUTONOMOUS. `platform`: STAGING→PILOT ou PILOT→CANONICAL. |
+| **SLA breaches** | Breach | `agentic_saas` (e blocos agentic em `hybrid`) | 1 task por mês em que cliente `agentic_saas` não atingiu SLA contratual (variável não cobrado) |
 
 #### Status
 
@@ -570,10 +688,16 @@ A versão anterior (`acme-governanca-ia/docs/clickup-blueprint.md` + scripts) cr
 
 | Termo | Significado |
 |---|---|
-| **Outcome** | Resultado entregue pelo agente que vira faturamento variável (ex: 1 lead qualificado = 1 outcome). |
-| **SHADOW** | Modo de operação em que o agente roda mas não materializa output para o cliente. Calibração. |
-| **ASSISTED** | Modo em que cada outcome do agente passa por aprovação humana antes de ir ao cliente. |
-| **AUTONOMOUS** | Modo em que o agente entrega outcomes diretamente; humano audita amostra. |
+| **Outcome** | Resultado entregue pelo agente que vira faturamento variável (ex: 1 lead qualificado = 1 outcome). Específico de `agentic_saas`. |
+| **Outcome operacional** | Termo genérico para `platform`/`automation`: resultado verificável da operação (ex: módulo aceito por usuário interno, comparação legado×nova fechada com erro <X%, smoke test passando em produção). Não vira faturamento por evento — vira gate de promoção. |
+| **delivery_type** | Classificação da entrega: `agentic_saas`, `platform`, `automation` ou `hybrid`. Define lifecycle, listas, atividades e artefatos obrigatórios. |
+| **SHADOW** | (`agentic_saas`) Modo de operação em que o agente roda mas não materializa output para o cliente. Calibração. |
+| **ASSISTED** | (`agentic_saas`) Modo em que cada outcome do agente passa por aprovação humana antes de ir ao cliente. |
+| **AUTONOMOUS** | (`agentic_saas`) Modo em que o agente entrega outcomes diretamente; humano audita amostra. |
+| **DRAFT/STAGING/PILOT/CANONICAL/DEPRECATED** | (`platform`) Lifecycle de plataforma operacional. PILOT antes de virar CANONICAL é o equivalente a SHADOW antes de cobrar do `agentic_saas`. |
+| **PILOT antes de virar fonte canônica** | (`platform`) Regra: nenhum módulo é promovido a CANONICAL sem rodar piloto contra usuários reais e ter aceite humano formal. |
+| **Aceite operacional** | (`platform`/`automation`) Registro humano de que o módulo cumpre os critérios de aceite contratuais. Requisito para promover PILOT → CANONICAL. |
+| **ai_enabled** | Flag booleano em qualquer `delivery_type` que indica que aquele módulo/bloco usa IA por dentro. Quando `true`, exige prompts versionados, eval suite e observabilidade de inferência **mesmo se** o `delivery_type` for `platform` ou `automation`. |
 | **Setup fee** | Pagamento único cobrado no início para cobrir CAC operacional (R$ 8-25k). |
 | **Cap mensal** | Teto da fatura variável combinado contratualmente — segurança para o cliente. |
 | **SLA threshold** | % mínimo de acurácia/qualidade abaixo do qual cliente não paga o variável do mês. |
@@ -607,3 +731,4 @@ Antes de implementar, decidir juntos:
 | Versão | Data | Mudança |
 |---|---|---|
 | 0.1 | 2026-05-01 | Versão inicial — substitui `clickup-blueprint.md` do projeto anterior |
+| 0.2 | 2026-05-08 | Multi-delivery: introduz `delivery_type` (`agentic_saas` / `platform` / `automation` / `hybrid`), lifecycle DRAFT→STAGING→PILOT→CANONICAL→DEPRECATED para `platform`, listas neutras `Rollouts em andamento`, `Pilotos ativos`, `Fontes canônicas`, `Aceites operacionais`. Condiciona SHADOW/ASSISTED/AUTONOMOUS a `agentic_saas`. |

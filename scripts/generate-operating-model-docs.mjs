@@ -13,7 +13,7 @@ const catalog = JSON.parse(await readFile(catalogPath, "utf8"));
 const diagnostic = JSON.parse(await readFile(diagnosticPath, "utf8"));
 
 function activityRow(item) {
-  return `| ${item.id} | ${item.phase} | ${item.activity} | ${item.owner} | ${item.space} / ${item.list} | ${item.status} | ${item.artifact ?? ""} |`;
+  return `| ${item.id} | \`${item.delivery_type ?? "any"}\` | ${item.phase} | ${item.activity} | ${item.owner} | ${item.space} / ${item.list} | ${item.status} | ${item.artifact ?? ""} |`;
 }
 
 const bySpace = new Map();
@@ -24,8 +24,8 @@ for (const item of catalog.activities) {
 const sections = [...bySpace.entries()].map(([space, activities]) => [
   `## ${space}`,
   "",
-  "| # | Fase | Atividade | Dono | Onde | Status | Artefato |",
-  "|---|---|---|---|---|---|---|",
+  "| # | Delivery type | Fase | Atividade | Dono | Onde | Status | Artefato |",
+  "|---|---|---|---|---|---|---|---|",
   ...activities.map(activityRow),
   ""
 ].join("\n"));
@@ -41,6 +41,35 @@ const diagnosticRules = diagnostic.decisionRules.map((rule) => [
   ""
 ].join("\n"));
 
+const deliveryTypesList = (catalog.deliveryTypes ?? []).map((dt) => `\`${dt}\``).join(", ");
+const deliveryNotes = catalog.deliveryTypeNotes ?? {};
+const deliveryNotesSection = Object.keys(deliveryNotes).length
+  ? [
+      "## Tipos de entrega (delivery_type)",
+      "",
+      `Suportados: ${deliveryTypesList || "n/d"}.`,
+      "",
+      ...Object.entries(deliveryNotes).map(([dt, note]) => `- \`${dt}\`: ${note}`),
+      ""
+    ]
+  : [];
+
+const requirementsByDt = diagnostic.candidateRequirementsByDeliveryType ?? {};
+const requirementsSection = Object.keys(requirementsByDt).length
+  ? [
+      "## Exigencias do diagnostico por delivery_type",
+      "",
+      ...Object.entries(requirementsByDt).flatMap(([dt, rule]) => [
+        `### \`${dt}\``,
+        "",
+        rule.required?.length ? `Required: ${rule.required.map((f) => `\`${f}\``).join(", ")}` : "Required: nenhum extra.",
+        rule.forbidden?.length ? `Forbidden: ${rule.forbidden.map((f) => `\`${f}\``).join(", ")}` : "Forbidden: nenhum.",
+        rule.notes ? `Notas: ${rule.notes}` : "",
+        ""
+      ])
+    ]
+  : [];
+
 const content = [
   "# Modelo operacional - ClickUp Acme",
   "",
@@ -50,6 +79,7 @@ const content = [
   "",
   ...catalog.rules.map((rule) => `- ${rule}`),
   "",
+  ...deliveryNotesSection,
   "## Atividades por Space",
   "",
   ...sections,
@@ -60,6 +90,7 @@ const content = [
   "Campos obrigatorios:",
   ...diagnostic.requiredFields.map((field) => `- \`${field}\``),
   "",
+  ...requirementsSection,
   "## Regras de geracao pos-diagnostico",
   "",
   ...diagnosticRules

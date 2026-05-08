@@ -21,7 +21,20 @@ Substitui o blueprint anterior (`acme-governanca-ia/docs/clickup-blueprint.md`),
 
 ## Status
 
-v0.1 - proposta inicial (2026-05-01), agora com bootstrap da Onda 1.
+v0.2 - governanca multi-delivery (2026-05-08): suporte a `agentic_saas`, `platform`, `automation` e `hybrid`. Ver [`GOVERNANCE.md §2.A`](./GOVERNANCE.md) para o modelo completo.
+
+## Tipos de entrega (delivery_type)
+
+Este projeto governa quatro tipos de entrega. Cada template, atividade e lista declara qual tipo aceita:
+
+| `delivery_type` | Quando usar | Lifecycle | Entrar por |
+|---|---|---|---|
+| `agentic_saas` | Agente de IA cobrado por outcome. | SHADOW → ASSISTED → AUTONOMOUS | `Solicitacoes de agente` |
+| `platform` | Plataforma SaaS multi-modulo. | DRAFT → STAGING → PILOT → CANONICAL → DEPRECATED | `Solicitacoes de plataforma` |
+| `automation` | Script/integracao/RPA pontual. | a fazer → em desenvolvimento → concluido | `Backlog tecnico` |
+| `hybrid` | Combina tipos acima no mesmo cliente. | Lifecycle por bloco. | Lista mais geral |
+
+Ver [`GOVERNANCE.md §2.A`](./GOVERNANCE.md) e [`docs/HOW_TO_NAVIGATE_CLICKUP.md`](./docs/HOW_TO_NAVIGATE_CLICKUP.md) para regras completas.
 
 ## Aplicacao da Onda 1
 
@@ -175,6 +188,21 @@ Para rodar sem rede e sem credenciais, usando fixture local:
 npm run tech:sync -- --offline
 ```
 
+## Solicitacao de nova plataforma
+
+Para iniciar a governanca de um cliente `delivery_type=platform` (ex: SchoolPlatform, Aicfo), use o template de solicitacao de plataforma:
+
+1. No ClickUp: `05 Institucional Acme / Solicitacoes de plataforma` -> usar `[TEMPLATE] Solicitacao de plataforma`
+2. Preencher: empresa, problema de negocio, sistema legado, numero de modulos, stage inicial
+3. Mudar status para `escopo pronto`
+4. O webhook gera a estrutura AIOS (Folder + List + modules) automaticamente
+
+Para revisar o template antes de semear no ClickUp:
+
+```bash
+npm run templates:dry
+```
+
 ## Automacao de plataformas SaaS multi-modulo (AIOS)
 
 Para projetos onde 1 cliente = **plataforma SaaS multi-tenant com varios modulos** (ex: SchoolPlatform), o fluxo e diferente do `tech:*`. Em vez de tarefas flat no `Backlog tecnico`, criamos uma **Folder dedicada por plataforma** com uma List `Modulos`. Cada modulo e uma task pai com **subtasks por stage AIOS** (spec -> backend -> frontend -> tests -> review -> merge), dando visao de produto pra CEO.
@@ -230,6 +258,24 @@ Quando o sync detecta `bloqueado`, alem de mover o status, deixa um **comentario
 - **Tier B**: agente AIOS gera, Rafael itera -> 6 stages encadeadas
 - **Tier C**: Rafael implementa, agentes apenas assistem -> 1 task manual_implementation
 - `module.key === "cnab"`: forca rota manual mesmo se tier mudar (modulo de risco) + tag `bloqueador-cnab`
+
+### Scripts de plataforma
+
+Os scripts `platform:*` sao aliases dos `aios:*` e funcionam com o payload padrao SchoolPlatform:
+
+```bash
+npm run platform:dry           # dry-run: Folder/List/modules que seriam criados
+npm run platform:generate      # cria estrutura no ClickUp
+npm run platform:sync          # dry-run do sync de status
+npm run platform:sync:live     # aplica status + comentarios no ClickUp
+```
+
+Para outros clientes, use `--payload-file`:
+
+```bash
+npm run aios:dry -- --payload-file=examples/aicfo-modules.payload.json
+npm run aicfo:dry             # alias pronto para o Aicfo
+```
 
 ### Revisar antes de criar
 
@@ -325,8 +371,9 @@ npm run tech:model
 
 ## Proximos passos
 
-1. Rodar `npm run bootstrap:dry` com a CEO olhando a saida.
-2. Definir se existe uma 23a lista ou se o numero correto da Onda 1 e 22.
-3. Rodar `npm run bootstrap` com `CLICKUP_TOKEN` e `CLICKUP_TEAM_ID`.
-4. Ajustar status no UI do ClickUp conforme o checklist impresso.
-5. Avancar para Onda 2: templates e hooks backend.
+1. Rodar `npm run bootstrap:dry` para revisar as 27 listas (22 originais + 5 novas de platform).
+2. Rodar `npm run bootstrap` com `CLICKUP_TOKEN` e `CLICKUP_TEAM_ID` para aplicar no ClickUp.
+3. Ajustar status no UI conforme o checklist impresso.
+4. Setar `CLICKUP_WEBHOOK_SECRET` no Railway (obrigatorio em producao).
+5. Registrar o webhook apos publicar: `npm run webhook:register -- --url=https://sua-url.up.railway.app`.
+6. Migrar clientes existentes: adicionar `delivery_type` nos payloads de cada cliente e rodar `npm run aios:generate`.

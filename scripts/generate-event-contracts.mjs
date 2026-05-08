@@ -21,6 +21,7 @@ function renderTemplate(template) {
     `## ${template.name}`,
     "",
     `- Evento: \`${template.key}\``,
+    `- Delivery type: \`${template.delivery_type ?? "any"}\``,
     `- Destino: \`${template.target.space} / ${template.target.list}\``,
     `- Status desejado: \`${template.target.desiredStatus}\``,
     "",
@@ -47,8 +48,12 @@ const content = [
   "Este documento e gerado a partir de `config/clickup-task-templates.json`.",
   "Ele define os campos que o backend deve receber antes de criar tasks e disparar atividades correspondentes.",
   "",
+  `Delivery types suportados: ${(config.deliveryTypes ?? []).map((dt) => `\`${dt}\``).join(", ") || "n/d"}.`,
+  "",
+  config.deliveryTypeNotes ? `> ${config.deliveryTypeNotes}` : "",
+  "",
   ...config.templates.map(renderTemplate)
-].join("\n");
+].filter((line) => line !== null && line !== undefined).join("\n");
 
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${content.trim()}\n`, "utf8");

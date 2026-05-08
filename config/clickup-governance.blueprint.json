@@ -1,7 +1,8 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "source": "GOVERNANCE.md",
   "workspaceName": "Acme",
+  "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
   "tags": [
     "ia-gerado",
     "revisao-humana",
@@ -13,7 +14,12 @@
     "tier:B",
     "tier:C",
     "rafael-implementa",
-    "bloqueador-cnab"
+    "bloqueador-cnab",
+    "delivery:agentic_saas",
+    "delivery:platform",
+    "delivery:automation",
+    "delivery:hybrid",
+    "ai-enabled"
   ],
   "spaces": [
     {
@@ -23,38 +29,56 @@
         {
           "name": "Leads",
           "entity": "Lead",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["novo", "conversa", "qualificado", "perdido"]
         },
         {
           "name": "Diagnosticos Fase 0",
           "entity": "Diagnostico",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["vendido", "em execucao", "entregue", "aguardando decisao", "convertido", "recusado"]
         },
         {
           "name": "Propostas",
           "entity": "Proposta",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["enviada", "em negociacao", "assinada", "rejeitada"]
         }
       ]
     },
     {
       "name": "02 Implantacao",
-      "purpose": "Onboarding tecnico do cliente: do contrato ao AUTONOMOUS.",
+      "purpose": "Onboarding tecnico: do contrato assinado ate a entrega entrar em operacao.",
       "lists": [
         {
           "name": "Setups em andamento",
           "entity": "Setup",
-          "statuses": ["kickoff", "briefing", "canal conectado", "baseline capturado", "prompts aprovados", "shadow ligado"]
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
+          "statuses": ["kickoff", "briefing", "canal conectado", "baseline capturado", "prompts aprovados", "shadow ligado", "staging pronto"]
+        },
+        {
+          "name": "Rollouts em andamento",
+          "entity": "Rollout de plataforma",
+          "deliveryTypes": ["platform", "hybrid"],
+          "statuses": ["draft", "ambiente provisionado", "smoke test verde", "staging", "promovido para piloto"]
         },
         {
           "name": "SHADOWs ativos",
           "entity": "Subscription em SHADOW",
+          "deliveryTypes": ["agentic_saas"],
           "statuses": ["calibrando", "30 outcomes coletados", "analise concluida", "promovido para ASSISTED"]
         },
         {
           "name": "ASSISTEDs ativos",
           "entity": "Subscription em ASSISTED",
+          "deliveryTypes": ["agentic_saas"],
           "statuses": ["operando", "threshold atingido", "promovido para AUTONOMOUS"]
+        },
+        {
+          "name": "Pilotos ativos",
+          "entity": "Plataforma ou modulo em PILOT",
+          "deliveryTypes": ["platform", "hybrid"],
+          "statuses": ["piloto aberto", "comparando legado vs nova", "aceite humano coletado", "promovido para CANONICAL"]
         }
       ]
     },
@@ -65,62 +89,85 @@
         {
           "name": "Clientes ativos",
           "entity": "Cliente",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["saudavel", "em alerta", "em risco", "pausado", "encerrado"]
+        },
+        {
+          "name": "Fontes canonicas",
+          "entity": "Plataforma ou modulo em CANONICAL",
+          "deliveryTypes": ["platform", "hybrid"],
+          "statuses": ["canonical", "em alerta", "em alerta canonical x legado", "depreciado", "sunset"]
         },
         {
           "name": "Faturamento mensal",
           "entity": "Fatura",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["em curso", "fechado", "emitido", "pago", "inadimplente"]
         },
         {
           "name": "Relacionamento",
           "entity": "Touchpoint",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["proximo", "realizado", "cancelado"]
         },
         {
           "name": "Expansoes",
-          "entity": "Wave ou upsell",
+          "entity": "Wave, upsell ou novo modulo",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["identificada", "proposta", "contratada", "em delivery", "concluida"]
         },
         {
           "name": "Renovacoes",
           "entity": "Renovacao",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["a vencer 90d", "conversa iniciada", "proposta enviada", "renovada", "perdida"]
         },
         {
           "name": "Pos-churn",
           "entity": "Cliente encerrado",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["encerrado", "retencao tentada", "postmortem", "fechado"]
         }
       ]
     },
     {
       "name": "04 Saude Operacional",
-      "purpose": "Cockpit reativo: gates, incidentes, auditorias, promocoes e SLA.",
+      "purpose": "Cockpit reativo: gates, aceites, incidentes, auditorias, promocoes e SLA.",
       "lists": [
         {
           "name": "Gates pendentes",
           "entity": "Gate",
+          "deliveryTypes": ["agentic_saas", "hybrid"],
           "statuses": ["aguardando", "aprovado", "rejeitado", "escalado"]
+        },
+        {
+          "name": "Aceites operacionais",
+          "entity": "Aceite",
+          "deliveryTypes": ["platform", "automation", "hybrid"],
+          "statuses": ["aguardando", "em revisao", "aprovado", "rejeitado", "promovido"]
         },
         {
           "name": "Incidentes",
           "entity": "Incidente",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["aberto", "investigando", "mitigado", "resolvido", "postmortem"]
         },
         {
           "name": "Auditorias mensais",
           "entity": "Auditoria",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["agendada", "em revisao", "concluida", "anexada a fatura"]
         },
         {
           "name": "Promocoes de modo",
           "entity": "Promocao",
+          "deliveryTypes": ["agentic_saas", "platform", "hybrid"],
           "statuses": ["solicitada", "aguardando aprovacao", "aprovada", "rejeitada"]
         },
         {
           "name": "SLA breaches",
           "entity": "Breach",
+          "deliveryTypes": ["agentic_saas", "hybrid"],
           "statuses": ["detectado", "comunicado ao cliente", "fatura ajustada", "fechado"]
         }
       ]
@@ -132,31 +179,43 @@
         {
           "name": "Catalogo de SKUs",
           "entity": "SKU",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["dev", "piloto", "producao", "maduro", "depreciado", "sunset"]
         },
         {
           "name": "Decisoes e ADRs",
           "entity": "Decisao",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["em curso", "aguardando aprovacao", "aprovada", "vigente", "superada"]
         },
         {
           "name": "Solicitacoes de agente",
           "entity": "Solicitacao de agente",
+          "deliveryTypes": ["agentic_saas", "hybrid"],
+          "statuses": ["rascunho", "escopo pronto", "gerado", "bloqueado", "cancelado"]
+        },
+        {
+          "name": "Solicitacoes de plataforma",
+          "entity": "Solicitacao de plataforma",
+          "deliveryTypes": ["platform", "hybrid"],
           "statuses": ["rascunho", "escopo pronto", "gerado", "bloqueado", "cancelado"]
         },
         {
           "name": "Backlog tecnico",
           "entity": "Iniciativa",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["bloqueado", "em curso", "em revisao", "concluido"]
         },
         {
           "name": "Time Acme",
           "entity": "Pessoa",
+          "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["ativo", "onboarding", "offboarding"]
         },
         {
           "name": "Auditoria DeepAgents",
           "entity": "Relatorio",
+          "deliveryTypes": ["agentic_saas", "hybrid"],
           "statuses": ["em curso", "publicada", "acoes em andamento", "fechada"]
         }
       ]

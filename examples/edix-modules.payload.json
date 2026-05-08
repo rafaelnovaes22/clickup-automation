@@ -24,5 +24,6 @@
   "repository_url": "https://github.com/acme-startup/school-platform",
   "project_root": "c:/Users/Rafael/Projetos/SchoolPlatform",
   "environment": "dev",
+  "delivery_type": "platform",
   "notes": "Plataforma EDIX - 15 modulos via AIOS Server. Tier C nao passa pelo pipeline."
 }

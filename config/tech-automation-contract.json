@@ -1,7 +1,8 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "event": "tech_scope_identified",
-  "purpose": "Gerar automaticamente tarefas tecnicas para dev a partir das plataformas identificadas.",
+  "purpose": "Gerar automaticamente tarefas tecnicas para dev a partir das plataformas identificadas. Funciona para qualquer delivery_type; campos especificos sao validados conforme delivery_type.",
+  "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
   "target": {
     "space": "05 Institucional Acme",
     "list": "Backlog tecnico"
@@ -19,6 +20,11 @@
     { "key": "client_task_id", "type": "clickup_task_id", "required": true },
     { "key": "diagnostic_task_id", "type": "clickup_task_id", "required": false },
     { "key": "setup_task_id", "type": "clickup_task_id", "required": false },
+    { "key": "delivery_type", "type": "select", "required": false,
+      "options": ["agentic_saas", "platform", "automation", "hybrid"],
+      "description": "Default: agentic_saas (compat com fluxo existente). Define quais plataformas tecnicas sao validadas como aplicaveis." },
+    { "key": "ai_enabled", "type": "boolean", "required": false,
+      "description": "Quando true, exige tarefas de IA (prompts/eval/observabilidade) mesmo se delivery_type nao for agentic_saas." },
     { "key": "technical_platforms", "type": "list", "required": true },
     { "key": "tech_owner", "type": "person_or_text", "required": true },
     { "key": "delivery_due_date", "type": "date", "required": true },

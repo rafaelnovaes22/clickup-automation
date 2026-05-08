@@ -3,9 +3,14 @@
 Este documento e gerado a partir de `config/clickup-task-templates.json`.
 Ele define os campos que o backend deve receber antes de criar tasks e disparar atividades correspondentes.
 
+Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
+
+> Cada template declara delivery_type. Templates agentic exigem prompts/eval/SHADOW; templates platform exigem rollout/smoke/piloto/aceite.
+
 ## [TEMPLATE] Solicitacao de agente
 
 - Evento: `agent_request`
+- Delivery type: `agentic_saas`
 - Destino: `05 Institucional Acme / Solicitacoes de agente`
 - Status desejado: `rascunho`
 
@@ -44,6 +49,7 @@ Ele define os campos que o backend deve receber antes de criar tasks e disparar 
 ## [TEMPLATE] Lead novo
 
 - Evento: `lead_new`
+- Delivery type: `any`
 - Destino: `01 Pipeline Comercial / Leads`
 - Status desejado: `novo`
 
@@ -75,6 +81,7 @@ Ele define os campos que o backend deve receber antes de criar tasks e disparar 
 ## [TEMPLATE] Diagnostico Fase 0 vendido
 
 - Evento: `diagnostic_sold`
+- Delivery type: `any`
 - Destino: `01 Pipeline Comercial / Diagnosticos Fase 0`
 - Status desejado: `vendido`
 
@@ -111,6 +118,7 @@ Ele define os campos que o backend deve receber antes de criar tasks e disparar 
 ## [TEMPLATE] Proposta enviada
 
 - Evento: `proposal_sent`
+- Delivery type: `any`
 - Destino: `01 Pipeline Comercial / Propostas`
 - Status desejado: `enviada`
 
@@ -146,6 +154,7 @@ Ele define os campos que o backend deve receber antes de criar tasks e disparar 
 ## [TEMPLATE] Setup tecnico iniciado
 
 - Evento: `setup_created`
+- Delivery type: `any`
 - Destino: `02 Implantacao / Setups em andamento`
 - Status desejado: `kickoff`
 
@@ -181,6 +190,7 @@ Ele define os campos que o backend deve receber antes de criar tasks e disparar 
 ## [TEMPLATE] SHADOW ativo
 
 - Evento: `shadow_active`
+- Delivery type: `agentic_saas`
 - Destino: `02 Implantacao / SHADOWs ativos`
 - Status desejado: `calibrando`
 
@@ -214,6 +224,7 @@ Ele define os campos que o backend deve receber antes de criar tasks e disparar 
 ## [TEMPLATE] Auditoria mensal
 
 - Evento: `monthly_audit`
+- Delivery type: `agentic_saas`
 - Destino: `04 Saude Operacional / Auditorias mensais`
 - Status desejado: `agendada`
 
@@ -246,6 +257,7 @@ Ele define os campos que o backend deve receber antes de criar tasks e disparar 
 ## [TEMPLATE] Incidente operacional
 
 - Evento: `incident_opened`
+- Delivery type: `any`
 - Destino: `04 Saude Operacional / Incidentes`
 - Status desejado: `aberto`
 
@@ -276,3 +288,143 @@ Ele define os campos que o backend deve receber antes de criar tasks e disparar 
 - Definir responsavel de mitigacao
 - Comunicar envolvidos
 - Escrever postmortem se P1/P2
+
+## [TEMPLATE] Plataforma - rollout
+
+- Evento: `platform_rollout`
+- Delivery type: `platform`
+- Destino: `02 Implantacao / Rollouts em andamento`
+- Status desejado: `draft`
+
+### Campos
+
+| Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
+|---|---|---|---|---|---|
+| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Acme |
+| `module_key` | Modulo | text | sim |  | cadastros |
+| `client_task_id` | Task do cliente | clickup_task_id | nao |  | 86cli123 |
+| `proposal_task_id` | Task da proposta | clickup_task_id | sim |  | 86prop123 |
+| `rollout_owner` | Responsavel pelo rollout | person_or_text | sim |  | Delivery |
+| `environment` | Ambiente | select | sim | dev, staging, prod |  |
+| `kickoff_date` | Data do kickoff | datetime | sim |  | 2026-05-06T10:00:00-03:00 |
+| `target_staging_date` | Data alvo para STAGING | date | sim |  | 2026-05-15 |
+| `ai_enabled` | Modulo usa IA? | select | nao | sim, nao |  |
+
+### Atividades disparadas
+
+- Quando `template_instantiated`: Criar task Rollout do modulo
+- Quando `task_created`: Criar 5 subtasks padrao de rollout
+- Quando `target_staging_date preenchido`: Definir due date do rollout
+- Quando `status=staging`: Disparar template platform_pilot
+
+### Subtasks padrao
+
+- Provisionar ambiente
+- Rodar migrations e seed inicial
+- Configurar observabilidade (logs, metricas, alertas)
+- Smoke test tecnico do modulo
+- Definir criterios de aceite operacional
+
+## [TEMPLATE] Plataforma - piloto ativo
+
+- Evento: `platform_pilot`
+- Delivery type: `platform`
+- Destino: `02 Implantacao / Pilotos ativos`
+- Status desejado: `piloto aberto`
+
+### Campos
+
+| Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
+|---|---|---|---|---|---|
+| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Acme |
+| `module_key` | Modulo | text | sim |  | cadastros |
+| `rollout_task_id` | Task do rollout | clickup_task_id | sim |  | 86roll123 |
+| `pilot_started_at` | Piloto iniciado em | datetime | sim |  | 2026-05-15T09:00:00-03:00 |
+| `pilot_user_count` | Usuarios participantes | number | sim |  | 5 |
+| `legacy_system_name` | Sistema legado em paralelo | text | nao |  | Sistema X |
+| `comparison_target_error_pct` | Erro maximo aceito vs legado (%) | percent | sim |  | 1 |
+| `ai_enabled` | Modulo usa IA? | select | nao | sim, nao |  |
+| `observability_url` | Link de observabilidade | url | nao |  | https://... |
+
+### Atividades disparadas
+
+- Quando `template_instantiated`: Criar task Piloto
+- Quando `task_created`: Criar 5 subtasks padrao de piloto
+- Quando `comparacao_legado_concluida`: Disparar template platform_acceptance
+- Quando `ai_enabled=sim`: Exigir prompts versionados, eval suite e Langfuse antes de aceite
+
+### Subtasks padrao
+
+- Confirmar perfil de usuarios participantes
+- Rodar comparacao legado vs plataforma
+- Coletar feedback estruturado dos usuarios
+- Verificar observabilidade (incidentes, latencia, erros)
+- Preparar dossie de aceite humano
+
+## [TEMPLATE] Plataforma - aceite operacional
+
+- Evento: `platform_acceptance`
+- Delivery type: `platform`
+- Destino: `04 Saude Operacional / Aceites operacionais`
+- Status desejado: `aguardando`
+
+### Campos
+
+| Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
+|---|---|---|---|---|---|
+| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Acme |
+| `module_key` | Modulo | text | sim |  | cadastros |
+| `pilot_task_id` | Task do piloto | clickup_task_id | sim |  | 86pilot123 |
+| `acceptance_criteria_doc` | Documento de criterios de aceite | url | sim |  | https://... |
+| `comparison_evidence` | Evidencia comparacao legado x nova | url | sim |  | https://... |
+| `client_signoff_owner` | Quem assina pelo cliente | text | sim |  | Maria Silva (CFO Acme) |
+| `tech_signoff_owner` | Quem assina pela Acme | person_or_text | sim |  | Tech Lead |
+
+### Atividades disparadas
+
+- Quando `template_instantiated`: Criar task Aceite operacional
+- Quando `status=aprovado`: Disparar template platform_canonical_promotion
+- Quando `status=rejeitado`: Voltar piloto para 'comparando legado vs nova' e listar gaps
+
+### Subtasks padrao
+
+- Validar criterios de aceite com cliente
+- Anexar evidencia de comparacao legado x nova
+- Coletar assinatura de aceite do cliente
+- Coletar assinatura de aceite do Tech Lead
+- Registrar decisao na task
+
+## [TEMPLATE] Plataforma - promocao para CANONICAL
+
+- Evento: `platform_canonical_promotion`
+- Delivery type: `platform`
+- Destino: `04 Saude Operacional / Promocoes de modo`
+- Status desejado: `solicitada`
+
+### Campos
+
+| Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
+|---|---|---|---|---|---|
+| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Acme |
+| `module_key` | Modulo | text | sim |  | cadastros |
+| `acceptance_task_id` | Task do aceite operacional | clickup_task_id | sim |  | 86acc123 |
+| `cutover_date` | Data planejada de cutover | date | sim |  | 2026-06-01 |
+| `legacy_sunset_plan` | Plano de sunset do legado | long_text | nao |  | Manter legado em leitura por 30 dias para auditoria, desligar em 2026-07-01. |
+
+### Atividades disparadas
+
+- Quando `template_instantiated`: Criar task Promocao para CANONICAL
+- Quando `status=aprovada`: Mover modulo para Fontes canonicas no Space 03 Clientes
+- Quando `status=aprovada`: Agendar auditoria operacional mensal de consistencia canonical x legado
+
+### Subtasks padrao
+
+- Validar plano de cutover com cliente
+- Confirmar plano de sunset do legado
+- Aprovar promocao com Tech Lead + CEO
+- Mover modulo para Fontes canonicas
+- Comunicar time e cliente da entrada em CANONICAL

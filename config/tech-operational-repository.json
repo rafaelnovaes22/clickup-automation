@@ -1,12 +1,15 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "scope": "tech_only",
   "purpose": "Repositorio operacional detalhado da area Tech: atividades, plataformas, artefatos, automacoes e progresso.",
+  "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
   "principles": [
     "Toda entrega tecnica precisa estar ligada a um cliente, plataforma e artefato esperado.",
     "Atividades manuais registram decisao humana; atividades automaticas registram execucao do sistema.",
     "Codigo, PR, deploy, teste e smoke test devem apontar para a task tecnica correspondente.",
-    "O ClickUp mostra execucao viva; este repositorio define o contrato operacional."
+    "O ClickUp mostra execucao viva; este repositorio define o contrato operacional.",
+    "Atividades de agente/IA (prompts, evals, traces) so sao obrigatorias para delivery_type=agentic_saas ou ai_enabled=true.",
+    "Atividades de plataforma (rollout, smoke, piloto, aceite, CANONICAL) so sao obrigatorias para delivery_type=platform ou blocos platform em hybrid."
   ],
   "activityTypes": ["manual", "automatic", "hybrid"],
   "statusFlow": ["a fazer", "em desenvolvimento", "em revisao", "bloqueado", "concluido"],
@@ -107,12 +110,29 @@
     { "key": "agent_guardrail_policy", "label": "Politica de guardrails", "storage": "repo_doc_or_task_description" },
     { "key": "agent_observability_trace", "label": "Trace de execucao do agente", "storage": "observability_tool_or_clickup_comment" },
     { "key": "agent_shadow_report", "label": "Relatorio SHADOW do agente", "storage": "clickup_comment_or_doc" },
-    { "key": "agent_assisted_gate", "label": "Gate de promocao ASSISTED", "storage": "clickup_comment_or_doc" }
+    { "key": "agent_assisted_gate", "label": "Gate de promocao ASSISTED", "storage": "clickup_comment_or_doc" },
+    { "key": "environment_provisioning_evidence", "label": "Evidencia de provisionamento de ambiente", "storage": "clickup_attachment_or_comment" },
+    { "key": "migrations_evidence", "label": "Evidencia de migrations", "storage": "clickup_comment_or_doc" },
+    { "key": "module_smoke_test_evidence", "label": "Evidencia de smoke test do modulo", "storage": "clickup_attachment_or_comment" },
+    { "key": "legacy_vs_new_comparison", "label": "Relatorio comparacao legado x nova", "storage": "repo_doc_or_clickup_comment" },
+    { "key": "platform_observability_setup", "label": "Setup de observabilidade da plataforma", "storage": "repo_doc_or_dashboard_url" },
+    { "key": "operational_acceptance_criteria", "label": "Criterios de aceite operacional", "storage": "repo_doc_or_clickup_comment" },
+    { "key": "pilot_open_note", "label": "Nota de abertura de piloto", "storage": "clickup_comment_or_doc" },
+    { "key": "human_operational_signoff", "label": "Assinatura de aceite humano", "storage": "clickup_comment_or_doc" },
+    { "key": "canonical_promotion_request", "label": "Solicitacao de promocao para CANONICAL", "storage": "clickup_task" },
+    { "key": "canonical_promotion_decision", "label": "Decisao de promocao para CANONICAL", "storage": "clickup_comment_or_doc" },
+    { "key": "canonical_cutover_note", "label": "Nota de cutover canonical", "storage": "clickup_comment_or_doc" },
+    { "key": "deprecation_note", "label": "Nota de depreciacao", "storage": "clickup_comment_or_doc" },
+    { "key": "rollback_plan", "label": "Plano de rollback", "storage": "repo_doc_or_clickup_comment" },
+    { "key": "user_pilot_feedback", "label": "Feedback de usuarios piloto", "storage": "clickup_comment_or_doc" },
+    { "key": "operational_consistency_report", "label": "Relatorio de consistencia operacional", "storage": "clickup_comment_or_doc" },
+    { "key": "incident_postmortem", "label": "Postmortem de incidente", "storage": "repo_doc_or_clickup_comment" }
   ],
   "activities": [
     {
       "id": "tech.scope.review",
       "name": "Revisar escopo tecnico do diagnostico",
+      "delivery_type": "any",
       "type": "manual",
       "role": "tech_lead",
       "trigger": "diagnostic_completed",
@@ -128,6 +148,7 @@
     {
       "id": "tech.task.generate",
       "name": "Gerar backlog tecnico por plataforma",
+      "delivery_type": "any",
       "type": "automatic",
       "role": "system",
       "trigger": "tech_scope_identified",
@@ -143,6 +164,7 @@
     {
       "id": "tech.code.link",
       "name": "Linkar codigo a tarefa tecnica",
+      "delivery_type": "any",
       "type": "hybrid",
       "role": "backend_dev",
       "trigger": "commit_or_pr_created",
@@ -158,6 +180,7 @@
     {
       "id": "tech.progress.read",
       "name": "Ler progresso tecnico por cliente",
+      "delivery_type": "any",
       "type": "automatic",
       "role": "system",
       "trigger": "daily_or_on_demand",
@@ -173,6 +196,7 @@
     {
       "id": "tech.agent.design",
       "name": "Desenhar agente de IA do produto",
+      "delivery_type": "agentic_saas",
       "type": "hybrid",
       "role": "ai_engineer",
       "trigger": "ai_agent_selected",
@@ -188,6 +212,7 @@
     {
       "id": "tech.agent.evaluate",
       "name": "Avaliar qualidade do agente",
+      "delivery_type": "agentic_saas",
       "type": "hybrid",
       "role": "ai_engineer",
       "trigger": "agent_implementation_ready",
@@ -203,6 +228,7 @@
     {
       "id": "tech.smoke.evidence",
       "name": "Registrar evidencia de smoke test",
+      "delivery_type": "any",
       "type": "hybrid",
       "role": "delivery_engineer",
       "trigger": "smoke_test_completed",
@@ -218,6 +244,7 @@
     {
       "id": "tech.frontend.visual.review",
       "name": "Validar entrega visual frontend",
+      "delivery_type": "any",
       "type": "hybrid",
       "role": "frontend_dev",
       "trigger": "frontend_screen_ready",
@@ -233,6 +260,7 @@
     {
       "id": "tech.frontend.e2e",
       "name": "Validar fluxo frontend com teste E2E",
+      "delivery_type": "any",
       "type": "hybrid",
       "role": "frontend_dev",
       "trigger": "frontend_flow_ready",
@@ -243,6 +271,150 @@
       "automation": {
         "current": "Manual: rodar teste e comentar resultado.",
         "next": "CI/Playwright atualiza status da task automaticamente."
+      }
+    },
+    {
+      "id": "tech.platform.environment",
+      "name": "Provisionar ambiente do modulo de plataforma",
+      "delivery_type": "platform",
+      "type": "hybrid",
+      "role": "delivery_engineer",
+      "trigger": "platform_module_planned",
+      "inputs": ["client_name", "module_key", "environment", "infra_template"],
+      "outputs": ["env_url", "env_credentials_evidence"],
+      "artifact": "environment_provisioning_evidence",
+      "clickup": { "space": "02 Implantacao", "list": "Rollouts em andamento", "taskPrefix": "[PLATFORM]" },
+      "automation": {
+        "current": "Manual: provisionar ambiente e registrar evidencia.",
+        "next": "Pipeline de IaC provisiona ambiente e comenta evidencia automaticamente."
+      }
+    },
+    {
+      "id": "tech.platform.migrations",
+      "name": "Rodar migrations e seed do modulo",
+      "delivery_type": "platform",
+      "type": "hybrid",
+      "role": "backend_dev",
+      "trigger": "environment_ready",
+      "inputs": ["env_url", "module_key", "migration_set"],
+      "outputs": ["migration_evidence", "rollback_tested"],
+      "artifact": "migrations_evidence",
+      "clickup": { "space": "02 Implantacao", "list": "Rollouts em andamento", "taskPrefix": "[PLATFORM]" },
+      "automation": {
+        "current": "Manual: rodar migrations + seed + testar rollback.",
+        "next": "CI executa migrations + rollback test e comenta na task."
+      }
+    },
+    {
+      "id": "tech.platform.smoke",
+      "name": "Smoke test tecnico do modulo de plataforma",
+      "delivery_type": "platform",
+      "type": "hybrid",
+      "role": "delivery_engineer",
+      "trigger": "module_deployed_in_env",
+      "inputs": ["env_url", "module_key", "smoke_scenarios"],
+      "outputs": ["smoke_evidence", "task_ready_for_acceptance"],
+      "artifact": "module_smoke_test_evidence",
+      "clickup": { "space": "02 Implantacao", "list": "Rollouts em andamento", "taskPrefix": "[PLATFORM]" },
+      "automation": {
+        "current": "Manual: rodar smoke e anexar log.",
+        "next": "Playwright + smoke API rodam em CI e comentam evidencias."
+      }
+    },
+    {
+      "id": "tech.platform.data.validate",
+      "name": "Comparar dados legado vs plataforma",
+      "delivery_type": "platform",
+      "type": "hybrid",
+      "role": "delivery_engineer",
+      "trigger": "pilot_in_progress",
+      "inputs": ["module_key", "legacy_dataset", "new_dataset", "tolerance_pct"],
+      "outputs": ["legacy_vs_new_comparison", "gaps_list"],
+      "artifact": "legacy_vs_new_comparison",
+      "clickup": { "space": "02 Implantacao", "list": "Pilotos ativos", "taskPrefix": "[PILOT]" },
+      "automation": {
+        "current": "Script ad-hoc executa diff e gera relatorio.",
+        "next": "Job recorrente roda diff e comenta tendencia na task."
+      }
+    },
+    {
+      "id": "tech.platform.observability",
+      "name": "Configurar observabilidade do modulo",
+      "delivery_type": "platform",
+      "type": "hybrid",
+      "role": "backend_dev",
+      "trigger": "module_in_staging",
+      "inputs": ["module_key", "metrics_spec", "alerting_targets"],
+      "outputs": ["dashboard_url", "alerts_active"],
+      "artifact": "platform_observability_setup",
+      "clickup": { "space": "02 Implantacao", "list": "Rollouts em andamento", "taskPrefix": "[PLATFORM]" },
+      "automation": {
+        "current": "Manual: instrumentar logs/metricas e configurar alertas.",
+        "next": "Templates de observabilidade aplicados via IaC."
+      }
+    },
+    {
+      "id": "tech.platform.acceptance",
+      "name": "Coletar aceite humano operacional",
+      "delivery_type": "platform",
+      "type": "manual",
+      "role": "tech_lead",
+      "trigger": "pilot_evidence_ready",
+      "inputs": ["pilot_task_id", "comparison_evidence", "acceptance_criteria_doc"],
+      "outputs": ["human_operational_signoff", "decision"],
+      "artifact": "human_operational_signoff",
+      "clickup": { "space": "04 Saude Operacional", "list": "Aceites operacionais", "taskPrefix": "[ACEITE]" },
+      "automation": {
+        "current": "Manual: coletar assinatura cliente + Tech Lead.",
+        "next": "Form interno gera task e anexa evidencia automaticamente."
+      }
+    },
+    {
+      "id": "tech.platform.canonical",
+      "name": "Promover modulo para CANONICAL",
+      "delivery_type": "platform",
+      "type": "manual",
+      "role": "tech_lead",
+      "trigger": "operational_signoff_approved",
+      "inputs": ["acceptance_task_id", "cutover_date", "legacy_sunset_plan"],
+      "outputs": ["canonical_cutover_note", "module_in_canonical"],
+      "artifact": "canonical_cutover_note",
+      "clickup": { "space": "04 Saude Operacional", "list": "Promocoes de modo", "taskPrefix": "[CANONICAL]" },
+      "automation": {
+        "current": "Manual: aprovar promocao e mover modulo para Fontes canonicas.",
+        "next": "Pipeline movimenta task automaticamente apos aprovacao registrada."
+      }
+    },
+    {
+      "id": "tech.platform.incident.canonical",
+      "name": "Monitorar incidentes pos-canonical",
+      "delivery_type": "platform",
+      "type": "automatic",
+      "role": "system",
+      "trigger": "module_in_canonical",
+      "inputs": ["module_key", "alerting_channels"],
+      "outputs": ["incident_tasks_created", "consistency_report"],
+      "artifact": "operational_consistency_report",
+      "clickup": { "space": "04 Saude Operacional", "list": "Auditorias mensais", "taskPrefix": "[AUDIT]" },
+      "automation": {
+        "current": "Manual: revisar dashboards e abrir incidentes quando necessario.",
+        "next": "Alertas em produto criam tasks de incidente automaticamente."
+      }
+    },
+    {
+      "id": "tech.platform.rollback",
+      "name": "Definir e validar plano de rollback",
+      "delivery_type": "platform",
+      "type": "manual",
+      "role": "tech_lead",
+      "trigger": "module_in_staging",
+      "inputs": ["module_key", "rollback_steps", "rollback_evidence"],
+      "outputs": ["rollback_plan", "rollback_tested"],
+      "artifact": "rollback_plan",
+      "clickup": { "space": "02 Implantacao", "list": "Rollouts em andamento", "taskPrefix": "[PLATFORM]" },
+      "automation": {
+        "current": "Manual: documentar e testar rollback em staging.",
+        "next": "CI valida rollback automaticamente em cada release de schema."
       }
     }
   ],

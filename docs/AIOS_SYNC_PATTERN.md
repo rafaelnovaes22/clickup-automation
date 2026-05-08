@@ -3,6 +3,19 @@
 Como o clickup-automation acompanha o estado de projetos AIOS (multi-modulo) sem acoplar
 o projeto consumidor (ex: SchoolPlatform/EDIX) a esta governança.
 
+> **Delivery type**: este pattern serve para entregas com `delivery_type: platform` (e tambem `hybrid`
+> quando a plataforma tem modulos agentic). O contrato `config/aios-pipeline-contract.json` carrega
+> `delivery_type=platform` por default. Modulos individuais podem override para `agentic_saas`
+> ou `automation` quando aplicavel.
+
+## Lifecycle dos modulos
+
+Modulos `platform` seguem o lifecycle DRAFT -> STAGING -> PILOT -> CANONICAL -> DEPRECATED. O sync
+preenche os 5 statuses (`to do`, `em desenvolvimento`, `em revisão`, `bloqueado`, `complete`)
+da list `Modulos`. A passagem PILOT -> CANONICAL acontece atraves do gate humano em
+`04 Saude Operacional / Aceites operacionais` + `04 Saude Operacional / Promocoes de modo`,
+nao automaticamente apenas pelo merge.
+
 ## Decisao arquitetural: ClickUp **puxa** o estado
 
 O AIOS Server e os agentes que rodam dentro de um projeto consumidor (ex: `SchoolPlatform`) **nao

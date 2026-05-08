@@ -1,9 +1,12 @@
 {
-  "version": "0.1",
+  "version": "0.2",
+  "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
+  "deliveryTypeNotes": "Cada template declara delivery_type. Templates agentic exigem prompts/eval/SHADOW; templates platform exigem rollout/smoke/piloto/aceite.",
   "templates": [
     {
       "key": "agent_request",
       "name": "[TEMPLATE] Solicitacao de agente",
+      "delivery_type": "agentic_saas",
       "target": {
         "space": "05 Institucional Acme",
         "list": "Solicitacoes de agente",
@@ -47,6 +50,7 @@
     {
       "key": "lead_new",
       "name": "[TEMPLATE] Lead novo",
+      "delivery_type": "any",
       "target": {
         "space": "01 Pipeline Comercial",
         "list": "Leads",
@@ -83,6 +87,7 @@
     {
       "key": "diagnostic_sold",
       "name": "[TEMPLATE] Diagnostico Fase 0 vendido",
+      "delivery_type": "any",
       "target": {
         "space": "01 Pipeline Comercial",
         "list": "Diagnosticos Fase 0",
@@ -124,6 +129,7 @@
     {
       "key": "proposal_sent",
       "name": "[TEMPLATE] Proposta enviada",
+      "delivery_type": "any",
       "target": {
         "space": "01 Pipeline Comercial",
         "list": "Propostas",
@@ -164,6 +170,7 @@
     {
       "key": "setup_created",
       "name": "[TEMPLATE] Setup tecnico iniciado",
+      "delivery_type": "any",
       "target": {
         "space": "02 Implantacao",
         "list": "Setups em andamento",
@@ -204,6 +211,7 @@
     {
       "key": "shadow_active",
       "name": "[TEMPLATE] SHADOW ativo",
+      "delivery_type": "agentic_saas",
       "target": {
         "space": "02 Implantacao",
         "list": "SHADOWs ativos",
@@ -242,6 +250,7 @@
     {
       "key": "monthly_audit",
       "name": "[TEMPLATE] Auditoria mensal",
+      "delivery_type": "agentic_saas",
       "target": {
         "space": "04 Saude Operacional",
         "list": "Auditorias mensais",
@@ -279,6 +288,7 @@
     {
       "key": "incident_opened",
       "name": "[TEMPLATE] Incidente operacional",
+      "delivery_type": "any",
       "target": {
         "space": "04 Saude Operacional",
         "list": "Incidentes",
@@ -313,6 +323,211 @@
         "Definir responsavel de mitigacao",
         "Comunicar envolvidos",
         "Escrever postmortem se P1/P2"
+      ]
+    },
+    {
+      "key": "platform_request",
+      "name": "[TEMPLATE] Solicitacao de plataforma",
+      "delivery_type": "platform",
+      "target": {
+        "space": "05 Institucional Acme",
+        "list": "Solicitacoes de plataforma",
+        "desiredStatus": "rascunho"
+      },
+      "description": [
+        "Entidade: Solicitacao de plataforma multi-modulo.",
+        "Quando usar: CEO/comercial quer iniciar a contratacao de uma plataforma SaaS multi-tenant (delivery_type=platform).",
+        "Objetivo: capturar escopo de produto, sistema legado a substituir e numero de modulos sem exigir linguagem tecnica.",
+        "Resultado esperado: status 'escopo pronto' dispara a criacao de Folder/List AIOS e tasks de rollout por modulo.",
+        "Status desejado: rascunho."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "business_problem", "label": "Problema de negocio", "type": "long_text", "required": true, "example": "Controles internos em planilhas, sem rastreabilidade e sem integracao com ERP." },
+        { "key": "legacy_system_to_replace", "label": "Sistema legado a substituir", "type": "text", "required": true, "example": "ERP legado + planilhas Excel" },
+        { "key": "module_count", "label": "Numero estimado de modulos", "type": "number", "required": true, "example": 15 },
+        { "key": "recommended_platform_stage", "label": "Stage inicial sugerido", "type": "select", "required": true, "options": ["DRAFT", "STAGING", "PILOT"] },
+        { "key": "subscription_fee", "label": "Mensalidade contratada (R$)", "type": "currency", "required": false, "example": 5000 },
+        { "key": "setup_fee", "label": "Setup fee (R$)", "type": "currency", "required": false, "example": 15000 },
+        { "key": "ai_enabled", "label": "Plataforma usa IA?", "type": "select", "required": true, "options": ["sim", "nao"] },
+        { "key": "tech_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "Delivery" },
+        { "key": "delivery_due_date", "label": "Prazo de entrega", "type": "date", "required": true, "example": "2026-12-31" },
+        { "key": "repository_url", "label": "Repositorio", "type": "url", "required": false, "example": "https://github.com/acme/acme-platform" },
+        { "key": "environment", "label": "Ambiente inicial", "type": "select", "required": true, "options": ["dev", "staging", "prod"] }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Solicitacao de plataforma" },
+        { "trigger": "custom_fields preenchidos", "action": "Validar escopo minimo (empresa, sistema legado, modulos)" },
+        { "trigger": "status=escopo pronto", "action": "Disparar geracao de Folder AIOS + tasks de rollout por modulo" },
+        { "trigger": "ai_enabled=sim", "action": "Exigir campo observability_url e checklist de prompts/eval em cada rollout" }
+      ],
+      "subtasks": [
+        "Preencher empresa, problema e sistema legado",
+        "Estimar numero de modulos e stage inicial",
+        "Confirmar responsavel tecnico e prazo",
+        "Validar stage inicial com Tech Lead",
+        "Marcar status como escopo pronto"
+      ]
+    },
+    {
+      "key": "platform_rollout",
+      "name": "[TEMPLATE] Plataforma - rollout",
+      "delivery_type": "platform",
+      "target": {
+        "space": "02 Implantacao",
+        "list": "Rollouts em andamento",
+        "desiredStatus": "draft"
+      },
+      "description": [
+        "Entidade: Rollout de plataforma.",
+        "Quando usar: contratacao de plataforma multi-modulo (delivery_type=platform) assinada e setup fee confirmado.",
+        "Objetivo: provisionar ambiente, rodar migrations, smoke test e levar modulo para STAGING.",
+        "Resultado esperado: modulo em STAGING com criterios de aceite operacional definidos, pronto para abrir piloto.",
+        "Status desejado: draft."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
+        { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
+        { "key": "proposal_task_id", "label": "Task da proposta", "type": "clickup_task_id", "required": true, "example": "86prop123" },
+        { "key": "rollout_owner", "label": "Responsavel pelo rollout", "type": "person_or_text", "required": true, "example": "Delivery" },
+        { "key": "environment", "label": "Ambiente", "type": "select", "required": true, "options": ["dev", "staging", "prod"] },
+        { "key": "kickoff_date", "label": "Data do kickoff", "type": "datetime", "required": true, "example": "2026-05-06T10:00:00-03:00" },
+        { "key": "target_staging_date", "label": "Data alvo para STAGING", "type": "date", "required": true, "example": "2026-05-15" },
+        { "key": "ai_enabled", "label": "Modulo usa IA?", "type": "select", "required": false, "options": ["sim", "nao"] }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Rollout do modulo" },
+        { "trigger": "task_created", "action": "Criar 5 subtasks padrao de rollout" },
+        { "trigger": "target_staging_date preenchido", "action": "Definir due date do rollout" },
+        { "trigger": "status=staging", "action": "Disparar template platform_pilot" }
+      ],
+      "subtasks": [
+        "Provisionar ambiente",
+        "Rodar migrations e seed inicial",
+        "Configurar observabilidade (logs, metricas, alertas)",
+        "Smoke test tecnico do modulo",
+        "Definir criterios de aceite operacional"
+      ]
+    },
+    {
+      "key": "platform_pilot",
+      "name": "[TEMPLATE] Plataforma - piloto ativo",
+      "delivery_type": "platform",
+      "target": {
+        "space": "02 Implantacao",
+        "list": "Pilotos ativos",
+        "desiredStatus": "piloto aberto"
+      },
+      "description": [
+        "Entidade: Plataforma ou modulo em PILOT.",
+        "Quando usar: STAGING aprovado e criterios de aceite operacional definidos.",
+        "Objetivo: rodar contra usuarios reais, comparar dados legado vs nova e coletar evidencia de qualidade operacional.",
+        "Resultado esperado: aceite humano operacional + decisao de promocao para CANONICAL.",
+        "Status desejado: piloto aberto."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
+        { "key": "rollout_task_id", "label": "Task do rollout", "type": "clickup_task_id", "required": true, "example": "86roll123" },
+        { "key": "pilot_started_at", "label": "Piloto iniciado em", "type": "datetime", "required": true, "example": "2026-05-15T09:00:00-03:00" },
+        { "key": "pilot_user_count", "label": "Usuarios participantes", "type": "number", "required": true, "example": 5 },
+        { "key": "legacy_system_name", "label": "Sistema legado em paralelo", "type": "text", "required": false, "example": "Sistema X" },
+        { "key": "comparison_target_error_pct", "label": "Erro maximo aceito vs legado (%)", "type": "percent", "required": true, "example": 1 },
+        { "key": "ai_enabled", "label": "Modulo usa IA?", "type": "select", "required": false, "options": ["sim", "nao"] },
+        { "key": "observability_url", "label": "Link de observabilidade", "type": "url", "required": false, "example": "https://..." }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Piloto" },
+        { "trigger": "task_created", "action": "Criar 5 subtasks padrao de piloto" },
+        { "trigger": "comparacao_legado_concluida", "action": "Disparar template platform_acceptance" },
+        { "trigger": "ai_enabled=sim", "action": "Exigir prompts versionados, eval suite e Langfuse antes de aceite" }
+      ],
+      "subtasks": [
+        "Confirmar perfil de usuarios participantes",
+        "Rodar comparacao legado vs plataforma",
+        "Coletar feedback estruturado dos usuarios",
+        "Verificar observabilidade (incidentes, latencia, erros)",
+        "Preparar dossie de aceite humano"
+      ]
+    },
+    {
+      "key": "platform_acceptance",
+      "name": "[TEMPLATE] Plataforma - aceite operacional",
+      "delivery_type": "platform",
+      "target": {
+        "space": "04 Saude Operacional",
+        "list": "Aceites operacionais",
+        "desiredStatus": "aguardando"
+      },
+      "description": [
+        "Entidade: Aceite operacional.",
+        "Quando usar: piloto rodou, comparacao legado vs nova esta dentro do criterio e ha dossie pronto para aceite humano.",
+        "Objetivo: registrar formalmente o aceite humano antes de promover modulo para CANONICAL.",
+        "Resultado esperado: aceite aprovado por usuario interno do cliente + Tech Lead, com evidencia anexada.",
+        "Status desejado: aguardando."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
+        { "key": "pilot_task_id", "label": "Task do piloto", "type": "clickup_task_id", "required": true, "example": "86pilot123" },
+        { "key": "acceptance_criteria_doc", "label": "Documento de criterios de aceite", "type": "url", "required": true, "example": "https://..." },
+        { "key": "comparison_evidence", "label": "Evidencia comparacao legado x nova", "type": "url", "required": true, "example": "https://..." },
+        { "key": "client_signoff_owner", "label": "Quem assina pelo cliente", "type": "text", "required": true, "example": "Maria Silva (CFO Acme)" },
+        { "key": "tech_signoff_owner", "label": "Quem assina pela Acme", "type": "person_or_text", "required": true, "example": "Tech Lead" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Aceite operacional" },
+        { "trigger": "status=aprovado", "action": "Disparar template platform_canonical_promotion" },
+        { "trigger": "status=rejeitado", "action": "Voltar piloto para 'comparando legado vs nova' e listar gaps" }
+      ],
+      "subtasks": [
+        "Validar criterios de aceite com cliente",
+        "Anexar evidencia de comparacao legado x nova",
+        "Coletar assinatura de aceite do cliente",
+        "Coletar assinatura de aceite do Tech Lead",
+        "Registrar decisao na task"
+      ]
+    },
+    {
+      "key": "platform_canonical_promotion",
+      "name": "[TEMPLATE] Plataforma - promocao para CANONICAL",
+      "delivery_type": "platform",
+      "target": {
+        "space": "04 Saude Operacional",
+        "list": "Promocoes de modo",
+        "desiredStatus": "solicitada"
+      },
+      "description": [
+        "Entidade: Promocao PILOT -> CANONICAL.",
+        "Quando usar: aceite operacional aprovado e modulo pronto para virar fonte canonica da operacao.",
+        "Objetivo: registrar decisao formal e mover modulo para 'Fontes canonicas'.",
+        "Resultado esperado: modulo em CANONICAL, sistema legado paralelo agendado para sunset.",
+        "Status desejado: solicitada."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
+        { "key": "acceptance_task_id", "label": "Task do aceite operacional", "type": "clickup_task_id", "required": true, "example": "86acc123" },
+        { "key": "cutover_date", "label": "Data planejada de cutover", "type": "date", "required": true, "example": "2026-06-01" },
+        { "key": "legacy_sunset_plan", "label": "Plano de sunset do legado", "type": "long_text", "required": false, "example": "Manter legado em leitura por 30 dias para auditoria, desligar em 2026-07-01." }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Promocao para CANONICAL" },
+        { "trigger": "status=aprovada", "action": "Mover modulo para Fontes canonicas no Space 03 Clientes" },
+        { "trigger": "status=aprovada", "action": "Agendar auditoria operacional mensal de consistencia canonical x legado" }
+      ],
+      "subtasks": [
+        "Validar plano de cutover com cliente",
+        "Confirmar plano de sunset do legado",
+        "Aprovar promocao com Tech Lead + CEO",
+        "Mover modulo para Fontes canonicas",
+        "Comunicar time e cliente da entrada em CANONICAL"
       ]
     }
   ]

@@ -8,6 +8,8 @@ Este documento e gerado a partir de `config/tech-operational-repository.json` e 
 - Atividades manuais registram decisao humana; atividades automaticas registram execucao do sistema.
 - Codigo, PR, deploy, teste e smoke test devem apontar para a task tecnica correspondente.
 - O ClickUp mostra execucao viva; este repositorio define o contrato operacional.
+- Atividades de agente/IA (prompts, evals, traces) so sao obrigatorias para delivery_type=agentic_saas ou ai_enabled=true.
+- Atividades de plataforma (rollout, smoke, piloto, aceite, CANONICAL) so sao obrigatorias para delivery_type=platform ou blocos platform em hybrid.
 
 ## Fluxo de status
 
@@ -60,6 +62,7 @@ Este documento e gerado a partir de `config/tech-operational-repository.json` e 
 ### Revisar escopo tecnico do diagnostico
 
 - ID: `tech.scope.review`
+- Delivery type: `any`
 - Tipo: `manual`
 - Papel: `tech_lead`
 - Gatilho: `diagnostic_completed`
@@ -81,6 +84,7 @@ Proxima automacao: Validar automaticamente se plataformas do diagnostico existem
 ### Gerar backlog tecnico por plataforma
 
 - ID: `tech.task.generate`
+- Delivery type: `any`
 - Tipo: `automatic`
 - Papel: `system`
 - Gatilho: `tech_scope_identified`
@@ -103,6 +107,7 @@ Proxima automacao: Expor como endpoint interno POST /admin/tech-scope.
 ### Linkar codigo a tarefa tecnica
 
 - ID: `tech.code.link`
+- Delivery type: `any`
 - Tipo: `hybrid`
 - Papel: `backend_dev`
 - Gatilho: `commit_or_pr_created`
@@ -124,6 +129,7 @@ Proxima automacao: Webhook GitHub identifica task_key e comenta automaticamente 
 ### Ler progresso tecnico por cliente
 
 - ID: `tech.progress.read`
+- Delivery type: `any`
 - Tipo: `automatic`
 - Papel: `system`
 - Gatilho: `daily_or_on_demand`
@@ -144,6 +150,7 @@ Proxima automacao: Gerar comentario diario no cliente ou dashboard executivo.
 ### Desenhar agente de IA do produto
 
 - ID: `tech.agent.design`
+- Delivery type: `agentic_saas`
 - Tipo: `hybrid`
 - Papel: `ai_engineer`
 - Gatilho: `ai_agent_selected`
@@ -167,6 +174,7 @@ Proxima automacao: Gerar automaticamente documento de especificacao do agente a 
 ### Avaliar qualidade do agente
 
 - ID: `tech.agent.evaluate`
+- Delivery type: `agentic_saas`
 - Tipo: `hybrid`
 - Papel: `ai_engineer`
 - Gatilho: `agent_implementation_ready`
@@ -188,6 +196,7 @@ Proxima automacao: Rodar avaliacoes automaticamente no CI e atualizar status no 
 ### Registrar evidencia de smoke test
 
 - ID: `tech.smoke.evidence`
+- Delivery type: `any`
 - Tipo: `hybrid`
 - Papel: `delivery_engineer`
 - Gatilho: `smoke_test_completed`
@@ -209,6 +218,7 @@ Proxima automacao: Teste automatizado comenta resultado e move status para em re
 ### Validar entrega visual frontend
 
 - ID: `tech.frontend.visual.review`
+- Delivery type: `any`
 - Tipo: `hybrid`
 - Papel: `frontend_dev`
 - Gatilho: `frontend_screen_ready`
@@ -231,6 +241,7 @@ Proxima automacao: Playwright captura screenshots e comenta automaticamente na t
 ### Validar fluxo frontend com teste E2E
 
 - ID: `tech.frontend.e2e`
+- Delivery type: `any`
 - Tipo: `hybrid`
 - Papel: `frontend_dev`
 - Gatilho: `frontend_flow_ready`
@@ -249,11 +260,211 @@ Saidas:
 Automacao atual: Manual: rodar teste e comentar resultado.
 Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 
+### Provisionar ambiente do modulo de plataforma
+
+- ID: `tech.platform.environment`
+- Delivery type: `platform`
+- Tipo: `hybrid`
+- Papel: `delivery_engineer`
+- Gatilho: `platform_module_planned`
+- Onde: `02 Implantacao / Rollouts em andamento`
+- Artefato: `environment_provisioning_evidence`
+
+Entradas:
+- `client_name`
+- `module_key`
+- `environment`
+- `infra_template`
+
+Saidas:
+- `env_url`
+- `env_credentials_evidence`
+
+Automacao atual: Manual: provisionar ambiente e registrar evidencia.
+Proxima automacao: Pipeline de IaC provisiona ambiente e comenta evidencia automaticamente.
+
+### Rodar migrations e seed do modulo
+
+- ID: `tech.platform.migrations`
+- Delivery type: `platform`
+- Tipo: `hybrid`
+- Papel: `backend_dev`
+- Gatilho: `environment_ready`
+- Onde: `02 Implantacao / Rollouts em andamento`
+- Artefato: `migrations_evidence`
+
+Entradas:
+- `env_url`
+- `module_key`
+- `migration_set`
+
+Saidas:
+- `migration_evidence`
+- `rollback_tested`
+
+Automacao atual: Manual: rodar migrations + seed + testar rollback.
+Proxima automacao: CI executa migrations + rollback test e comenta na task.
+
+### Smoke test tecnico do modulo de plataforma
+
+- ID: `tech.platform.smoke`
+- Delivery type: `platform`
+- Tipo: `hybrid`
+- Papel: `delivery_engineer`
+- Gatilho: `module_deployed_in_env`
+- Onde: `02 Implantacao / Rollouts em andamento`
+- Artefato: `module_smoke_test_evidence`
+
+Entradas:
+- `env_url`
+- `module_key`
+- `smoke_scenarios`
+
+Saidas:
+- `smoke_evidence`
+- `task_ready_for_acceptance`
+
+Automacao atual: Manual: rodar smoke e anexar log.
+Proxima automacao: Playwright + smoke API rodam em CI e comentam evidencias.
+
+### Comparar dados legado vs plataforma
+
+- ID: `tech.platform.data.validate`
+- Delivery type: `platform`
+- Tipo: `hybrid`
+- Papel: `delivery_engineer`
+- Gatilho: `pilot_in_progress`
+- Onde: `02 Implantacao / Pilotos ativos`
+- Artefato: `legacy_vs_new_comparison`
+
+Entradas:
+- `module_key`
+- `legacy_dataset`
+- `new_dataset`
+- `tolerance_pct`
+
+Saidas:
+- `legacy_vs_new_comparison`
+- `gaps_list`
+
+Automacao atual: Script ad-hoc executa diff e gera relatorio.
+Proxima automacao: Job recorrente roda diff e comenta tendencia na task.
+
+### Configurar observabilidade do modulo
+
+- ID: `tech.platform.observability`
+- Delivery type: `platform`
+- Tipo: `hybrid`
+- Papel: `backend_dev`
+- Gatilho: `module_in_staging`
+- Onde: `02 Implantacao / Rollouts em andamento`
+- Artefato: `platform_observability_setup`
+
+Entradas:
+- `module_key`
+- `metrics_spec`
+- `alerting_targets`
+
+Saidas:
+- `dashboard_url`
+- `alerts_active`
+
+Automacao atual: Manual: instrumentar logs/metricas e configurar alertas.
+Proxima automacao: Templates de observabilidade aplicados via IaC.
+
+### Coletar aceite humano operacional
+
+- ID: `tech.platform.acceptance`
+- Delivery type: `platform`
+- Tipo: `manual`
+- Papel: `tech_lead`
+- Gatilho: `pilot_evidence_ready`
+- Onde: `04 Saude Operacional / Aceites operacionais`
+- Artefato: `human_operational_signoff`
+
+Entradas:
+- `pilot_task_id`
+- `comparison_evidence`
+- `acceptance_criteria_doc`
+
+Saidas:
+- `human_operational_signoff`
+- `decision`
+
+Automacao atual: Manual: coletar assinatura cliente + Tech Lead.
+Proxima automacao: Form interno gera task e anexa evidencia automaticamente.
+
+### Promover modulo para CANONICAL
+
+- ID: `tech.platform.canonical`
+- Delivery type: `platform`
+- Tipo: `manual`
+- Papel: `tech_lead`
+- Gatilho: `operational_signoff_approved`
+- Onde: `04 Saude Operacional / Promocoes de modo`
+- Artefato: `canonical_cutover_note`
+
+Entradas:
+- `acceptance_task_id`
+- `cutover_date`
+- `legacy_sunset_plan`
+
+Saidas:
+- `canonical_cutover_note`
+- `module_in_canonical`
+
+Automacao atual: Manual: aprovar promocao e mover modulo para Fontes canonicas.
+Proxima automacao: Pipeline movimenta task automaticamente apos aprovacao registrada.
+
+### Monitorar incidentes pos-canonical
+
+- ID: `tech.platform.incident.canonical`
+- Delivery type: `platform`
+- Tipo: `automatic`
+- Papel: `system`
+- Gatilho: `module_in_canonical`
+- Onde: `04 Saude Operacional / Auditorias mensais`
+- Artefato: `operational_consistency_report`
+
+Entradas:
+- `module_key`
+- `alerting_channels`
+
+Saidas:
+- `incident_tasks_created`
+- `consistency_report`
+
+Automacao atual: Manual: revisar dashboards e abrir incidentes quando necessario.
+Proxima automacao: Alertas em produto criam tasks de incidente automaticamente.
+
+### Definir e validar plano de rollback
+
+- ID: `tech.platform.rollback`
+- Delivery type: `platform`
+- Tipo: `manual`
+- Papel: `tech_lead`
+- Gatilho: `module_in_staging`
+- Onde: `02 Implantacao / Rollouts em andamento`
+- Artefato: `rollback_plan`
+
+Entradas:
+- `module_key`
+- `rollback_steps`
+- `rollback_evidence`
+
+Saidas:
+- `rollback_plan`
+- `rollback_tested`
+
+Automacao atual: Manual: documentar e testar rollback em staging.
+Proxima automacao: CI valida rollback automaticamente em cada release de schema.
+
 ## Plataformas e tarefas automaticas
 
 ### WhatsApp
 
 - Key: `whatsapp`
+- Delivery types aplicaveis: `agentic_saas`, `platform`, `automation`, `hybrid`
 - Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
@@ -266,6 +477,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### Email
 
 - Key: `email`
+- Delivery types aplicaveis: `agentic_saas`, `platform`, `automation`, `hybrid`
 - Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
@@ -277,6 +489,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### CRM
 
 - Key: `crm`
+- Delivery types aplicaveis: `agentic_saas`, `platform`, `automation`, `hybrid`
 - Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
@@ -288,6 +501,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### Backend Node
 
 - Key: `node_backend`
+- Delivery types aplicaveis: `agentic_saas`, `platform`, `automation`, `hybrid`
 - Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
@@ -300,7 +514,9 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### Agente de IA
 
 - Key: `ai_agent`
+- Delivery types aplicaveis: `agentic_saas`, `hybrid`
 - Dono padrao: `ai_engineer`
+- IA-enabled: sim (exige prompts/eval/observabilidade de IA)
 
 | Task | Artefato | Done when |
 |---|---|---|
@@ -318,6 +534,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### Frontend Web
 
 - Key: `frontend_web`
+- Delivery types aplicaveis: `agentic_saas`, `platform`, `automation`, `hybrid`
 - Dono padrao: `frontend_dev`
 
 | Task | Artefato | Done when |
@@ -332,6 +549,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### Dashboard Frontend
 
 - Key: `frontend_dashboard`
+- Delivery types aplicaveis: `agentic_saas`, `platform`, `automation`, `hybrid`
 - Dono padrao: `frontend_dev`
 
 | Task | Artefato | Done when |
@@ -344,6 +562,7 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 ### API externa
 
 - Key: `external_api`
+- Delivery types aplicaveis: `agentic_saas`, `platform`, `automation`, `hybrid`
 - Dono padrao: `backend_dev`
 
 | Task | Artefato | Done when |
@@ -351,6 +570,25 @@ Proxima automacao: CI/Playwright atualiza status da task automaticamente.
 | Documentar contrato da API externa | `external_api_contract` | Auth, endpoints, rate limits e erros conhecidos documentados. |
 | Implementar client da API externa | `api_client_module` | Client cobre chamadas necessarias com retry e tratamento de erro. |
 | Validar integracao com API externa | `integration_test_result` | Fluxo principal passa contra sandbox ou credencial real autorizada. |
+
+### Modulo de plataforma
+
+- Key: `platform_module`
+- Delivery types aplicaveis: `platform`, `hybrid`
+- Dono padrao: `delivery_engineer`
+
+| Task | Artefato | Done when |
+|---|---|---|
+| Provisionar ambiente do modulo | `environment_provisioning_evidence` | Ambiente isolado provisionado com configs do cliente e acesso restrito. |
+| Rodar migrations e seed | `migrations_evidence` | Schema atual aplicado e seed inicial inserido. Rollback testado. |
+| Smoke test tecnico do modulo | `module_smoke_test_evidence` | Fluxos criticos do modulo respondem sem erro em ambiente isolado. |
+| Validar consistencia de dados vs legado | `legacy_vs_new_comparison` | Comparacao automatizada legado x nova roda dentro do erro maximo aceito. |
+| Configurar observabilidade do modulo | `platform_observability_setup` | Logs estruturados, metricas e alertas ativados com runbook minimo. |
+| Documentar criterios de aceite operacional | `operational_acceptance_criteria` | Criterios escritos e revisados com cliente; condicao de aceite explicita. |
+| Operacao assistida em piloto com usuario interno | `pilot_open_note` | Modulo rodando contra usuarios reais em paralelo ao legado, com canal de feedback. |
+| Coletar aceite humano operacional | `human_operational_signoff` | Cliente e Tech Lead assinam aceite com base nos criterios documentados. |
+| Promover modulo para CANONICAL | `canonical_cutover_note` | Modulo virou fonte canonica; legado paralelo desligado ou agendado. |
+| Definir e validar plano de rollback | `rollback_plan` | Procedimento de rollback documentado e testado em staging. |
 
 ## Backlog de automacao
 

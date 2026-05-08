@@ -9,11 +9,19 @@ export const agentRequestTarget = {
   list: "Solicitacoes de agente"
 };
 
+export const platformRequestTarget = {
+  space: "05 Institucional Acme",
+  list: "Solicitacoes de plataforma"
+};
+
 export const generatedStatus = "gerado";
+export const generatingStatus = "gerando";
 export const readyStatus = "escopo pronto";
 
 const platformCatalogPath = resolve(root, "config/tech-platform-catalog.json");
 const contractPath = resolve(root, "config/tech-automation-contract.json");
+
+const IDEMPOTENCY_COMMENT_PREFIX = "[idempotency-lock] generation_in_progress=";
 
 export async function loadTechConfig() {
   return {
@@ -56,6 +64,7 @@ export function agentRequestToPayload(task) {
   const technicalPlatforms = splitPlatforms(customFieldValue(task, "Plataformas tecnicas"));
 
   return {
+    delivery_type: "agentic_saas",
     client_name: clientName,
     client_task_id: task.id,
     technical_platforms: technicalPlatforms,
@@ -93,9 +102,34 @@ export async function existingTaskNames(clickUp, listId) {
   return new Set(tasks.map((task) => task.name));
 }
 
-export async function createTechTasksFromPayload(clickUp, teamId, input, { dryRun = false } = {}) {
+async function hasIdempotencyLock(clickUp, taskId, idempotencyKey) {
+  const data = await clickUp.request("GET", `/task/${taskId}/comment`).catch(() => null);
+  const comments = data?.comments ?? [];
+  const marker = `${IDEMPOTENCY_COMMENT_PREFIX}${idempotencyKey}`;
+  return comments.some((comment) => {
+    const text = comment?.comment_text ?? comment?.comment ?? "";
+    return typeof text === "string" && text.includes(marker);
+  });
+}
+
+async function placeIdempotencyLock(clickUp, taskId, idempotencyKey) {
+  await clickUp.request("POST", `/task/${taskId}/comment`, {
+    comment_text: `${IDEMPOTENCY_COMMENT_PREFIX}${idempotencyKey}`,
+    notify_all: false
+  });
+}
+
+export async function createTechTasksFromPayload(clickUp, teamId, input, { dryRun = false, idempotencyKey = null } = {}) {
   const { platformCatalog, contract } = await loadTechConfig();
   validatePayload(input, contract);
+
+  if (!dryRun && idempotencyKey && input.client_task_id) {
+    const locked = await hasIdempotencyLock(clickUp, input.client_task_id, idempotencyKey);
+    if (locked) {
+      return { created: [], existing: [], planned: 0, alreadyGenerating: true };
+    }
+    await placeIdempotencyLock(clickUp, input.client_task_id, idempotencyKey);
+  }
 
   const platforms = selectedPlatforms(input, platformCatalog);
   const planned = platforms.flatMap((platform) =>
@@ -109,7 +143,8 @@ export async function createTechTasksFromPayload(clickUp, teamId, input, { dryRu
   const result = {
     created: [],
     existing: [],
-    planned: planned.length
+    planned: planned.length,
+    alreadyGenerating: false
   };
 
   for (const item of planned) {
@@ -126,7 +161,7 @@ export async function createTechTasksFromPayload(clickUp, teamId, input, { dryRu
       name,
       description: taskDescription(input, item.platform, item.task),
       due_date: Date.parse(`${input.delivery_due_date}T23:59:59.000Z`),
-      tags: ["ia-gerado", "revisao-humana"]
+      tags: ["ia-gerado", "revisao-humana", `delivery:${input.delivery_type ?? "agentic_saas"}`]
     });
   }
 

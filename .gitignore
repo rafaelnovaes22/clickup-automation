@@ -11,3 +11,6 @@ __pycache__/
 # OS/editor noise
 .DS_Store
 Thumbs.db
+
+# Claude Code (configuracao local da maquina do dev, nao versionar)
+.claude/

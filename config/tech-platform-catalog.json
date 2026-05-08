@@ -1,11 +1,14 @@
 {
-  "version": "0.1",
-  "purpose": "Catalogo tecnico para gerar tarefas automaticamente a partir das plataformas identificadas no diagnostico/setup.",
+  "version": "0.2",
+  "purpose": "Catalogo tecnico para gerar tarefas automaticamente a partir das plataformas/modulos identificados no diagnostico/setup.",
   "statusFlow": ["a fazer", "em desenvolvimento", "em revisao", "bloqueado", "concluido"],
+  "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
+  "platformDeliveryNotes": "Cada plataforma tecnica declara delivery_types em que ela faz sentido. Ex: ai_agent so existe em agentic_saas/hybrid/ai_enabled. platform_module so existe em platform/hybrid.",
   "platforms": [
     {
       "key": "whatsapp",
       "label": "WhatsApp",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
       "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
@@ -37,6 +40,7 @@
     {
       "key": "email",
       "label": "Email",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
       "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
@@ -62,6 +66,7 @@
     {
       "key": "crm",
       "label": "CRM",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
       "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
@@ -87,6 +92,7 @@
     {
       "key": "node_backend",
       "label": "Backend Node",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
       "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
@@ -118,6 +124,8 @@
     {
       "key": "ai_agent",
       "label": "Agente de IA",
+      "delivery_types": ["agentic_saas", "hybrid"],
+      "ai_enabled": true,
       "defaultOwnerRole": "ai_engineer",
       "tasks": [
         {
@@ -185,6 +193,7 @@
     {
       "key": "frontend_web",
       "label": "Frontend Web",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
       "defaultOwnerRole": "frontend_dev",
       "tasks": [
         {
@@ -228,6 +237,7 @@
     {
       "key": "frontend_dashboard",
       "label": "Dashboard Frontend",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
       "defaultOwnerRole": "frontend_dev",
       "tasks": [
         {
@@ -259,6 +269,7 @@
     {
       "key": "external_api",
       "label": "API externa",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
       "defaultOwnerRole": "backend_dev",
       "tasks": [
         {
@@ -278,6 +289,74 @@
           "title": "Validar integracao com API externa",
           "artifact": "integration_test_result",
           "doneWhen": "Fluxo principal passa contra sandbox ou credencial real autorizada."
+        }
+      ]
+    },
+    {
+      "key": "platform_module",
+      "label": "Modulo de plataforma",
+      "delivery_types": ["platform", "hybrid"],
+      "defaultOwnerRole": "delivery_engineer",
+      "tasks": [
+        {
+          "key": "platform_environment_setup",
+          "title": "Provisionar ambiente do modulo",
+          "artifact": "environment_provisioning_evidence",
+          "doneWhen": "Ambiente isolado provisionado com configs do cliente e acesso restrito."
+        },
+        {
+          "key": "platform_migrations",
+          "title": "Rodar migrations e seed",
+          "artifact": "migrations_evidence",
+          "doneWhen": "Schema atual aplicado e seed inicial inserido. Rollback testado."
+        },
+        {
+          "key": "platform_smoke_test",
+          "title": "Smoke test tecnico do modulo",
+          "artifact": "module_smoke_test_evidence",
+          "doneWhen": "Fluxos criticos do modulo respondem sem erro em ambiente isolado."
+        },
+        {
+          "key": "platform_data_validation",
+          "title": "Validar consistencia de dados vs legado",
+          "artifact": "legacy_vs_new_comparison",
+          "doneWhen": "Comparacao automatizada legado x nova roda dentro do erro maximo aceito."
+        },
+        {
+          "key": "platform_observability",
+          "title": "Configurar observabilidade do modulo",
+          "artifact": "platform_observability_setup",
+          "doneWhen": "Logs estruturados, metricas e alertas ativados com runbook minimo."
+        },
+        {
+          "key": "platform_acceptance_criteria",
+          "title": "Documentar criterios de aceite operacional",
+          "artifact": "operational_acceptance_criteria",
+          "doneWhen": "Criterios escritos e revisados com cliente; condicao de aceite explicita."
+        },
+        {
+          "key": "platform_pilot_run",
+          "title": "Operacao assistida em piloto com usuario interno",
+          "artifact": "pilot_open_note",
+          "doneWhen": "Modulo rodando contra usuarios reais em paralelo ao legado, com canal de feedback."
+        },
+        {
+          "key": "platform_human_signoff",
+          "title": "Coletar aceite humano operacional",
+          "artifact": "human_operational_signoff",
+          "doneWhen": "Cliente e Tech Lead assinam aceite com base nos criterios documentados."
+        },
+        {
+          "key": "platform_canonical_cutover",
+          "title": "Promover modulo para CANONICAL",
+          "artifact": "canonical_cutover_note",
+          "doneWhen": "Modulo virou fonte canonica; legado paralelo desligado ou agendado."
+        },
+        {
+          "key": "platform_rollback_plan",
+          "title": "Definir e validar plano de rollback",
+          "artifact": "rollback_plan",
+          "doneWhen": "Procedimento de rollback documentado e testado em staging."
         }
       ]
     }

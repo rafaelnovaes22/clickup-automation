@@ -56,10 +56,21 @@ export async function findOrCreateModuleList(clickUp, folderId, listName, { dryR
   return { list: created, created: true };
 }
 
-export async function listAllTasks(clickUp, listId, { includeSubtasks = true, includeClosed = true } = {}) {
-  const url = `/list/${listId}/task?archived=false&subtasks=${includeSubtasks}&include_closed=${includeClosed}`;
-  const data = await clickUp.request("GET", url);
-  return data.tasks ?? [];
+export async function listAllTasks(clickUp, listId, { includeSubtasks = true, includeClosed = true, pageSize = 100, maxPages = 50 } = {}) {
+  const all = [];
+  for (let page = 0; page < maxPages; page += 1) {
+    const params = new URLSearchParams({
+      archived: "false",
+      subtasks: String(includeSubtasks),
+      include_closed: String(includeClosed),
+      page: String(page)
+    });
+    const data = await clickUp.request("GET", `/list/${listId}/task?${params.toString()}`);
+    const batch = data.tasks ?? [];
+    all.push(...batch);
+    if (batch.length < pageSize) break;
+  }
+  return all;
 }
 
 export function indexParentsByModuleKey(tasks) {

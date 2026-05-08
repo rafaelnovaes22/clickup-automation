@@ -1,42 +1,113 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "event": "diagnostic_completed",
-  "purpose": "Converter achados do Diagnostico Fase 0 em proposta, atividades e artefatos de implantacao.",
+  "purpose": "Converter achados do Diagnostico Fase 0 em proposta, atividades e artefatos de implantacao. Suporta multiplos delivery_types.",
+  "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
   "requiredFields": [
     "company_name",
     "diagnostic_task_id",
     "selected_candidate.name",
     "selected_candidate.outcome_definition",
     "selected_candidate.sku",
-    "selected_candidate.unit_economics",
-    "selected_candidate.recommended_mode",
+    "selected_candidate.delivery_type",
     "selected_candidate.technical_platforms",
     "decision"
   ],
   "candidateFields": [
     { "key": "name", "type": "text", "required": true },
     { "key": "problem", "type": "long_text", "required": true },
-    { "key": "outcome_definition", "type": "long_text", "required": true },
-    { "key": "input_channel", "type": "select", "required": true, "options": ["whatsapp", "email", "webhook", "form", "outro"] },
-    { "key": "human_cost_baseline", "type": "currency_brl", "required": true },
-    { "key": "estimated_agent_cost", "type": "currency_brl", "required": true },
-    { "key": "price_per_outcome", "type": "currency_brl", "required": true },
-    { "key": "monthly_cap", "type": "currency_brl", "required": true },
-    { "key": "sla_threshold", "type": "percent", "required": true },
-    { "key": "recommended_mode", "type": "select", "required": true, "options": ["SHADOW", "ASSISTED", "AUTONOMOUS"] },
+    { "key": "outcome_definition", "type": "long_text", "required": true,
+      "description": "Para agentic_saas: outcome cobrado por evento. Para platform/automation: outcome operacional verificavel (ex: modulo aceito, smoke verde, erro <X% vs legado)." },
+    { "key": "delivery_type", "type": "select", "required": true,
+      "options": ["agentic_saas", "platform", "automation", "hybrid"],
+      "description": "Define lifecycle, listas e atividades obrigatorias da entrega." },
+    { "key": "ai_enabled", "type": "boolean", "required": false,
+      "description": "True se o modulo/entrega usa IA por dentro mesmo nao sendo agentic_saas. Quando true, exige prompts versionados, eval suite e observabilidade de inferencia." },
+    { "key": "input_channel", "type": "select", "required": false, "options": ["whatsapp", "email", "webhook", "form", "outro"],
+      "description": "Obrigatorio para agentic_saas. Opcional para platform/automation." },
+    { "key": "human_cost_baseline", "type": "currency_brl", "required": false,
+      "description": "Obrigatorio para agentic_saas (ROI por outcome). Opcional para platform/automation." },
+    { "key": "estimated_agent_cost", "type": "currency_brl", "required": false,
+      "description": "Obrigatorio para agentic_saas. Opcional caso contrario." },
+    { "key": "price_per_outcome", "type": "currency_brl", "required": false,
+      "description": "Obrigatorio para agentic_saas. Nao se aplica a platform/automation." },
+    { "key": "monthly_cap", "type": "currency_brl", "required": false,
+      "description": "Obrigatorio para agentic_saas. Nao se aplica a platform/automation." },
+    { "key": "platform_subscription_fee", "type": "currency_brl", "required": false,
+      "description": "Obrigatorio para platform. Cobranca recorrente de plataforma." },
+    { "key": "platform_setup_fee", "type": "currency_brl", "required": false,
+      "description": "Recomendado para platform. Pagamento unico de setup." },
+    { "key": "sla_threshold", "type": "percent", "required": false,
+      "description": "Obrigatorio para agentic_saas. Opcional para platform (vira aceite operacional)." },
+    { "key": "recommended_agentic_mode", "type": "select", "required": false,
+      "options": ["SHADOW", "ASSISTED", "AUTONOMOUS"],
+      "description": "Obrigatorio quando delivery_type=agentic_saas. Modo inicial em que o agente vai operar (nao deve comecar AUTONOMOUS sem evidencia)." },
+    { "key": "recommended_platform_stage", "type": "select", "required": false,
+      "options": ["DRAFT", "STAGING", "PILOT", "CANONICAL", "DEPRECATED"],
+      "description": "Obrigatorio quando delivery_type=platform. Stage inicial em que a plataforma/modulo entra (tipicamente DRAFT ou STAGING)." },
     { "key": "technical_platforms", "type": "list", "required": true },
     { "key": "risks", "type": "list", "required": false },
     { "key": "required_artifacts", "type": "list", "required": true }
   ],
+  "candidateRequirementsByDeliveryType": {
+    "agentic_saas": {
+      "required": [
+        "input_channel",
+        "human_cost_baseline",
+        "estimated_agent_cost",
+        "price_per_outcome",
+        "monthly_cap",
+        "sla_threshold",
+        "recommended_agentic_mode"
+      ],
+      "forbidden": ["recommended_platform_stage"],
+      "notes": "Exige unit economics de inferencia, prompts versionados e plano SHADOW/ASSISTED."
+    },
+    "platform": {
+      "required": [
+        "platform_subscription_fee",
+        "recommended_platform_stage"
+      ],
+      "forbidden": ["price_per_outcome", "monthly_cap", "recommended_agentic_mode"],
+      "notes": "Exige criterios de aceite operacional, smoke test por modulo e plano DRAFT/STAGING/PILOT."
+    },
+    "automation": {
+      "required": [],
+      "forbidden": ["price_per_outcome", "monthly_cap", "recommended_agentic_mode", "recommended_platform_stage"],
+      "notes": "Entrega pontual; sem fases formais de promocao."
+    },
+    "hybrid": {
+      "required": [],
+      "forbidden": [],
+      "notes": "Cada bloco interno declara o proprio delivery_type; exigencias seguem o bloco."
+    }
+  },
   "decisionRules": [
     {
-      "when": "decision=approved_for_proposal",
+      "when": "decision=approved_for_proposal AND delivery_type=agentic_saas",
       "create": [
         "Propostas / Proposta enviada",
         "Catalogo de SKUs / SKU em dev se SKU ainda nao existir",
         "Backlog tecnico / tarefas tech por plataforma identificada"
       ],
       "artifacts": ["proposal_doc", "unit_economics_model", "diagnostic_report_pdf"]
+    },
+    {
+      "when": "decision=approved_for_proposal AND delivery_type=platform",
+      "create": [
+        "Propostas / Proposta enviada",
+        "Catalogo de SKUs / SKU em dev se SKU ainda nao existir",
+        "Backlog tecnico / tarefas tech por modulo de plataforma"
+      ],
+      "artifacts": ["proposal_doc", "platform_pricing_model", "diagnostic_report_pdf", "operational_acceptance_criteria_template"]
+    },
+    {
+      "when": "decision=approved_for_proposal AND delivery_type=automation",
+      "create": [
+        "Propostas / Proposta enviada",
+        "Backlog tecnico / tarefa de automacao pontual"
+      ],
+      "artifacts": ["proposal_doc", "diagnostic_report_pdf"]
     },
     {
       "when": "proposal.status=assinada",
@@ -47,12 +118,42 @@
       "artifacts": ["signed_contract", "setup_fee_receipt", "institutional_briefing"]
     },
     {
-      "when": "setup.status=shadow ligado",
+      "when": "setup.status=shadow ligado AND delivery_type=agentic_saas",
       "create": [
         "SHADOWs ativos / SHADOW ativo",
         "Auditorias mensais / Auditoria agendada se cliente ja estiver em operacao"
       ],
       "artifacts": ["prompt_pack_v1", "smoke_test_evidence"]
+    },
+    {
+      "when": "setup.status=staging pronto AND delivery_type=platform",
+      "create": [
+        "Rollouts em andamento / Rollout em STAGING",
+        "Aceites operacionais / Aceite aguardando antes de abrir piloto"
+      ],
+      "artifacts": ["module_smoke_test_evidence", "operational_acceptance_criteria"]
+    },
+    {
+      "when": "rollout.status=promovido para piloto AND delivery_type=platform",
+      "create": [
+        "Pilotos ativos / Piloto aberto",
+        "Auditorias mensais / Auditoria operacional agendada"
+      ],
+      "artifacts": ["pilot_open_note", "legacy_vs_new_comparison"]
+    },
+    {
+      "when": "pilot.aceite=aprovado AND delivery_type=platform",
+      "create": [
+        "Promocoes de modo / Promocao PILOT->CANONICAL solicitada"
+      ],
+      "artifacts": ["human_operational_signoff", "canonical_promotion_request"]
+    },
+    {
+      "when": "promotion.canonical=aprovada AND delivery_type=platform",
+      "create": [
+        "Fontes canonicas / Modulo CANONICAL"
+      ],
+      "artifacts": ["canonical_cutover_note"]
     }
   ]
 }

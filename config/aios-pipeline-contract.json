@@ -1,7 +1,8 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "event": "saas_platform_planned",
-  "purpose": "Gerar tarefas AIOS por modulo de plataforma SaaS multi-tenant.",
+  "purpose": "Gerar tarefas AIOS por modulo de plataforma SaaS multi-tenant. delivery_type=platform por default; suporta hybrid quando modulos individuais forem agentic.",
+  "delivery_type": "platform",
   "target": {
     "space": "05 Institucional Acme",
     "folder": "{platform_name}",
@@ -22,6 +23,9 @@
       "description": "Nome da Folder no ClickUp. Ex: 'Plataforma SchoolPlatform'." },
     { "key": "list_name",          "type": "text",            "required": false,
       "description": "Nome da List dentro da Folder. Default: 'Modulos'." },
+    { "key": "delivery_type",      "type": "select",          "required": false,
+      "options": ["platform", "hybrid"],
+      "description": "Default: platform. Use hybrid quando algum modulo for agentic_saas." },
     { "key": "client_task_id",     "type": "clickup_task_id", "required": false,
       "description": "Opcional - referencia a uma task externa (ex: diagnostico)." },
     { "key": "diagnostic_task_id", "type": "clickup_task_id", "required": false },
@@ -32,7 +36,12 @@
       "itemFields": [
         { "key": "key",  "type": "text",   "required": true },
         { "key": "tier", "type": "select", "required": true, "options": ["A", "B", "C"] },
-        { "key": "week", "type": "number", "required": true }
+        { "key": "week", "type": "number", "required": true },
+        { "key": "delivery_type", "type": "select", "required": false,
+          "options": ["platform", "agentic_saas", "automation"],
+          "description": "Override por modulo. Default herda do payload (platform)." },
+        { "key": "ai_enabled", "type": "boolean", "required": false,
+          "description": "Quando true, modulo exige prompts/eval/observabilidade de IA mesmo em platform." }
       ]
     },
     { "key": "tech_owner",        "type": "person_or_text", "required": true },

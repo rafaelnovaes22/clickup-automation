@@ -47,5 +47,6 @@
   "repository_url": "https://github.com/acme-startup/aicfo",
   "project_root": "c:/Users/Rafael/Projetos/Aicfo",
   "environment": "dev",
+  "delivery_type": "platform",
   "notes": "Aicfo = produto self-serve do guarda-chuva Acme (CFO-IA pra PMEs). 30 modulos em 8 ondas. Onda 0 (weeks 1-4) = fundacao Tier C. Onda 1 (weeks 5-10) = SKU piloto monthly-analysis Tier B. SKU piloto cobre 14 das 60 features iniciais; outras 46 viram roadmap pos-piloto. frontend_agent reposicionado como Contract Agent (gera OpenAPI 3.1 + Zod + handoff doc, NAO codigo React). Frontend em repositorio separado mantido pelo dev frontend interno (URL a ser fornecida)."
 }

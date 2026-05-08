@@ -26,6 +26,7 @@ function activitySection(activity) {
     `### ${activity.name}`,
     "",
     `- ID: \`${activity.id}\``,
+    `- Delivery type: \`${activity.delivery_type ?? "any"}\``,
     `- Tipo: \`${activity.type}\``,
     `- Papel: \`${activity.role}\``,
     `- Gatilho: \`${activity.trigger}\``,
@@ -45,17 +46,20 @@ function activitySection(activity) {
 }
 
 function platformSection(platform) {
+  const dtList = (platform.delivery_types ?? []).map((dt) => `\`${dt}\``).join(", ") || "any";
   return [
     `### ${platform.label}`,
     "",
     `- Key: \`${platform.key}\``,
+    `- Delivery types aplicaveis: ${dtList}`,
     `- Dono padrao: \`${platform.defaultOwnerRole}\``,
+    platform.ai_enabled ? "- IA-enabled: sim (exige prompts/eval/observabilidade de IA)" : null,
     "",
     "| Task | Artefato | Done when |",
     "|---|---|---|",
     ...platform.tasks.map((task) => `| ${task.title} | \`${task.artifact}\` | ${task.doneWhen} |`),
     ""
-  ].join("\n");
+  ].filter((line) => line !== null).join("\n");
 }
 
 const content = [
