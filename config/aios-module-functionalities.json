@@ -250,6 +250,342 @@
         "Regras de pauta, presenca, reposicao, trainee e alunos desaparecidos",
         "Baixa da primeira parcela com conta de divida perdoada"
       ]
+    },
+
+    "auth-tenant": {
+      "title": "Autenticacao e isolamento por empresa",
+      "summary": "Login, sessao e separacao total dos dados de cada empresa cliente. Sem isso, ninguem entra no Aicfo nem garantimos que dados de uma empresa nao vazem para outra.",
+      "features": [
+        "Login com email + senha",
+        "Recuperacao de senha por email",
+        "Sessao persistente com expiracao configuravel",
+        "Isolamento dos dados por empresa (multi-tenant)",
+        "Permissao basica por usuario (admin / editor / leitor)"
+      ]
+    },
+    "workspace-setup": {
+      "title": "Onboarding inicial da empresa",
+      "summary": "Primeiros passos quando o cliente entra: nome da empresa, segmento de atuacao, regime tributario. Personaliza o Aicfo para a realidade dele.",
+      "features": [
+        "Cadastro da empresa: razao social, CNPJ, segmento (agencia, industria, servicos, SaaS, varejo)",
+        "Escolha de regime tributario (Simples / Lucro Presumido / Lucro Real)",
+        "Definicao de plano de contas inicial (template padrao Aicfo)",
+        "Convite de usuarios adicionais",
+        "Personalizacao por segmento (afeta analises e benchmarks futuros)"
+      ]
+    },
+    "billing": {
+      "title": "Cobranca self-serve (Stripe)",
+      "summary": "Cliente escolhe plano, paga com cartao, recebe nota fiscal. Tudo automatico sem time comercial precisar tocar.",
+      "features": [
+        "Checkout com cartao de credito (Stripe)",
+        "Planos: Aicfo Lite / Pro / Business",
+        "Upgrade e downgrade entre planos",
+        "Historico de faturas e recibos",
+        "Cancelamento self-service",
+        "Trial gratuito sem cartao"
+      ]
+    },
+    "tenant-config": {
+      "title": "Configuracoes e permissoes da empresa",
+      "summary": "Cliente customiza preferencias da empresa, gerencia equipe e define quem ve o que. Sem isso, todo usuario tem acesso total.",
+      "features": [
+        "Tela de configuracoes da empresa",
+        "Gerenciamento de usuarios (convidar, remover, alterar permissao)",
+        "Permissoes granulares (financeiro / operacional / leitura)",
+        "Logs de acesso e acoes de cada usuario",
+        "Configuracoes regionais (moeda, fuso, idioma)"
+      ]
+    },
+
+    "ingest": {
+      "title": "Importacao de lancamentos financeiros",
+      "summary": "4 jeitos de o cliente trazer os dados financeiros do mes para dentro do Aicfo: planilha colada, PDF do contador, Excel/CSV ou lancamento manual.",
+      "features": [
+        "Colar planilha com Ctrl+V (detecta colunas automaticamente)",
+        "Upload de PDF do contador (extrai lancamentos do texto)",
+        "Upload Excel/CSV com mapeamento de colunas",
+        "Lancamento manual em formulario",
+        "Validacao de shape minimo (data, descricao, valor)",
+        "Deteccao de duplicatas e conflitos"
+      ]
+    },
+    "classification": {
+      "title": "Classificacao automatica dos lancamentos",
+      "summary": "A IA le cada linha importada e classifica em categorias do DRE (receita, custo variavel, despesa operacional, etc.) sem o cliente precisar arrastar nada manualmente.",
+      "features": [
+        "Classificacao automatica por IA com confidence score",
+        "Categorias DRE padrao Aicfo (~25)",
+        "Aprendizado continuo: classificacoes aceitas viram referencia",
+        "Edicao manual permite o cliente corrigir e o sistema aprende",
+        "Sinalizacao de lancamentos ambiguos que exigem revisao"
+      ]
+    },
+    "dre-narrative": {
+      "title": "DRE Facilitado com narrativa da IA",
+      "summary": "O cliente ve o DRE classico (Receita Bruta -> Lucro Liquido) e, embaixo, 3 cards narrados pela IA explicando o que esta bom, o que esta em alerta e o que e gargalo critico, em linguagem de negocios.",
+      "features": [
+        "DRE classico (Receita -> Deducoes -> Receita Liquida -> Custos -> Margem -> Despesas -> Resultado Operacional -> Lucro Liquido)",
+        "Visualizacao com peso visual por linha (% sobre receita)",
+        "Toggle entre R$, % da receita e comparacao vs. mes anterior",
+        "Card 'Gargalo critico' (vermelho) com pior indicador do mes",
+        "Card 'Atencao' (amarelo) com algo a observar",
+        "Card 'Saudavel' (verde) com o que esta funcionando",
+        "Cada card cita evidencia numerica concreta dos dados do cliente"
+      ]
+    },
+    "action-plan": {
+      "title": "Plano de Acao em 3 horizontes",
+      "summary": "Recomendacoes praticas e quantificadas: o que o CEO deve fazer no curto prazo (ate 3 meses), medio (3 a 6 meses) e longo (acima de 1 ano), com impacto financeiro estimado por acao.",
+      "features": [
+        "3 horizontes: curto / medio / longo prazo",
+        "Acoes categorizadas: reduzir custo / aumentar receita",
+        "Cada acao com prazo, esforco, risco e impacto R$ estimado",
+        "Soma do impacto por horizonte (ex: '+R$ 11.400/mes' no curto prazo)",
+        "Justificativa baseada nos dados reais do cliente"
+      ]
+    },
+    "hub": {
+      "title": "Hub de analise (home do produto)",
+      "summary": "Tela principal quando o cliente entra: lucro liquido do mes, sinais 'gargalos identificados / plano pronto', ultimas analises e botao para iniciar nova analise.",
+      "features": [
+        "Card destaque: lucro liquido + margem do mes atual",
+        "Tags de sinal: '3 gargalos identificados', 'Plano pronto', etc.",
+        "Lista de analises anteriores com lucro e margem por mes",
+        "CTA 'Iniciar nova analise' com 4 caminhos de import",
+        "Composicao rapida do mes (receita, custos, despesas, lucro)"
+      ]
+    },
+    "export": {
+      "title": "Exportacao de relatorios",
+      "summary": "Cliente exporta a analise em formatos prontos para apresentar a socios, investidores ou contador externo.",
+      "features": [
+        "Exportar analise mensal em PDF (capa + DRE + cards + plano)",
+        "Relatorio formatado para investidores (resumo executivo)",
+        "Relatorio para socios (acoes + impacto + riscos)",
+        "Exportacao Excel com lancamentos brutos",
+        "Compartilhamento por link (futuro)"
+      ]
+    },
+
+    "cashflow": {
+      "title": "Fluxo de caixa em tempo real + projecoes",
+      "summary": "Diferente da analise mensal de fechamento, aqui o cliente ve o caixa do dia + projecao de quanto vai entrar e sair nos proximos 7, 30 e 90 dias.",
+      "features": [
+        "Saldo atual de caixa consolidado (todas as contas)",
+        "Projecao 7 dias com proximos vencimentos",
+        "Projecao 30 dias do mes corrente",
+        "Projecao 90 dias do trimestre",
+        "Visualizacao burn rate e runway (quantos meses ate esgotar o caixa)",
+        "Alertas de ruptura iminente"
+      ]
+    },
+    "kpis": {
+      "title": "Indicadores financeiros automaticos",
+      "summary": "CAC, LTV, payback, margem, burn rate, runway calculados automaticamente sem o cliente precisar planilha. Atualizados em tempo real.",
+      "features": [
+        "CAC (Custo de Aquisicao de Cliente)",
+        "LTV (Lifetime Value)",
+        "Payback period",
+        "Margem bruta / liquida / contribuicao",
+        "Burn rate mensal",
+        "Runway (meses de caixa restante)",
+        "Atualizacao automatica conforme novos lancamentos"
+      ]
+    },
+    "score": {
+      "title": "Score de saude financeira da empresa",
+      "summary": "Uma nota unica de 0 a 100 que resume a saude financeira do negocio, calculada a partir de margem, liquidez, endividamento, crescimento e previsibilidade.",
+      "features": [
+        "Score 0-100 com breakdown por dimensao",
+        "Comparacao com meses anteriores",
+        "Explicacao do que esta puxando o score para cima e para baixo",
+        "Sugestoes de quais alavancas mexer para subir o score"
+      ]
+    },
+    "alerts": {
+      "title": "Alertas proativos de risco e metas",
+      "summary": "O Aicfo avisa o cliente automaticamente quando algo sai do esperado: queda de margem, ruptura de caixa proxima, burn rate elevado, meta nao atingida.",
+      "features": [
+        "Alerta de queda de margem (configuravel por threshold)",
+        "Alerta de ruptura de caixa em N dias",
+        "Alerta de burn rate fora do plano",
+        "Alerta de meta financeira nao atingida",
+        "Notificacao por email + in-app"
+      ]
+    },
+    "dashboard-ceo": {
+      "title": "Dashboard executivo simplificado",
+      "summary": "Versao refinada do Hub focada em decisao estrategica: KPIs principais, score de saude, gargalos, acoes sugeridas em uma tela so.",
+      "features": [
+        "5-7 KPIs em destaque (configuravel)",
+        "Score de saude da empresa em destaque",
+        "Gargalos criticos do mes com link para o DRE",
+        "Acoes em andamento (do plano de acao)",
+        "Comparacao tempo real vs. plano"
+      ]
+    },
+
+    "decision-engine": {
+      "title": "Copiloto de decisao financeira",
+      "summary": "Versao mais avancada do plano de acao: a IA nao apenas sugere acoes, mas explica o raciocinio de cada decisao e aprende com o historico do cliente.",
+      "features": [
+        "Recomendacoes com raciocinio explicavel (cite as fontes nos dados)",
+        "Aprendizado do historico de acoes (o que deu certo, o que nao deu)",
+        "Priorizacao automatica por impacto x urgencia",
+        "Simulacao 'e se' de cada recomendacao"
+      ]
+    },
+    "scenarios": {
+      "title": "Simuladores de cenarios",
+      "summary": "Cliente faz 'e se contratar 3 pessoas?', 'e se cortar 20% de marketing?', 'e se vender 30% mais?' e ve o impacto financeiro projetado.",
+      "features": [
+        "Simulador de impacto: contratacao, demissao, investimento, corte",
+        "3 cenarios: pessimista / base / agressivo",
+        "Simulador de crescimento empresarial",
+        "Simulador de estrutura de custos",
+        "Comparacao lado a lado de cenarios"
+      ]
+    },
+    "benchmarking": {
+      "title": "Comparacoes historica e setorial",
+      "summary": "Cliente compara seu desempenho com meses anteriores e (quando houver dados suficientes) com outras empresas do mesmo segmento e porte.",
+      "features": [
+        "Benchmarking interno: este mes vs. 12 meses anteriores",
+        "Benchmarking setorial: vs. media do segmento (anonimizado)",
+        "Indicador 'voce esta acima/abaixo da media'",
+        "Identifica metricas onde a empresa esta mais forte / mais fraca"
+      ]
+    },
+    "conversational-agent": {
+      "title": "Pergunte ao Aicfo em linguagem natural",
+      "summary": "Em vez de procurar na tela, o CEO pergunta 'qual foi minha pior despesa em outubro?', 'meu ROAS esta bom?', 'tenho caixa para contratar?' e a IA responde com base nos dados do cliente.",
+      "features": [
+        "Chat com IA usando dados financeiros do cliente",
+        "Respostas com citacao dos dados que embasam",
+        "Suporta perguntas em portugues coloquial",
+        "Sugestoes de perguntas relevantes ao contexto"
+      ]
+    },
+
+    "integrations-banks": {
+      "title": "Conexao direta com bancos (multi-conta)",
+      "summary": "Cliente conecta seus bancos e o Aicfo puxa lancamentos automaticamente sem precisar importar planilha. Open Finance ou conexao proprietaria por banco.",
+      "features": [
+        "OAuth com Open Finance / Pluggy / Belvo",
+        "Multiplas contas bancarias por empresa",
+        "Sincronizacao automatica diaria",
+        "Conciliacao automatica lancamentos vs. banco",
+        "Suporte aos 10+ maiores bancos do Brasil"
+      ]
+    },
+    "integrations-erp-crm-payroll": {
+      "title": "Conexao com ERP, CRM e folha de pagamento",
+      "summary": "Cliente conecta o sistema que usa hoje (Omie, Tiny, Bling, Pipedrive, etc.) e o Aicfo puxa dados automaticamente.",
+      "features": [
+        "Integracao com ERPs (Omie, Tiny, Bling, ContaAzul)",
+        "Integracao com CRMs (Pipedrive, RD Station, HubSpot)",
+        "Integracao com sistemas de folha de pagamento",
+        "Sincronizacao automatica + reconciliacao"
+      ]
+    },
+    "payment-execution": {
+      "title": "Execucao automatizada de pagamentos",
+      "summary": "Aicfo nao so sugere prioridade de pagamento, mas pode executar (com aprovacao humana) via integracao bancaria. Cliente economiza tempo operacional.",
+      "features": [
+        "Geracao automatica de boletos / Pix",
+        "Execucao de pagamentos agendados",
+        "Aprovacao obrigatoria pelo cliente antes da execucao",
+        "Comprovantes consolidados"
+      ]
+    },
+    "revenue-forecast": {
+      "title": "Previsao de receita futura",
+      "summary": "A IA preve quanto a empresa vai faturar nos proximos meses com base no historico + pipeline de vendas (CRM).",
+      "features": [
+        "Previsao de faturamento 1, 3, 6, 12 meses",
+        "Correlacao vendas pipeline vs. caixa futuro",
+        "Identifica sazonalidade automaticamente",
+        "Gap analysis: previsao vs. meta"
+      ]
+    },
+
+    "tax-suite": {
+      "title": "Suite tributaria inteligente",
+      "summary": "Controle dos tributos a recolher, sugestao do regime tributario ideal, alertas de risco fiscal e simulacao de cenarios (Simples vs. Presumido vs. Real).",
+      "features": [
+        "Calculo automatico de tributos a recolher",
+        "Sugestao de regime tributario ideal (Simples / Presumido / Real)",
+        "Alertas de risco fiscal (limite Simples proximo, etc.)",
+        "Simulacao 'e se mudar de regime?'",
+        "Calendario de obrigacoes tributarias"
+      ]
+    },
+
+    "accounts-management": {
+      "title": "Contas a pagar e a receber",
+      "summary": "Cliente gerencia contas a pagar e receber dentro do Aicfo, recebe priorizacao automatica e previsao de inadimplencia por cliente.",
+      "features": [
+        "Listagem de contas a pagar com vencimento",
+        "Listagem de contas a receber",
+        "Priorizacao inteligente de pagamentos (impacto x urgencia)",
+        "Previsao de inadimplencia por cliente final (score)",
+        "Alertas de boletos vencendo"
+      ]
+    },
+    "bank-reconciliation": {
+      "title": "Conciliacao bancaria automatica",
+      "summary": "Bate cada lancamento do extrato bancario com o lancamento contabil correspondente, sinalizando o que nao bate.",
+      "features": [
+        "Match automatico extrato vs. lancamentos por valor + data",
+        "Sinalizacao de divergencias",
+        "Sugestao de classificacao para lancamentos orfaos",
+        "Relatorio consolidado de conciliacao por mes"
+      ]
+    },
+    "profitability": {
+      "title": "Analise de rentabilidade",
+      "summary": "Cliente ve quanto cada cliente final, produto e canal de vendas contribui para o lucro, nao so para a receita.",
+      "features": [
+        "Rentabilidade por cliente final (ranking)",
+        "Rentabilidade por produto",
+        "Rentabilidade por canal de vendas",
+        "Identificacao dos clientes/produtos/canais que dao prejuizo"
+      ]
+    },
+
+    "anomaly-fraud-detection": {
+      "title": "Deteccao de anomalias e fraudes",
+      "summary": "A IA monitora os lancamentos e sinaliza padroes fora do comum: gastos atipicos, transferencias suspeitas, divergencia entre canais.",
+      "features": [
+        "Deteccao de anomalias estatisticas em lancamentos",
+        "Sinalizacao de fraudes potenciais",
+        "Deteccao de divergencia entre fontes (banco vs. ERP)",
+        "Historico de anomalias com classificacao (verdadeiro positivo / falso alarme)"
+      ]
+    },
+    "audit-governance": {
+      "title": "Auditoria e governanca financeira",
+      "summary": "Cada decisao e acao automatizada do Aicfo fica logada com rastreabilidade total. Cliente pode auditar tudo o que a IA fez.",
+      "features": [
+        "Log completo de todas as acoes da IA",
+        "Justificativa rastreavel de cada recomendacao",
+        "Trilha de auditoria por usuario",
+        "Conformidade LGPD (acesso a dados pessoais)",
+        "Relatorio de governanca mensal"
+      ]
+    },
+
+    "financial-planning": {
+      "title": "Planejamento financeiro anual e orcamentario",
+      "summary": "Cliente cria o plano financeiro anual no inicio do ano e o Aicfo acompanha em tempo real, ajustando o orcamento conforme a empresa evolui.",
+      "features": [
+        "Planejamento anual com metas mensais",
+        "Orcamentario com ajuste dinamico",
+        "Comparacao plano vs. realizado em tempo real",
+        "Alertas de desvio de plano",
+        "Replan trimestral guiado por IA"
+      ]
     }
   }
 }

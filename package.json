@@ -34,7 +34,9 @@
     "aicfo:sync:live": "node scripts/sync-aios-status.mjs --live --platform=\"Plataforma Aicfo\"",
     "aicfo:daemon": "node scripts/aios-sync-daemon.mjs --platform=\"Plataforma Aicfo\"",
     "aicfo:frontend:dry": "node scripts/generate-aicfo-frontend-list.mjs",
-    "aicfo:frontend:generate": "node scripts/generate-aicfo-frontend-list.mjs --live"
+    "aicfo:frontend:generate": "node scripts/generate-aicfo-frontend-list.mjs --live",
+    "aicfo:update-descriptions:dry": "node scripts/update-aicfo-descriptions.mjs --dry-run",
+    "aicfo:update-descriptions": "node scripts/update-aicfo-descriptions.mjs --live"
   },
   "engines": {
     "node": ">=18"
