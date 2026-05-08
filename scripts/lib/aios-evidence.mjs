@@ -76,8 +76,24 @@ export function collectAiosEvidence({ module, stage, projectRoot }) {
 
   const content = readFileSync(fullPath, "utf8");
   const isReview = stage === "review";
-  const reviewApproved = isReview && content.includes("APROVADO PARA MERGE: Sim");
-  const reviewBlocked = isReview && /BLOCKER|BLOQUEADOR/i.test(content);
+
+  // Usa a ÚLTIMA linha "APROVADO PARA MERGE" para determinar o status final.
+  // Evita falso positivo: arquivos com BLOCKERs resolvidos mencionam a palavra
+  // mesmo após aprovação — a última decisão prevalece.
+  let reviewApproved = false;
+  let reviewBlocked = false;
+  if (isReview) {
+    const lines = content.split(/\r?\n/);
+    let lastMergeDecision = null;
+    for (let i = lines.length - 1; i >= 0; i--) {
+      if (/APROVADO PARA MERGE/i.test(lines[i])) {
+        lastMergeDecision = lines[i];
+        break;
+      }
+    }
+    reviewApproved = lastMergeDecision !== null && /\bSim\b/i.test(lastMergeDecision);
+    reviewBlocked = !reviewApproved && /BLOCKER|BLOQUEADOR/i.test(content);
+  }
 
   return {
     found: true,

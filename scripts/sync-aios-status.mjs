@@ -93,8 +93,17 @@ async function loadPlatformTasks() {
 async function syncSubtask(task) {
   const info = parseAiosTask(task);
 
+  // Para Tier C (manual), tenta _review_{module}.md como evidência suplementar.
+  // Se o review estiver aprovado, usa o mesmo decisor dos stages AIOS — isso permite
+  // que módulos manuais com spec+review formalizados apareçam como "em revisão" no ClickUp.
+  const manualReviewEvidence = info.isManual && info.projectRoot
+    ? collectAiosEvidence({ module: info.moduleKey, stage: "review", projectRoot: info.projectRoot })
+    : null;
+
   const evidence = info.isManual
-    ? { found: false, stage: "manual_implementation", module: info.moduleKey, reason: "tarefa manual - sem artefato AIOS" }
+    ? (manualReviewEvidence?.found
+        ? manualReviewEvidence
+        : { found: false, stage: "manual_implementation", module: info.moduleKey, reason: "tarefa manual - sem artefato AIOS" })
     : collectAiosEvidence({ module: info.moduleKey, stage: info.stageKey, projectRoot: info.projectRoot });
 
   const githubEvidence = await collectEvidence(
@@ -108,8 +117,17 @@ async function syncSubtask(task) {
     { githubClient: github, offline }
   );
 
+  // Para Tier C com review aprovado, "merged" é implícito (sem branch/PR separada —
+  // o trabalho vai direto para main). Simula githubEvidence com merged=true para
+  // que decideStatusFromAiosEvidence retorne "complete" quando reviewApproved + CI ok.
+  const githubEvidenceForManual = (info.isManual && manualReviewEvidence?.reviewApproved)
+    ? { ...githubEvidence, prs: [{ merged_at: new Date().toISOString(), state: "closed", number: 0, updated_at: new Date().toISOString() }, ...(githubEvidence?.prs ?? [])] }
+    : githubEvidence;
+
   const nextStatus = info.isManual
-    ? decideStatusForManualTask(githubEvidence)
+    ? (manualReviewEvidence?.found
+        ? decideStatusFromAiosEvidence(evidence, githubEvidenceForManual)
+        : decideStatusForManualTask(githubEvidence))
     : decideStatusFromAiosEvidence(evidence, githubEvidence);
 
   const blocked = isBlockedSignal(evidence, githubEvidence);
