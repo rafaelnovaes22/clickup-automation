@@ -37,6 +37,11 @@ export async function findOrCreatePlatformFolder(clickUp, teamId, spaceName, fol
 }
 
 export async function findOrCreateModuleList(clickUp, folderId, listName, { dryRun = false, statuses = DEFAULT_LIST_STATUSES, content } = {}) {
+  // Early return em dry-run com folderId fictício (folder ainda não criada),
+  // evita chamar API com ID inválido como /folder/dry-folder/list?archived=false.
+  if (dryRun && typeof folderId === "string" && folderId.startsWith("dry-")) {
+    return { list: { id: "dry-list", name: listName }, created: true, dryRun: true };
+  }
   const existing = await findListInFolder(clickUp, folderId, listName);
   if (existing) {
     return { list: existing, created: false };

@@ -1,0 +1,51 @@
+{
+  "client_name": "Aicfo",
+  "platform_name": "Plataforma Aicfo",
+  "list_name": "Modulos",
+  "modules": [
+    { "key": "auth-tenant",                  "tier": "C", "week": 1 },
+    { "key": "workspace-setup",              "tier": "C", "week": 2 },
+    { "key": "billing",                      "tier": "C", "week": 3 },
+    { "key": "tenant-config",                "tier": "C", "week": 4 },
+
+    { "key": "ingest",                       "tier": "B", "week": 5 },
+    { "key": "classification",               "tier": "B", "week": 6 },
+    { "key": "dre-narrative",                "tier": "B", "week": 7 },
+    { "key": "action-plan",                  "tier": "B", "week": 8 },
+    { "key": "hub",                          "tier": "B", "week": 9 },
+    { "key": "export",                       "tier": "B", "week": 10 },
+
+    { "key": "cashflow",                     "tier": "B", "week": 11 },
+    { "key": "kpis",                         "tier": "B", "week": 12 },
+    { "key": "score",                        "tier": "B", "week": 13 },
+    { "key": "alerts",                       "tier": "B", "week": 14 },
+    { "key": "dashboard-ceo",                "tier": "B", "week": 15 },
+
+    { "key": "decision-engine",              "tier": "B", "week": 16 },
+    { "key": "scenarios",                    "tier": "B", "week": 17 },
+    { "key": "benchmarking",                 "tier": "B", "week": 18 },
+    { "key": "conversational-agent",         "tier": "B", "week": 19 },
+
+    { "key": "integrations-banks",           "tier": "C", "week": 20 },
+    { "key": "integrations-erp-crm-payroll", "tier": "C", "week": 21 },
+    { "key": "payment-execution",            "tier": "C", "week": 22 },
+    { "key": "revenue-forecast",             "tier": "B", "week": 23 },
+
+    { "key": "tax-suite",                    "tier": "B", "week": 24 },
+
+    { "key": "accounts-management",          "tier": "B", "week": 26 },
+    { "key": "bank-reconciliation",          "tier": "C", "week": 27 },
+    { "key": "profitability",                "tier": "B", "week": 28 },
+
+    { "key": "anomaly-fraud-detection",      "tier": "B", "week": 29 },
+    { "key": "audit-governance",             "tier": "B", "week": 30 },
+
+    { "key": "financial-planning",           "tier": "B", "week": 31 }
+  ],
+  "tech_owner": "Rafael Novaes",
+  "delivery_due_date": "2027-01-31",
+  "repository_url": "https://github.com/acme-startup/aicfo",
+  "project_root": "c:/Users/Rafael/Projetos/Aicfo",
+  "environment": "dev",
+  "notes": "Aicfo = produto self-serve do guarda-chuva Acme (CFO-IA pra PMEs). 30 modulos em 8 ondas. Onda 0 (weeks 1-4) = fundacao Tier C. Onda 1 (weeks 5-10) = SKU piloto monthly-analysis Tier B. SKU piloto cobre 14 das 60 features iniciais; outras 46 viram roadmap pos-piloto. frontend_agent reposicionado como Contract Agent (gera OpenAPI 3.1 + Zod + handoff doc, NAO codigo React). Frontend em repositorio separado mantido pelo dev frontend interno (URL a ser fornecida)."
+}

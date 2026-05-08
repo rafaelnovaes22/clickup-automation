@@ -27,7 +27,14 @@
     "aios:generate": "node scripts/generate-aios-modules.mjs --live",
     "aios:sync": "node scripts/sync-aios-status.mjs --dry-run --platform=\"Plataforma SchoolPlatform\"",
     "aios:sync:live": "node scripts/sync-aios-status.mjs --live --platform=\"Plataforma SchoolPlatform\"",
-    "aios:daemon": "node scripts/aios-sync-daemon.mjs --platform=\"Plataforma SchoolPlatform\""
+    "aios:daemon": "node scripts/aios-sync-daemon.mjs --platform=\"Plataforma SchoolPlatform\"",
+    "aicfo:dry": "node scripts/generate-aios-modules.mjs --dry-run --payload-file=examples/aicfo-modules.payload.json",
+    "aicfo:generate": "node scripts/generate-aios-modules.mjs --live --payload-file=examples/aicfo-modules.payload.json",
+    "aicfo:sync": "node scripts/sync-aios-status.mjs --dry-run --platform=\"Plataforma Aicfo\"",
+    "aicfo:sync:live": "node scripts/sync-aios-status.mjs --live --platform=\"Plataforma Aicfo\"",
+    "aicfo:daemon": "node scripts/aios-sync-daemon.mjs --platform=\"Plataforma Aicfo\"",
+    "aicfo:frontend:dry": "node scripts/generate-aicfo-frontend-list.mjs",
+    "aicfo:frontend:generate": "node scripts/generate-aicfo-frontend-list.mjs --live"
   },
   "engines": {
     "node": ">=18"
