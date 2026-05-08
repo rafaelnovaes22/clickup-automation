@@ -96,15 +96,17 @@ async function syncSubtask(task) {
   // Para Tier C (manual), tenta _review_{module}.md como evidência suplementar.
   // Se o review estiver aprovado, usa o mesmo decisor dos stages AIOS — isso permite
   // que módulos manuais com spec+review formalizados apareçam como "em revisão" no ClickUp.
-  const manualReviewEvidence = info.isManual && info.projectRoot
-    ? collectAiosEvidence({ module: info.moduleKey, stage: "review", projectRoot: info.projectRoot })
+  const githubArgs = { githubClient: github, repositoryUrl: info.repositoryUrl };
+
+  const manualReviewEvidence = info.isManual && (info.projectRoot || info.repositoryUrl)
+    ? await collectAiosEvidence({ module: info.moduleKey, stage: "review", projectRoot: info.projectRoot, ...githubArgs })
     : null;
 
   const evidence = info.isManual
     ? (manualReviewEvidence?.found
         ? manualReviewEvidence
         : { found: false, stage: "manual_implementation", module: info.moduleKey, reason: "tarefa manual - sem artefato AIOS" })
-    : collectAiosEvidence({ module: info.moduleKey, stage: info.stageKey, projectRoot: info.projectRoot });
+    : await collectAiosEvidence({ module: info.moduleKey, stage: info.stageKey, projectRoot: info.projectRoot, ...githubArgs });
 
   const githubEvidence = await collectEvidence(
     {

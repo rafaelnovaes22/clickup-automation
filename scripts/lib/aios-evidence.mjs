@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { parseGitHubRepository } from "./github-evidence.mjs";
 
 const STAGE_TO_PATH = {
   spec: (m) => `docs/specs/${m}.md`,
@@ -43,67 +44,57 @@ export function canonicalAiosStatus(status) {
   return AIOS_STATUS_ALIASES.get(normalized) ?? normalized;
 }
 
-export function collectAiosEvidence({ module, stage, projectRoot }) {
-  if (!STAGE_TO_PATH[stage]) {
-    return {
-      found: false,
-      stage,
-      module,
-      reason: `stage ${stage} nao tem artefato AIOS (provavelmente merge ou manual)`
-    };
-  }
-
-  if (!projectRoot) {
-    return {
-      found: false,
-      stage,
-      module,
-      reason: "project_root ausente na descricao da task"
-    };
-  }
-
-  const fullPath = resolve(projectRoot, STAGE_TO_PATH[stage](module));
-
-  if (!existsSync(fullPath)) {
-    return {
-      found: false,
-      stage,
-      module,
-      path: fullPath,
-      reason: `arquivo ausente: ${fullPath}`
-    };
-  }
-
-  const content = readFileSync(fullPath, "utf8");
-  const isReview = stage === "review";
-
-  // Usa a ÚLTIMA linha "APROVADO PARA MERGE" para determinar o status final.
-  // Evita falso positivo: arquivos com BLOCKERs resolvidos mencionam a palavra
-  // mesmo após aprovação — a última decisão prevalece.
+function buildAiosResult(stage, module, pathRef, content) {
   let reviewApproved = false;
   let reviewBlocked = false;
-  if (isReview) {
+  if (stage === "review") {
     const lines = content.split(/\r?\n/);
     let lastMergeDecision = null;
+    // Usa a ÚLTIMA linha "APROVADO PARA MERGE" — evita falso positivo em arquivos
+    // com BLOCKERs resolvidos que ainda mencionam a palavra mais acima.
     for (let i = lines.length - 1; i >= 0; i--) {
-      if (/APROVADO PARA MERGE/i.test(lines[i])) {
-        lastMergeDecision = lines[i];
-        break;
-      }
+      if (/APROVADO PARA MERGE/i.test(lines[i])) { lastMergeDecision = lines[i]; break; }
     }
     reviewApproved = lastMergeDecision !== null && /\bSim\b/i.test(lastMergeDecision);
     reviewBlocked = !reviewApproved && /BLOCKER|BLOQUEADOR/i.test(content);
   }
+  return { found: true, stage, module, path: pathRef, reviewApproved, reviewBlocked, sizeBytes: content.length };
+}
 
-  return {
-    found: true,
-    stage,
-    module,
-    path: fullPath,
-    reviewApproved,
-    reviewBlocked,
-    sizeBytes: content.length
-  };
+export async function collectAiosEvidence({ module, stage, projectRoot, githubClient, repositoryUrl }) {
+  if (!STAGE_TO_PATH[stage]) {
+    return { found: false, stage, module, reason: `stage ${stage} nao tem artefato AIOS (provavelmente merge ou manual)` };
+  }
+
+  const relPath = STAGE_TO_PATH[stage](module);
+
+  // Fonte 1: filesystem local (dev)
+  if (projectRoot) {
+    const fullPath = resolve(projectRoot, relPath);
+    if (existsSync(fullPath)) {
+      return buildAiosResult(stage, module, fullPath, readFileSync(fullPath, "utf8"));
+    }
+  }
+
+  // Fonte 2: GitHub API (Railway / sem filesystem)
+  if (githubClient && repositoryUrl) {
+    const repo = parseGitHubRepository(repositoryUrl);
+    if (repo) {
+      try {
+        const data = await githubClient.request(`/repos/${repo.owner}/${repo.repo}/contents/${relPath}`);
+        const content = Buffer.from(data.content, "base64").toString("utf8");
+        return buildAiosResult(stage, module, `github:${repo.owner}/${repo.repo}/${relPath}`, content);
+      } catch (error) {
+        if (/\(404\)/.test(error.message)) {
+          return { found: false, stage, module, reason: `arquivo ausente no GitHub: ${relPath}` };
+        }
+        return { found: false, stage, module, reason: `erro GitHub: ${error.message}` };
+      }
+    }
+  }
+
+  const fallbackPath = projectRoot ? resolve(projectRoot, relPath) : relPath;
+  return { found: false, stage, module, path: fallbackPath, reason: `arquivo ausente: ${fallbackPath}` };
 }
 
 function latestPr(githubEvidence) {
