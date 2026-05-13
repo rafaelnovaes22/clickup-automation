@@ -949,18 +949,44 @@ async function run() {
 
 // ─── Roadmap dates (via due_date — nativo do ClickUp, sem limite de plan) ──
 
-// Data de início do roadmap de 14 dias (D1).
-// Calculado: 2026-05-12 (segunda da sessão D1).
-const ROADMAP_START_DATE = new Date("2026-05-12T00:00:00.000Z");
+// Data de início do roadmap de 14 DIAS ÚTEIS (D1).
+// Fonte da verdade: project.json → consumer_declared_at (2026-05-13 quarta-feira).
+// Sábados e domingos são pulados — só dias úteis contam.
+const ROADMAP_START_DATE = new Date("2026-05-13T00:00:00.000Z");
 
 /**
- * Converte número do dia (1-14) em timestamp Unix (ms) para due_date.
+ * Adiciona N dias úteis a uma data, pulando sábados (6) e domingos (0).
+ * addBusinessDays(qua 13/05, 0) = qua 13/05 (mesmo dia, é útil)
+ * addBusinessDays(qua 13/05, 1) = qui 14/05
+ * addBusinessDays(qua 13/05, 3) = seg 18/05 (pula sáb 16, dom 17)
+ */
+function addBusinessDays(startDate, businessDaysToAdd) {
+  const result = new Date(startDate);
+  let added = 0;
+  while (added < businessDaysToAdd) {
+    result.setUTCDate(result.getUTCDate() + 1);
+    const dayOfWeek = result.getUTCDay(); // 0=dom, 6=sab
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      added++;
+    }
+  }
+  return result;
+}
+
+/**
+ * Converte número do dia útil (1-14) em timestamp Unix (ms) para due_date.
+ * Day 1 = ROADMAP_START_DATE (hoje, garantido ser dia útil).
+ * Day N = Day 1 + (N-1) dias úteis seguintes.
+ *
+ * Mapeamento esperado começando 2026-05-13 (qua):
+ *   D1=qua 13/05  D2=qui 14/05  D3=sex 15/05  D4=seg 18/05  D5=ter 19/05
+ *   D6=qua 20/05  D7=qui 21/05  D8=sex 22/05  D9=seg 25/05  D10=ter 26/05
+ *   D11=qua 27/05 D12=qui 28/05 D13=sex 29/05 D14=seg 01/06
  */
 function dayToTimestamp(day) {
   if (day == null || day < 1) return null;
-  const date = new Date(ROADMAP_START_DATE);
-  date.setUTCDate(date.getUTCDate() + (day - 1));
-  // Due date às 18:00 UTC = ~15:00 BRT (fim de expediente)
+  const date = addBusinessDays(ROADMAP_START_DATE, day - 1);
+  // Due date às 21:00 UTC = ~18:00 BRT (fim de expediente)
   date.setUTCHours(21, 0, 0, 0);
   return date.getTime();
 }
