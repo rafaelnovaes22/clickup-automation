@@ -13,7 +13,7 @@ if (!Number.isFinite(intervalMs) || intervalMs < 1000) {
   process.exit(1);
 }
 
-// Sources de sincronização — cada uma tem script e args próprios.
+// Sources de sincronização — cada uma tem script + args + setup opcional.
 // Plataformas (delivery_type=platform) usam sync-aios-status.mjs.
 // Agentes (delivery_type=agentic_saas) usam scripts dedicados.
 const SOURCES = [
@@ -33,25 +33,38 @@ const SOURCES = [
     name: "Acme Social",
     type: "agentic_saas",
     script: "scripts/sync-marketing-ai-agents-from-forge.mjs",
-    args: ["--live"]
+    args: ["--live"],
+    // Setup roda antes do sync para garantir filesystem atualizado.
+    // Em produção (Railway): clona/atualiza o repo marketing-ai-agents.
+    setup: { script: "scripts/bootstrap-marketing-ai-agents-repo.mjs", args: [] }
   }
 ];
 
-function syncSource(source) {
+function runScript(scriptPath, args, label) {
   return new Promise((done) => {
-    const scriptPath = resolve(root, source.script);
-    const proc = spawn(process.execPath, [scriptPath, ...source.args], { stdio: "inherit" });
+    const proc = spawn(process.execPath, [resolve(root, scriptPath), ...args], {
+      stdio: "inherit"
+    });
     proc.on("close", (code) => {
       if (code !== 0) {
-        console.warn(`[${new Date().toISOString()}] sync "${source.name}" exited with code ${code}`);
+        console.warn(`[${new Date().toISOString()}] ${label} exited with code ${code}`);
       }
-      done();
+      done(code);
     });
   });
 }
 
+async function syncSource(source) {
+  // Setup opcional (ex: bootstrap repo) — roda ANTES do sync
+  if (source.setup) {
+    await runScript(source.setup.script, source.setup.args || [], `setup "${source.name}"`);
+  }
+  await runScript(source.script, source.args, `sync "${source.name}"`);
+}
+
 async function tick() {
   console.log(`[${new Date().toISOString()}] sync:all tick (${SOURCES.length} sources)`);
+  // Sources rodam em paralelo. Dentro de cada source: setup → sync (sequencial).
   await Promise.all(SOURCES.map(syncSource));
 }
 

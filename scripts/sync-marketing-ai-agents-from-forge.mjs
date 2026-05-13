@@ -23,7 +23,20 @@ const args = process.argv.slice(2);
 const live = args.includes("--live");
 const dryRun = !live || args.includes("--dry-run");
 
-const ACME_SOCIAL_ROOT = "C:/Users/Rafael/Projetos/Acme_Social";
+// Path do repo marketing-ai-agents. Resolução por ordem:
+// 1. env ACME_SOCIAL_PATH (Railway worker injeta isso)
+// 2. ./marketing-ai-agents (mono-repo style — clonado pelo bootstrap)
+// 3. C:/Users/Rafael/Projetos/Acme_Social (fallback dev local)
+function resolveAcmeSocialPath() {
+  if (process.env.ACME_SOCIAL_PATH?.trim()) {
+    return process.env.ACME_SOCIAL_PATH.trim();
+  }
+  const monorepo = resolve(process.cwd(), "marketing-ai-agents");
+  if (existsSync(monorepo)) return monorepo;
+  return "C:/Users/Rafael/Projetos/Acme_Social";
+}
+
+const ACME_SOCIAL_ROOT = resolveAcmeSocialPath();
 const TARGET = { space: "05 Institucional Acme", list: "Solicitacoes de agente" };
 
 // ─── Mapeamento SKU → estrutura de código esperada ───────────────────

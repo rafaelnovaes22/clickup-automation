@@ -43,7 +43,10 @@
     "aicfo:frontend:dry": "node scripts/generate-aicfo-frontend-list.mjs",
     "aicfo:frontend:generate": "node scripts/generate-aicfo-frontend-list.mjs --live",
     "aicfo:update-descriptions:dry": "node scripts/update-aicfo-descriptions.mjs --dry-run",
-    "aicfo:update-descriptions": "node scripts/update-aicfo-descriptions.mjs --live"
+    "aicfo:update-descriptions": "node scripts/update-aicfo-descriptions.mjs --live",
+    "marketing-ai-agents:bootstrap": "node scripts/bootstrap-marketing-ai-agents-repo.mjs",
+    "marketing-ai-agents:sync:dry": "node scripts/sync-marketing-ai-agents-from-forge.mjs --dry-run",
+    "marketing-ai-agents:sync": "node scripts/sync-marketing-ai-agents-from-forge.mjs --live"
   },
   "engines": {
     "node": ">=18"
