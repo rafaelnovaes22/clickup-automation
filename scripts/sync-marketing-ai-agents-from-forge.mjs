@@ -127,6 +127,79 @@ const WAVE_LABELS_CEO = {
   wave_6_ship_shadow:     { label: "🚀 Liberado em modo teste (SHADOW)", short: "Roda em produção sem cobrar — para calibrar" }
 };
 
+// Roadmap planejado: cada (SKU × Wave) tem um dia alvo (1-14).
+// Valores baseados no roadmap original + entregas já realizadas em D1-D2.
+// null = não tem dia atribuído (ex: Wave 6 do atendimento-dm está bloqueada LGPD).
+const ROADMAP_DAYS = {
+  "social-media-agent": {
+    wave_1_foundation: 1,
+    wave_2_use_cases: 2,
+    wave_3_tdd_red: 2,
+    wave_4_build_real: 4,
+    wave_5_eval_suite: 5,
+    wave_6_ship_shadow: 6
+  },
+  "copywriter-agent": {
+    wave_1_foundation: 2,
+    wave_2_split_usecases: 4,
+    wave_3_tdd_red: 4,
+    wave_4_build_real: 5,
+    wave_5_eval_suite: 5,
+    wave_6_ship_shadow: 6
+  },
+  "designer-agent": {
+    wave_1_foundation: 2,
+    wave_2_curation: 3,
+    wave_3_tdd_red: 3,
+    wave_4_build_real: 5,
+    wave_5_eval_suite: 5,
+    wave_6_ship_shadow: 6
+  },
+  "trafego-agent": {
+    wave_1_foundation: 7,
+    wave_2_use_cases: 7,
+    wave_3_tdd_red: 7,
+    wave_4_build_real: 8,
+    wave_5_eval_suite: 8,
+    wave_6_ship_shadow: 9
+  },
+  "video-editor-agent": {
+    wave_1_foundation: 9,
+    wave_2_use_cases: 10,
+    wave_3_tdd_red: 10,
+    wave_4_build_real: 11,
+    wave_5_eval_suite: 11,
+    wave_6_ship_shadow: 12
+  },
+  "estrategista-agent": {
+    wave_1_foundation: 11,
+    wave_2_use_cases: 12,
+    wave_3_tdd_red: 12,
+    wave_4_build_real: 13,
+    wave_5_eval_suite: 13,
+    wave_6_ship_shadow: 14
+  },
+  "atendimento-dm-agent": {
+    wave_1_foundation: 6,
+    wave_2_use_cases: 6,
+    wave_3_tdd_red: 7,
+    wave_4_build_real: 7,
+    wave_5_eval_suite: 7,
+    wave_6_ship_shadow: null   // Bloqueado por LGPD
+  }
+};
+
+// Para a task pai (agente), atribui "semana" (1 ou 2 do roadmap).
+const ROADMAP_WEEKS = {
+  "social-media-agent": 1,
+  "copywriter-agent": 1,
+  "designer-agent": 1,
+  "trafego-agent": 1,
+  "video-editor-agent": 2,
+  "estrategista-agent": 2,
+  "atendimento-dm-agent": 1
+};
+
 function humanizeWave(waveKey) {
   return WAVE_LABELS_CEO[waveKey] || { label: waveKey, short: "" };
 }
@@ -745,8 +818,11 @@ async function run() {
   }
   console.log(`   Pais com marker: ${parentsByMarker.size} | Subtasks: ${subtasksByParentAndLabel.size}\n`);
 
+  console.log(`   📅 Usando due_date (nativo ClickUp) para visão de roadmap por dia\n`);
+
   let createdCount = 0;
   let updatedCount = 0;
+  let dueDateUpdatedCount = 0;
 
   for (const sku of skus) {
     const parentName = buildParentTaskName(sku);
@@ -799,6 +875,22 @@ async function run() {
       createdCount++;
     }
 
+    // Parent: due_date = primeiro dia das suas Waves (início do agente)
+    const allDays = Object.values(ROADMAP_DAYS[sku.id] || {}).filter((d) => d != null);
+    const firstDay = allDays.length > 0 ? Math.min(...allDays) : null;
+    const parentDueTs = dayToTimestamp(firstDay);
+    if (parentDueTs) {
+      try {
+        const changed = await setDueDate(clickUp, parentTask, parentDueTs);
+        if (changed) {
+          console.log(`   📅 Início (Dia ${firstDay}): ${new Date(parentDueTs).toISOString().slice(0, 10)}`);
+          dueDateUpdatedCount++;
+        }
+      } catch (err) {
+        console.warn(`   ⚠️  Falhou ao setar due_date do parent: ${err.message}`);
+      }
+    }
+
     // Subtasks
     for (const [key, wave] of Object.entries(sku.waves)) {
       const subtaskName = buildSubtaskName(key, wave);
@@ -821,14 +913,30 @@ async function run() {
         existingSubtask = subtasksByParentAndLabel.get(legacyKey);
       }
 
+      let subtaskCreatedOrUpdated;
       if (existingSubtask) {
         console.log(`   🔄 ${subtaskName}`);
-        await clickUp.request("PUT", `/task/${existingSubtask.id}`, subtaskPayload);
+        subtaskCreatedOrUpdated = await clickUp.request("PUT", `/task/${existingSubtask.id}`, subtaskPayload);
         updatedCount++;
       } else {
         console.log(`   ➕ ${subtaskName}`);
-        await clickUp.request("POST", `/list/${list.id}/task`, subtaskPayload);
+        subtaskCreatedOrUpdated = await clickUp.request("POST", `/list/${list.id}/task`, subtaskPayload);
         createdCount++;
+      }
+
+      // Subtask: due_date a partir de ROADMAP_DAYS[sku][wave]
+      const dayValue = ROADMAP_DAYS[sku.id]?.[key];
+      const subtaskDueTs = dayToTimestamp(dayValue);
+      if (subtaskDueTs) {
+        try {
+          const changed = await setDueDate(clickUp, subtaskCreatedOrUpdated, subtaskDueTs);
+          if (changed) {
+            console.log(`      📅 Dia ${dayValue} (${new Date(subtaskDueTs).toISOString().slice(0, 10)})`);
+            dueDateUpdatedCount++;
+          }
+        } catch (err) {
+          console.warn(`      ⚠️  Falhou ao setar due_date: ${err.message}`);
+        }
       }
     }
   }
@@ -836,6 +944,39 @@ async function run() {
   console.log(`\n\n✅ Auto-sync concluído:`);
   console.log(`   ➕ Criadas: ${createdCount}`);
   console.log(`   🔄 Atualizadas: ${updatedCount}`);
+  console.log(`   📅 Due dates atualizados: ${dueDateUpdatedCount}`);
+}
+
+// ─── Roadmap dates (via due_date — nativo do ClickUp, sem limite de plan) ──
+
+// Data de início do roadmap de 14 dias (D1).
+// Calculado: 2026-05-12 (segunda da sessão D1).
+const ROADMAP_START_DATE = new Date("2026-05-12T00:00:00.000Z");
+
+/**
+ * Converte número do dia (1-14) em timestamp Unix (ms) para due_date.
+ */
+function dayToTimestamp(day) {
+  if (day == null || day < 1) return null;
+  const date = new Date(ROADMAP_START_DATE);
+  date.setUTCDate(date.getUTCDate() + (day - 1));
+  // Due date às 18:00 UTC = ~15:00 BRT (fim de expediente)
+  date.setUTCHours(21, 0, 0, 0);
+  return date.getTime();
+}
+
+/**
+ * Atualiza due_date da task. Idempotente: skip se já bate.
+ */
+async function setDueDate(clickUp, task, timestamp) {
+  if (!timestamp) return false;
+  const current = task?.due_date ? Number(task.due_date) : null;
+  if (current === timestamp) return false; // unchanged
+  await clickUp.request("PUT", `/task/${task.id}`, {
+    due_date: timestamp,
+    due_date_time: true
+  });
+  return true;
 }
 
 async function listTasks(clickUp, listId) {
