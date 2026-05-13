@@ -15,6 +15,7 @@ import { readFile, access } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { existsSync } from "node:fs";
 import { createClickUpClient, findListByTarget } from "./lib/clickup.mjs";
+import { findOrCreatePlatformFolder, findOrCreateModuleList } from "./lib/aios-platform.mjs";
 import { clickUpCredentials, loadLocalEnv } from "./lib/env.mjs";
 
 await loadLocalEnv();
@@ -37,7 +38,16 @@ function resolveAcmeSocialPath() {
 }
 
 const ACME_SOCIAL_ROOT = resolveAcmeSocialPath();
-const TARGET = { space: "05 Institucional Acme", list: "Solicitacoes de agente" };
+
+// Target no ClickUp: folder dedicada (estrutura igual a Plataforma SchoolPlatform / Aicfo)
+// Space "05 Institucional Acme" → Folder "Acme Social Agentes" → List "Agentes"
+const TARGET = {
+  space: "05 Institucional Acme",
+  folder: "Acme Social Agentes",
+  list: "Agentes"
+};
+
+const FOLDER_DESCRIPTION = "Os 7 agentes IA do projeto Acme Social. Cada task pai = 1 agente; subtasks = Waves (1-6) com due_date (D1-D14 dias úteis). Sincronizado a cada 15min via worker Railway a partir do repo acme-startup/marketing-ai-agents.";
 
 // ─── Mapeamento SKU → estrutura de código esperada ───────────────────
 // Apenas declaração dos paths que cada SKU usa. O script detecta o resto.
@@ -751,7 +761,7 @@ async function run() {
   console.log(`\n🤖 Acme Social — Auto-sync ClickUp ← filesystem`);
   console.log(`   Mode:  ${live ? "🔴 LIVE (vai atualizar)" : "🔵 DRY-RUN"}`);
   console.log(`   Fonte: ${ACME_SOCIAL_ROOT}/docs/forge/project.json + filesystem`);
-  console.log(`   Alvo:  ${TARGET.space} → ${TARGET.list}\n`);
+  console.log(`   Alvo:  ${TARGET.space} → ${TARGET.folder} → ${TARGET.list}\n`);
 
   console.log(`🔍 Auto-discovery dos SKUs...`);
   const skus = await discoverSkusFromForge();
@@ -788,7 +798,12 @@ async function run() {
 
   console.log(`\n\n🔴 LIVE — chamando API ClickUp...\n`);
   const clickUp = createClickUpClient({ token });
-  const list = await findListByTarget(clickUp, teamId, TARGET);
+  // Estrutura folder-based (igual Aicfo/SchoolPlatform). Idempotente — cria se não existir.
+  const folderResult = await findOrCreatePlatformFolder(clickUp, teamId, TARGET.space, TARGET.folder);
+  if (folderResult.created) console.log(`   ➕ Folder criada: ${TARGET.folder} (id=${folderResult.folder.id})`);
+  const listResult = await findOrCreateModuleList(clickUp, folderResult.folder.id, TARGET.list, { content: FOLDER_DESCRIPTION });
+  if (listResult.created) console.log(`   ➕ List criada: ${TARGET.list} (id=${listResult.list.id})`);
+  const list = listResult.list;
   console.log(`✅ List: ${list.name} (id=${list.id})`);
 
   const allTasks = await listTasks(clickUp, list.id);
