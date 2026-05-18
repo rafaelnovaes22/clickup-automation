@@ -1,0 +1,2442 @@
+{
+  "$schema": "https://acme.com.br/forge/manifest-v1.json",
+  "manifest_version": "0.21.0",
+  "framework": {
+    "name": "Acme Forge",
+    "version": "0.21.0",
+    "canonical": true,
+    "phase": "Forge-20 entregue -- self-harness loop (Hermes learning loop, agent-soul/memory, learning-curator).",
+    "last_updated": "2026-05-18",
+    "constitution_version": "0.3.0",
+    "constitution_path": ".claude/CONSTITUTION.md",
+    "constitution_sha256": "e4c69f3817eac26c",
+    "supported_project_types": [
+      {
+        "type": "agentic_saas",
+        "ai_enabled_default": true,
+        "lifecycle_states": [
+          "SHADOW",
+          "ASSISTED",
+          "AUTONOMOUS"
+        ],
+        "economics_model": "cost_per_outcome",
+        "outcome_kind": "classified_outcome",
+        "description": "Default histórico do Forge — agentes de IA com governança de outcome cobrável."
+      },
+      {
+        "type": "platform",
+        "ai_enabled_default": false,
+        "lifecycle_states": [
+          "DRAFT",
+          "STAGING",
+          "PILOT",
+          "CANONICAL",
+          "DEPRECATED"
+        ],
+        "economics_model": "platform_margin",
+        "outcome_kind": "operational_action",
+        "description": "Plataforma SaaS/operacional com módulos CRUD/CRM/etc. Outcome = ação operacional verificável (tela/API/dado/audit log)."
+      },
+      {
+        "type": "automation",
+        "ai_enabled_default": false,
+        "lifecycle_states": [
+          "DRAFT",
+          "STAGING",
+          "PILOT",
+          "CANONICAL",
+          "DEPRECATED"
+        ],
+        "economics_model": "platform_margin",
+        "outcome_kind": "execution_event",
+        "description": "Automações operacionais determinísticas (jobs, workers, integrações, RPA). Subset de platform."
+      },
+      {
+        "type": "hybrid",
+        "ai_enabled_default": "per-module",
+        "lifecycle_states": [
+          "mixed"
+        ],
+        "economics_model": "hybrid",
+        "outcome_kind": "per-module",
+        "description": "Plataforma com módulos agênticos. Cada módulo declara seu ai_enabled."
+      }
+    ],
+    "owner": "Acme / Novais Digital",
+    "license": "private",
+    "consumer_types": [
+      {
+        "type": "human-developer",
+        "entry_point": "QUICKSTART.md",
+        "tooling": "Claude Code IDE"
+      },
+      {
+        "type": "deep-agent",
+        "entry_point": "DEEPAGENT_GUIDE.md",
+        "tooling": "GPT-5.5 via OpenAI SDK (Python deepagents OR Node @langchain/langgraph)"
+      },
+      {
+        "type": "framework-maintainer",
+        "entry_point": "CONTRIBUTING.md",
+        "tooling": "Claude Code IDE + git"
+      }
+    ],
+    "reviewer": {
+      "type": "deep-agent",
+      "stack": "deepagents-cli (LangChain Python, v0.0.34+)",
+      "model": "configurable via DEEPAGENTS_MODEL env",
+      "provider": "openai (default — F10)",
+      "frequency": "monthly",
+      "contract_path": "docs/forge/reviewer-contract.md",
+      "implementation_status": "infrastructure-complete (10 skills converted; runtime invocation pending in consumer project)",
+      "implementation_decisions": [
+        "F17",
+        "F18"
+      ],
+      "converter_repo": "https://github.com/andersonamaral2/Claude-Code-to-Deep-Agents-Skills-Converter",
+      "artifacts": {
+        "prompt": "reviewer/prompt.template.md",
+        "output_schema": "reviewer/output-schema.json",
+        "validation_rules": "reviewer/validation-rules.json",
+        "example_audit": "reviewer/example-audit.md",
+        "deepagents_root": "reviewer/deepagents/",
+        "deepagents_readme": "reviewer/deepagents/README.md",
+        "deepagents_conversion_log": "reviewer/deepagents/conversion-log.md",
+        "deepagents_skills": [
+          "reviewer/deepagents/skills/L0/company-dna/SKILL.md",
+          "reviewer/deepagents/skills/L0/icp-loader/SKILL.md",
+          "reviewer/deepagents/skills/L0/offerings-loader/SKILL.md",
+          "reviewer/deepagents/skills/L1/baseline-cost-builder/SKILL.md",
+          "reviewer/deepagents/skills/L1/diagnostic-runner/SKILL.md",
+          "reviewer/deepagents/skills/L1/process-mapper/SKILL.md",
+          "reviewer/deepagents/skills/L2/artifact-prompt-builder/SKILL.md",
+          "reviewer/deepagents/skills/L2/eval-case-author/SKILL.md",
+          "reviewer/deepagents/skills/L2/shadow-mode-runner/SKILL.md",
+          "reviewer/deepagents/skills/reviewer/forge-auditor/SKILL.md"
+        ]
+      }
+    }
+  },
+  "principles": [
+    {
+      "id": "C1",
+      "name": "Diagnose-before-build",
+      "scope": "all-categories",
+      "renamed_from_v0_2_0": "Diagnose-before-design",
+      "interpretation_modes": {
+        "agentic_saas": "diagnostic.md por SKU/produto em produção",
+        "platform": "diagnostic.md por módulo PILOT/CANONICAL crítico (financeiro, contrato, LGPD)",
+        "automation": "diagnostic.md por job em produção"
+      }
+    },
+    {
+      "id": "C2",
+      "name": "Outcome-first, never tech-first",
+      "scope": "all-categories",
+      "interpretation_modes": {
+        "agentic_saas": "classified_outcome — categorias com threshold de acurácia",
+        "platform": "operational_action — critério de aceite operacional + audit log entry",
+        "automation": "execution_event — completed_event com payload_schema e log_location"
+      }
+    },
+    {
+      "id": "C3",
+      "name": "Economic viability",
+      "scope": "all-categories",
+      "shadow_exemption": true,
+      "renamed_from_v0_2_0": "Cost ≤ 25% of price",
+      "interpretation_modes": {
+        "ai_enabled_true": "cost_per_outcome (custo de inferência / preço por outcome)",
+        "ai_enabled_false": "platform_margin ((infra + suporte + manutenção) / receita atribuída)"
+      },
+      "default_ratio_max": 0.25
+    },
+    {
+      "id": "C4",
+      "name": "Pilot-before-canonical / Shadow-before-billing",
+      "scope": "all-categories",
+      "renamed_from_v0_2_0": "SHADOW antes de cobrar",
+      "interpretation_modes": {
+        "ai_enabled_true": "SHADOW (≥14d) → ASSISTED → AUTONOMOUS",
+        "ai_enabled_false": "DRAFT → STAGING → PILOT (≥14d crítico, ≥3d simple) → CANONICAL → DEPRECATED"
+      }
+    },
+    {
+      "id": "C5",
+      "name": "Three-tier context",
+      "scope": "all-categories"
+    },
+    {
+      "id": "C6",
+      "name": "Telemetry / auditability by default",
+      "scope": "all-categories",
+      "renamed_from_v0_2_0": "Telemetry-by-default",
+      "interpretation_modes": {
+        "ai_enabled_true": "LLM trace provider obrigatório (Langfuse/equivalente)",
+        "ai_enabled_false": "audit_log_provider + structured_logging_provider obrigatórios"
+      }
+    },
+    {
+      "id": "C7",
+      "name": "Portability over lock-in",
+      "scope": "all-categories",
+      "products_relax": "stack divergente em Beta com plano de migração",
+      "expanded_in_v0_3_0": "Cobre LLMs (src/llm/), infra (src/infra/), integrações (src/integrations/), pagamentos, mensageria"
+    },
+    {
+      "id": "C8",
+      "name": "Configuration over heroic customization",
+      "scope": "all-categories",
+      "renamed_from_v0_2_0": "Anti-customização heroica"
+    }
+  ],
+  "principle_extensions_path": "examples/acme/constitution-extension.md",
+  "artifacts": {
+    "documentation": {
+      "core": [
+        {
+          "id": "readme",
+          "path": "README.md",
+          "type": "documentation",
+          "audience": [
+            "human-developer",
+            "deep-agent",
+            "framework-maintainer"
+          ],
+          "version": "0.4.1",
+          "sha256": "80b0c12ae9bade29",
+          "description": "Multi-consumer overview e ponteiros — atualizado para v0.4.1 (badges, status, estrutura expandida)"
+        },
+        {
+          "id": "quickstart",
+          "path": "QUICKSTART.md",
+          "type": "documentation",
+          "audience": [
+            "human-developer"
+          ],
+          "version": "0.2.0",
+          "sha256": "38d1030fc93e5a64",
+          "description": "Instalar Forge em projeto novo em <5 min"
+        },
+        {
+          "id": "architecture",
+          "path": "ARCHITECTURE.md",
+          "type": "documentation",
+          "audience": [
+            "human-developer",
+            "framework-maintainer"
+          ],
+          "version": "0.2.0",
+          "sha256": "472b5a05e0c1869e",
+          "description": "Visão estrutural, fluxos, camadas de governança"
+        },
+        {
+          "id": "install",
+          "path": "INSTALL.md",
+          "type": "documentation",
+          "audience": [
+            "human-developer"
+          ],
+          "version": "0.14.0",
+          "sha256": null,
+          "description": "Instalação automatizada via forge-sync.sh + Surface-aware (persona routing). Manual permanece como fallback. v0.14.0 (Forge-13 Sprint 2)."
+        },
+        {
+          "id": "contributing",
+          "path": "CONTRIBUTING.md",
+          "type": "documentation",
+          "audience": [
+            "framework-maintainer"
+          ],
+          "version": "0.3.0",
+          "sha256": null,
+          "description": "Como evoluir o framework. v0.3.0 (Forge-14 / F49) adiciona seção 'Processo para MAJOR bumps' com alternativas obrigatórias, ADR formal, aviso prévio a consumidores, e política de suporte N-1."
+        },
+        {
+          "id": "deepagent-guide",
+          "path": "DEEPAGENT_GUIDE.md",
+          "type": "documentation",
+          "audience": [
+            "deep-agent"
+          ],
+          "version": "0.2.0",
+          "sha256": "3dbf19411146a6f2",
+          "description": "Como agente autônomo navega e audita projetos Forge"
+        },
+        {
+          "id": "glossary-plain",
+          "path": "GLOSSARY_PLAIN.md",
+          "type": "documentation",
+          "audience": [
+            "human-developer",
+            "non-technical-stakeholder"
+          ],
+          "version": "1.0.0",
+          "sha256": null,
+          "linked_principles": [
+            "C7"
+          ],
+          "description": "Glossário em linguagem leiga (PT-BR) — extraído do QUICKSTART_VIBE e expandido para 60+ termos. Foco em CEO/fundador/decisor não-técnico. Cada entrada: o que é + por que importa + equivalente técnico. Forge-14 / F45."
+        },
+        {
+          "id": "glossary",
+          "path": "GLOSSARY.md",
+          "type": "documentation",
+          "audience": [
+            "human-developer",
+            "deep-agent",
+            "framework-maintainer"
+          ],
+          "version": "0.2.0",
+          "sha256": "cdb197a382257e80",
+          "description": "Vocabulário compartilhado"
+        },
+        {
+          "id": "claude-md-meta",
+          "path": "CLAUDE.md",
+          "type": "documentation",
+          "audience": [
+            "framework-maintainer"
+          ],
+          "version": "0.10.0",
+          "sha256": null,
+          "description": "Meta-doc para devs do framework (atualizado em Forge-11 com seção Master Prompt para projetos consumidores)"
+        },
+        {
+          "id": "claude-md-template",
+          "path": "CLAUDE.md.template",
+          "type": "template",
+          "audience": [
+            "human-developer"
+          ],
+          "version": "0.1.0",
+          "sha256": "8dcc9b897286a023",
+          "description": "Template para projeto consumidor adaptar como CLAUDE.md raiz"
+        },
+        {
+          "id": "changelog",
+          "path": "CHANGELOG.md",
+          "type": "documentation",
+          "audience": [
+            "all"
+          ],
+          "version": "0.15.0",
+          "sha256": null,
+          "description": "Histórico de versões (entradas até v0.15.0 — Forge-14 Surface layer Fase 3)"
+        }
+      ],
+      "forge_docs": [
+        {
+          "id": "forge-readme",
+          "path": "docs/forge/README.md",
+          "type": "documentation",
+          "version": "0.12.0",
+          "sha256": null,
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Overview interno do framework (Forge-0 a Forge-12 Fase 2)"
+        },
+        {
+          "id": "forge-decisions",
+          "path": "docs/forge/decisions.md",
+          "type": "documentation",
+          "version": "0.15.0",
+          "sha256": null,
+          "description": "Decisões F1-F29 + F26-bis (F26 Forge-9 delivery-type agnostic; F26-bis Forge-10 AIOS TDD-first). Atualizada em v0.15.0 para refletir Forge-14 (Surface Fase 3 — router, persona auto-detect, glossário leigo, friendly-errors expandido, PLAYGROUND/04, schema AIOS configs, MAJOR bump policy)."
+        },
+        {
+          "id": "forge-roadmap",
+          "path": "docs/forge/roadmap.md",
+          "type": "documentation",
+          "version": "0.12.0",
+          "sha256": null,
+          "description": "Roadmap das 12 ondas (Forge-0 a Forge-12 Fase 2 entregues; Forge-13+ planejadas em AUDIT_2026-05-13_pendencias.md)"
+        },
+        {
+          "id": "forge-aios-telemetry-pattern",
+          "path": "docs/forge/aios-telemetry-pattern.md",
+          "type": "documentation",
+          "version": "0.1.0",
+          "sha256": "f906415e2db0f812",
+          "linked_principles": [
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Padrão oficial de telemetria Langfuse para agentes AIOS — campos obrigatórios, mock fallback, integração com hook langfuse-trace-check"
+        },
+        {
+          "id": "forge-reviewer-contract",
+          "path": "docs/forge/reviewer-contract.md",
+          "type": "documentation",
+          "version": "0.2.0",
+          "sha256": "ee12cd6920d08598",
+          "linked_principles": [
+            "C6"
+          ],
+          "description": "Contrato formal com reviewer DeepAgent — v0.2.0 inclui project.json como input obrigatório e checks ramificados por project_type/ai_enabled (Forge-9)"
+        },
+        {
+          "id": "forge-out-of-scope",
+          "path": "docs/forge/out-of-scope.md",
+          "type": "documentation",
+          "version": "0.2.0",
+          "sha256": "571ceeea1b844220",
+          "description": "O que NÃO entra no Forge"
+        },
+        {
+          "id": "forge-manifest",
+          "path": "docs/forge/manifest.json",
+          "type": "manifest",
+          "version": "0.15.0",
+          "sha256": null,
+          "linked_principles": [
+            "C6"
+          ],
+          "description": "Este arquivo - inventory machine-readable; sha256 fica null por autorreferência"
+        },
+        {
+          "id": "forge-helper-pattern",
+          "path": "docs/forge/helper-pattern.md",
+          "type": "documentation",
+          "version": "0.1.0",
+          "sha256": "d0b93da7fe5e4d23",
+          "linked_principles": [
+            "C5"
+          ],
+          "description": "Helper pattern (BMAD) — cache strategy para skills Tier 1 com meta de ≥70% redução de tokens"
+        },
+        {
+          "id": "forge-audit-2026-05-13",
+          "path": "docs/forge/AUDIT_2026-05-13_pendencias.md",
+          "type": "documentation",
+          "version": "1.0.0",
+          "sha256": null,
+          "linked_principles": [
+            "C1",
+            "C7"
+          ],
+          "description": "Auditoria de pendências do framework após adoção real por Acme Social (2026-05-13). 23 pendências catalogadas (6 P0 + 9 P1 + 8 P2); origina Forge-13/14/15 e cataloga F30-F52."
+        }
+      ]
+    },
+    "constitution": {
+      "id": "constitution",
+      "path": ".claude/CONSTITUTION.md",
+      "type": "constitution",
+      "version": "0.3.0",
+      "sha256": "e4c69f3817eac26c",
+      "owner": "Mantenedor",
+      "approval_required_for_change": true,
+      "description": "8 princípios genéricos versionados (C1-C8) — v0.3.0 delivery-type agnostic com matriz por project_type ({agentic_saas, platform, automation, hybrid})"
+    },
+    "settings": {
+      "id": "claude-settings",
+      "path": ".claude/settings.json",
+      "type": "settings",
+      "version": "0.4.1",
+      "sha256": "4e50af2d5fadbc86",
+      "description": "Permissões e hooks do Claude Code (Forge layer; settings.local.json continua para overrides do dev). Forge-4: 9 hooks ativos. _forge_version e _constitution_version espelham manifest — não são fonte canônica."
+    },
+    "templates": [
+      {
+        "id": "template-platform-sku-spec",
+        "path": "templates/platform-sku-spec.template.md",
+        "type": "template",
+        "version": "0.2.0",
+        "sha256": "27b24e9dc986f75d",
+        "linked_principles": [
+          "C1",
+          "C2",
+          "C3",
+          "C4"
+        ],
+        "use_case": "platform-sku",
+        "description": "Spec de SKU vertical em plataforma high-touch (cliente não loga, entrega async). Renomeado de sku-spec na v0.2.0."
+      },
+      {
+        "id": "template-product-spec",
+        "path": "templates/product-spec.template.md",
+        "type": "template",
+        "version": "0.2.0",
+        "sha256": "fe1e2ac56293d705",
+        "linked_principles": [
+          "C1",
+          "C2",
+          "C3",
+          "C8"
+        ],
+        "use_case": "self-serve-product",
+        "description": "Spec de produto self-serve (cliente loga, mensalidade fixa) — Acme Fin, Acme Educacional, etc."
+      },
+      {
+        "id": "template-diagnostic-spec",
+        "path": "templates/diagnostic-spec.template.md",
+        "type": "template",
+        "version": "0.2.0",
+        "sha256": "3e2af6d4e507796e",
+        "linked_principles": [
+          "C1",
+          "C2"
+        ],
+        "use_case": "diagnostic-fase-0",
+        "description": "Spec de Diagnóstico/Fase 0 cobrável"
+      },
+      {
+        "id": "template-adr",
+        "path": "templates/adr.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "5e2b540c6c786091",
+        "linked_principles": [
+          "C7"
+        ],
+        "description": "Architecture Decision Record"
+      },
+      {
+        "id": "template-eval-case",
+        "path": "templates/eval-case.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "b9a98d6a2f027917",
+        "linked_principles": [
+          "C4"
+        ],
+        "description": "Caso de eval suite por SKU/produto"
+      },
+      {
+        "id": "template-unit-economics",
+        "path": "templates/unit-economics.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "6c625d50f9641ffb",
+        "linked_principles": [
+          "C3"
+        ],
+        "description": "Validação de unit economics (regra C3)"
+      },
+      {
+        "id": "template-lifecycle-stage",
+        "path": "templates/lifecycle-stage.template.md",
+        "type": "template",
+        "version": "0.2.0",
+        "sha256": "0166ee9c5e3406e3",
+        "linked_principles": [],
+        "description": "Declaração de stage atual (Discovery → MVP → Beta → GA → Maturity → Sunset) com critérios de promoção"
+      },
+      {
+        "id": "template-monthly-audit",
+        "path": "templates/monthly-audit.template.md",
+        "type": "template",
+        "version": "0.2.0",
+        "sha256": "68532ce28eca8f04",
+        "linked_principles": [
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7",
+          "C8"
+        ],
+        "description": "Output do reviewer DeepAgent — relatório mensal de auditoria"
+      },
+      {
+        "id": "template-clickup-blueprint",
+        "path": "templates/clickup-blueprint.template.md",
+        "type": "template",
+        "version": "0.2.0",
+        "sha256": "31c3e9a545d10b52",
+        "linked_principles": [
+          "C5"
+        ],
+        "description": "Estrutura ClickUp aplicando Three-tier (Sincra) — opcional"
+      },
+      {
+        "id": "template-adr-reviewer-runtime",
+        "path": "templates/adr-reviewer-runtime.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "aac68d6ba05ee98a",
+        "linked_principles": [
+          "C6"
+        ],
+        "use_case": "consumer-adr-002",
+        "description": "Template para ADR-002 do projeto consumidor — runtime do reviewer DeepAgent (D1-D7: local de execução, modelo, telemetry, cadência, output, auto-rollback, credenciais)"
+      },
+      {
+        "id": "template-playbook",
+        "path": "templates/playbook.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "2c862e6c0162008c",
+        "linked_principles": [
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "C8"
+        ],
+        "use_case": "vertical-playbook",
+        "description": "Template para playbook vertical — blocos reutilizáveis, padrões de integração e métricas de esforço. Meta: cliente 2 custa ≤30% do cliente 1."
+      },
+      {
+        "id": "template-retrospective",
+        "path": "templates/retrospective.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "f07e2211fe5d4bad",
+        "linked_principles": [
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "C6"
+        ],
+        "use_case": "sku-retrospective",
+        "description": "Template de retrospectiva por SKU pós-AUTONOMOUS — compliance C1-C8, gate failures, métricas reais, lições aprendidas."
+      },
+      {
+        "id": "template-project-config",
+        "path": "templates/project.template.json",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "c2f9c75465d90442",
+        "linked_principles": [
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7",
+          "C8"
+        ],
+        "use_case": "consumer-project-declaration",
+        "description": "Forge-9 — Declaração canônica do consumidor: project_type ({agentic_saas, platform, automation, hybrid}), ai_enabled, economics_model, telemetry providers, modules[]. Lido pelo reviewer antes de qualquer check; defaults legados (agentic_saas + ai_enabled=true) quando ausente.",
+        "introduced_in": "Forge-9 (v0.8.0)"
+      },
+      {
+        "id": "template-platform-module-spec",
+        "path": "templates/platform-module-spec.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "4bb53747d4bb0735",
+        "linked_principles": [
+          "C1",
+          "C2",
+          "C4",
+          "C6",
+          "C8"
+        ],
+        "use_case": "platform-module",
+        "description": "Forge-9 — Spec de módulo de plataforma (CRUD/CRM/financeiro/etc.). Outcome operacional verificável (tela/payload/audit log). Substitui platform-sku-spec quando ai_enabled=false. Também usado para automation-job (subset).",
+        "applies_to_project_types": [
+          "platform",
+          "automation",
+          "hybrid"
+        ],
+        "introduced_in": "Forge-9 (v0.8.0)"
+      },
+      {
+        "id": "template-platform-pilot-state",
+        "path": "templates/platform-pilot-state.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "ad3c1d7cccb95342",
+        "linked_principles": [
+          "C4"
+        ],
+        "use_case": "platform-promotion-log",
+        "description": "Forge-9 — Append-only log de transições DRAFT→STAGING→PILOT→CANONICAL→DEPRECATED para módulos platform. Versão platform de subscriptions/{id}/promotions.md (que existe para agentic). Lido pelo gate C4.platform.1 do reviewer e pelo /acme:promote.",
+        "applies_to_project_types": [
+          "platform",
+          "automation",
+          "hybrid"
+        ],
+        "introduced_in": "Forge-9 (v0.8.0)"
+      },
+      {
+        "id": "template-platform-acceptance-report",
+        "path": "templates/platform-acceptance-report.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "20a1b2286a290462",
+        "linked_principles": [
+          "C2",
+          "C4",
+          "C6"
+        ],
+        "use_case": "platform-canonical-acceptance",
+        "description": "Forge-9 — Registro formal de aceite humano antes de promover módulo platform a CANONICAL. Substitui (em platform/automation) a eval suite + shadow-mode-runner do agentic. Para criticality=critical, exige signature_hash do decisor cliente.",
+        "applies_to_project_types": [
+          "platform",
+          "automation",
+          "hybrid"
+        ],
+        "introduced_in": "Forge-9 (v0.8.0)"
+      },
+      {
+        "id": "template-delivery-economics",
+        "path": "templates/delivery-economics.template.md",
+        "type": "template",
+        "version": "0.1.0",
+        "sha256": "d73516955ea9e97c",
+        "linked_principles": [
+          "C3"
+        ],
+        "use_case": "platform-margin-validation",
+        "description": "Forge-9 — Cálculo de C3 quando ai_enabled=false: (infra + suporte + manutenção) / receita atribuída ≤ 25%. Para projetos com módulos IA, complementa unit-economics.md. Lido pelos checks C3.platform.* do reviewer.",
+        "applies_to_project_types": [
+          "platform",
+          "automation",
+          "hybrid"
+        ],
+        "introduced_in": "Forge-9 (v0.8.0)"
+      },
+      {
+        "id": "template-master-prompt",
+        "path": "templates/master-prompt.md",
+        "type": "template",
+        "version": "1.0.0",
+        "sha256": "bd49f94b605989ec",
+        "linked_principles": [
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C7",
+          "C8"
+        ],
+        "use_case": "consumer-orchestrator-prompt",
+        "description": "Master prompt universal de orquestração para projetos consumidores. Detecta project_type (agentic_saas/platform/automation/hybrid) e ai_enabled via manifest do consumidor, adapta interpretação de C1-C8, roteia slash commands /acme:* e invoca Guardians corretos. Substitui necessidade de instruções manuais por projeto.",
+        "applies_to_project_types": [
+          "agentic_saas",
+          "platform",
+          "automation",
+          "hybrid"
+        ],
+        "introduced_in": "Forge-11 (planned)"
+      }
+    ],
+    "templates_aios": {
+      "_status": "Forge-7 + Forge-10 (v0.9.0) — 6/6 agentes portáveis + orchestrator TDD-first + config com coverage_targets/test_commands. test_agent + review_agent + orchestrator atualizados para modo TDD; configs sobem para v0.2.0.",
+      "root": "templates/aios/",
+      "linked_principles": [
+        "C5",
+        "C6",
+        "C7",
+        "C8"
+      ],
+      "files": [
+        {
+          "id": "template-aios-readme",
+          "path": "templates/aios/README.md",
+          "type": "template-doc",
+          "version": "0.2.0",
+          "sha256": "0702de0cbbd62a8c",
+          "description": "Documentação dos placeholders, estrutura, pipeline TDD-first (v0.9.0+) e integração com CI/CD."
+        },
+        {
+          "id": "template-aios-orchestrator",
+          "path": "templates/aios/orchestrator.py.template",
+          "type": "template",
+          "version": "0.2.0",
+          "sha256": "3cbf9aeadf1ce037",
+          "linked_principles": [
+            "C4",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Pipeline TDD-first — spec → schema → test(red) → build → test(verify) → review. 3 gates humanos C4: pós-spec, pós-RED (operador confirma fail), pós-build (operador confirma green). Subcmd test --mode red|verify."
+        },
+        {
+          "id": "template-aios-config",
+          "path": "templates/aios/config.yaml.template",
+          "type": "template",
+          "version": "0.2.0",
+          "sha256": "71a6b2800abaef23",
+          "linked_principles": [
+            "C4",
+            "C7",
+            "C8"
+          ],
+          "description": "Config canônica AIOS — project.* + stack.{backend,frontend,database,tests_unit,tests_integration,tests_e2e} + coverage_targets{A,B,C}.{line,branch,critical_path} + test_commands{install,lint,typecheck,unit,integration,e2e,coverage_report_path} + modules[has_ui]."
+        },
+        {
+          "id": "template-aios-agent-spec",
+          "path": "templates/aios/agents/spec_agent/",
+          "path_kind": "directory",
+          "type": "template",
+          "version": "0.1.0",
+          "sha256": null,
+          "shared": false,
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Especializado por módulo — converte descrição em spec executável. Tier configurável (A/B/C)."
+        },
+        {
+          "id": "template-aios-agent-backend",
+          "path": "templates/aios/agents/backend_agent/",
+          "path_kind": "directory",
+          "type": "template",
+          "version": "0.1.0",
+          "sha256": null,
+          "shared": false,
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Especializado por módulo — implementa API + service layer. Stack lida de aios/config.yaml → stack.backend."
+        },
+        {
+          "id": "template-aios-agent-frontend",
+          "path": "templates/aios/agents/frontend_agent/",
+          "path_kind": "directory",
+          "type": "template",
+          "version": "0.1.0",
+          "sha256": null,
+          "shared": false,
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Especializado por módulo — implementa UI/telas. Stack lida de aios/config.yaml → stack.frontend."
+        },
+        {
+          "id": "template-aios-agent-schema",
+          "path": "templates/aios/agents/schema_agent/",
+          "path_kind": "directory",
+          "type": "template",
+          "version": "0.1.0",
+          "sha256": null,
+          "shared": true,
+          "stack_agnostic": true,
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Compartilhado e stack-agnostic — gera schema na stack declarada em aios/config.yaml → stack.database; se vazia, propõe 1-3 stacks com tradeoffs."
+        },
+        {
+          "id": "template-aios-agent-test",
+          "path": "templates/aios/agents/test_agent/",
+          "path_kind": "directory",
+          "type": "template",
+          "version": "0.2.0",
+          "sha256": null,
+          "shared": true,
+          "tdd_phase_aware": true,
+          "modes": [
+            "red",
+            "verify"
+          ],
+          "writes_physical_files": true,
+          "writes_scope": "tests/{module}/",
+          "linked_principles": [
+            "C4",
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "TDD-first (v0.9.0+) — modo red lê APENAS a spec e materializa arquivos físicos em tests/{module}/{unit,integration,e2e}/; modo verify revisa cobertura pós-build com VEREDICTO parseável. Coverage targets por tier lidos de aios/config.yaml → coverage_targets."
+        },
+        {
+          "id": "template-aios-agent-review",
+          "path": "templates/aios/agents/review_agent/",
+          "path_kind": "directory",
+          "type": "template",
+          "version": "0.2.0",
+          "sha256": null,
+          "shared": true,
+          "linked_principles": [
+            "C4",
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Revisa output contra spec + Constitution + gate TDD (RED→GREEN + coverage por tier + arquivos físicos em tests/{module}/{unit,integration,e2e}/). Inventário automático de testes físicos. Output parseável (APROVADO PARA MERGE: Sim/Não)."
+        }
+      ]
+    },
+    "templates_cicd": {
+      "_status": "Forge-8 + Forge-10 — 5 templates de CI/CD (v0.9.0). validate ganha gate G6 (TDD-RED phase check); novo forge-test.yml roda unit/integration/e2e com coverage gate por tier e DB ephemeral; cicd-checklist atualizado (39 itens, 29 🔴).",
+      "root": "templates/cicd/",
+      "linked_principles": [
+        "C1",
+        "C4",
+        "C6",
+        "C7"
+      ],
+      "files": [
+        {
+          "id": "template-cicd-validate",
+          "path": "templates/cicd/github-actions-validate.template.yml",
+          "type": "template",
+          "version": "0.2.0",
+          "sha256": "286f3bc21e0cc0a5",
+          "linked_principles": [
+            "C4",
+            "C6",
+            "C7"
+          ],
+          "use_case": "pr-validation",
+          "description": "Workflow GitHub Actions para todo PR — forge-doctor (7 checks), skill-security-scan (S1-S5), pre-merge G1-G5 + NOVO G6 tdd-red-phase-check (módulos em src/ exigem tests/{module}/unit/). Copiar para .github/workflows/forge-validate.yml."
+        },
+        {
+          "id": "template-cicd-test",
+          "path": "templates/cicd/github-actions-test.template.yml",
+          "type": "template",
+          "version": "0.1.0",
+          "sha256": "b27dffa4db576a92",
+          "linked_principles": [
+            "C4",
+            "C6",
+            "C7"
+          ],
+          "use_case": "functional-tests",
+          "description": "Workflow GitHub Actions (Forge v0.9.0+) que roda os testes funcionais do projeto consumidor — lint+typecheck, unit em matrix por módulo com coverage gate por tier, integration via Postgres ephemeral (Tier C bloqueante), e2e Playwright (módulos has_ui), resumo no PR. Comandos lidos de aios/config.yaml → test_commands. Copiar para .github/workflows/forge-test.yml."
+        },
+        {
+          "id": "template-cicd-eval",
+          "path": "templates/cicd/github-actions-eval.template.yml",
+          "type": "template",
+          "version": "0.1.0",
+          "sha256": "7a9cb8b69a172ff0",
+          "linked_principles": [
+            "C4",
+            "C6",
+            "C7"
+          ],
+          "use_case": "eval-automation",
+          "description": "Workflow GitHub Actions para eval automático em mudanças de prompts/ — detecta artifact_id, roda eval por categoria, falha PR se pass_rate < threshold, trace Langfuse obrigatório. Copiar para .github/workflows/forge-eval.yml."
+        },
+        {
+          "id": "template-cicd-audit",
+          "path": "templates/cicd/github-actions-audit.template.yml",
+          "type": "template",
+          "version": "0.1.0",
+          "sha256": "22e21ec086744f80",
+          "linked_principles": [
+            "C1",
+            "C4",
+            "C6"
+          ],
+          "use_case": "monthly-audit",
+          "description": "Workflow GitHub Actions com cron mensal (1ª seg. 06:00 UTC) — invoca forge-auditor DeepAgent, commit automático do relatório em docs/forge/audits/, Issue se SLA breach. Copiar para .github/workflows/forge-audit.yml."
+        },
+        {
+          "id": "template-cicd-checklist",
+          "path": "templates/cicd/cicd-checklist.template.md",
+          "type": "template",
+          "version": "0.2.0",
+          "sha256": "cd99e3cbdf43d5b5",
+          "linked_principles": [
+            "C1",
+            "C4",
+            "C6",
+            "C7"
+          ],
+          "use_case": "gate-6-evidence",
+          "description": "Checklist platform-agnostic com 39 itens (29 🔴, 10 🟡) — nova seção 3 'Testes funcionais do projeto cliente' (Forge v0.9.0+) com 11 itens 🔴 cobrindo workflow forge-test, coverage gate, integration sem mocks, e2e UI, Tier C bloqueante. Campo gate_6_status lido pelo promotion-officer."
+        }
+      ]
+    },
+    "reviewer_assets": [
+      {
+        "id": "reviewer-readme",
+        "path": "reviewer/README.md",
+        "type": "reviewer-asset",
+        "version": "0.4.1",
+        "sha256": "6f338028a12435da",
+        "audience": [
+          "deep-agent",
+          "human-developer"
+        ],
+        "description": "Índice do diretório reviewer/ — ordem de leitura, links para assets e deepagents/"
+      },
+      {
+        "id": "reviewer-prompt",
+        "path": "reviewer/prompt.template.md",
+        "type": "reviewer-asset",
+        "version": "0.5.0",
+        "sha256": null,
+        "audience": [
+          "deep-agent"
+        ],
+        "description": "System prompt para DeepAgent reviewer — v0.5.0 incorpora retroativamente checks C4.tdd.* (Forge-10 / F26-bis), C8.master_prompt.* (Forge-11 / F27) e C7.surface.* (Forge-12 / F28+F29). Política de retro-aplicação para audits geradas com prompt ≤ v0.3.0."
+      },
+      {
+        "id": "reviewer-output-schema",
+        "path": "reviewer/output-schema.json",
+        "type": "reviewer-asset",
+        "version": "0.2.0",
+        "sha256": "82c491b595eef64f",
+        "audience": [
+          "deep-agent"
+        ],
+        "description": "JSON schema do output da auditoria mensal"
+      },
+      {
+        "id": "reviewer-aios-agent-config-schema",
+        "path": "reviewer/aios-agent-config-schema.json",
+        "type": "schema",
+        "version": "1.0.0",
+        "sha256": null,
+        "audience": [
+          "framework-maintainer",
+          "deep-agent"
+        ],
+        "linked_principles": [
+          "C5",
+          "C7"
+        ],
+        "description": "JSON schema canônico para templates/aios/agents/*/config.json.template. Validado por forge-doctor C10 (Forge-14 / F43). Garante que os 6 agentes AIOS mantêm contrato consistente (name/description/tools/meta/build) ao bumpar versão."
+      },
+      {
+        "id": "reviewer-validation-rules",
+        "path": "reviewer/validation-rules.json",
+        "type": "reviewer-asset",
+        "version": "0.3.0",
+        "sha256": "2a0e4550b19f313b",
+        "audience": [
+          "deep-agent"
+        ],
+        "description": "Validation rules machine-readable para os 8 princípios — v0.3.0 estruturado em seções {common, agentic_saas, platform, automation, hybrid} com applies_when condicional (Forge-9)"
+      },
+      {
+        "id": "reviewer-example-audit",
+        "path": "reviewer/example-audit.md",
+        "type": "reviewer-asset",
+        "version": "0.2.0",
+        "sha256": "a13d2b13f7a95f03",
+        "audience": [
+          "deep-agent",
+          "framework-maintainer"
+        ],
+        "description": "Exemplo sintético de output bem-feito"
+      }
+    ],
+    "examples": [
+      {
+        "id": "example-acme",
+        "path": "examples/acme/",
+        "path_kind": "directory",
+        "type": "example",
+        "version": "0.1.0",
+        "description": "Caso Acme — projeto que originou o Forge",
+        "subartifacts": [
+          {
+            "path": "examples/acme/README.md",
+            "description": "Overview do caso",
+            "sha256": "d7101161603e6b0e"
+          },
+          {
+            "path": "examples/acme/portfolio.md",
+            "description": "Portfolio em 3 categorias (Diagnóstico/Plataforma/Produtos)",
+            "sha256": "4b8756b7cbc52c53"
+          },
+          {
+            "path": "examples/acme/constitution-extension.md",
+            "description": "C9, C10, C11 específicas Acme",
+            "sha256": "2c9824c792578719"
+          },
+          {
+            "path": "examples/acme/clickup-blueprint.md",
+            "description": "ClickUp interno Acme",
+            "sha256": "5add75f73e2fb6c5"
+          },
+          {
+            "path": "examples/acme/methodology/metodologia.md",
+            "description": "Metodologia Acme clássica",
+            "sha256": "ae5d58a2dece4a3b"
+          },
+          {
+            "path": "examples/acme/methodology/metodologia_acme.md",
+            "description": "Metodologia Acme SaaS²",
+            "sha256": "0f0ca3c9bd726cf6"
+          },
+          {
+            "path": "examples/acme/methodology/metodologia_sincra.md",
+            "description": "Metodologia Sincra (origem do C5)",
+            "sha256": "9382b040265a5d1b"
+          },
+          {
+            "path": "examples/acme/products/acme-fin.md",
+            "description": "Spec do Acme Fin (Beta em produção)",
+            "sha256": "88b5307a32f01ee5"
+          },
+          {
+            "path": "examples/acme/products/acme-educacional.md",
+            "description": "Acme Educacional (Discovery)",
+            "sha256": "56cf228336f041eb"
+          }
+        ]
+      }
+    ],
+    "skills": {
+      "L0": [
+        {
+          "id": "skill-company-dna",
+          "path": ".claude/skills/L0/company-dna.md",
+          "type": "skill",
+          "tier": 1,
+          "version": "0.1.0",
+          "sha256": "aad10a0a1c8b9108",
+          "linked_principles": [
+            "C5",
+            "C7"
+          ],
+          "helper_pattern": "bmad",
+          "cache_strategy": "ephemeral-strong",
+          "reads_from_tier": [
+            1
+          ],
+          "must_not_read": [
+            2,
+            3
+          ],
+          "description": "Carrega DNA da organização (purpose, mission, values, north-star) em YAML compacto cacheável."
+        },
+        {
+          "id": "skill-icp-loader",
+          "path": ".claude/skills/L0/icp-loader.md",
+          "type": "skill",
+          "tier": 1,
+          "version": "0.1.0",
+          "sha256": "798e4884e7c7ceaf",
+          "linked_principles": [
+            "C5",
+            "C7"
+          ],
+          "helper_pattern": "bmad",
+          "cache_strategy": "ephemeral-strong",
+          "reads_from_tier": [
+            1
+          ],
+          "must_not_read": [
+            2,
+            3
+          ],
+          "description": "Carrega ICP (Ideal Customer Profile) com sinais de qualificação e anti-ICP."
+        },
+        {
+          "id": "skill-offerings-loader",
+          "path": ".claude/skills/L0/offerings-loader.md",
+          "type": "skill",
+          "tier": 1,
+          "version": "0.1.0",
+          "sha256": "f4922a95964541af",
+          "linked_principles": [
+            "C2",
+            "C5",
+            "C7"
+          ],
+          "helper_pattern": "bmad",
+          "cache_strategy": "ephemeral-strong",
+          "reads_from_tier": [
+            1
+          ],
+          "must_not_read": [
+            2,
+            3
+          ],
+          "description": "Carrega catálogo de ofertas (produtos, SKUs, diagnósticos) com lifecycle_stage e pricing_model."
+        },
+        {
+          "id": "skill-using-forge",
+          "path": ".claude/skills/L0/using-forge.md",
+          "type": "skill",
+          "tier": 0,
+          "version": "1.0.0",
+          "sha256": "bfeec206dc68bc9e",
+          "description": "Meta-skill Forge: flowchart de descoberta, hierarquia de contexto C5, modos de operação. Injetada pelo SessionStart hook.",
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "auto_inject": true
+        }
+      ],
+      "L1": [
+        {
+          "id": "skill-baseline-cost-builder",
+          "path": ".claude/skills/L1/baseline-cost-builder.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "0.1.0",
+          "sha256": "d42618c19f53b7d6",
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C3"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none",
+          "reads_from_tier": [
+            1,
+            2
+          ],
+          "must_not_read": [
+            3
+          ],
+          "requires_helper": [
+            "company-dna",
+            "offerings-loader"
+          ],
+          "description": "Calcula custo humano baseline (volume × tempo × custo-hora) e deriva preço de venda mínimo para cumprir hard gate C3."
+        },
+        {
+          "id": "skill-diagnostic-runner",
+          "path": ".claude/skills/L1/diagnostic-runner.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "0.1.0",
+          "sha256": "55ec8b58a9d73543",
+          "linked_principles": [
+            "C1",
+            "C2"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none",
+          "reads_from_tier": [
+            1,
+            2
+          ],
+          "must_not_read": [
+            3
+          ],
+          "requires_helper": [
+            "company-dna",
+            "icp-loader",
+            "offerings-loader"
+          ],
+          "description": "Executa roteiro estruturado de diagnóstico Fase 0 (10 blocos) — produz docs/clients/{client}/diagnostic.md. Critério: relatório em ≤10 min."
+        },
+        {
+          "id": "skill-process-mapper",
+          "path": ".claude/skills/L1/process-mapper.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "0.1.0",
+          "sha256": "1df580bd4833d2a8",
+          "linked_principles": [
+            "C1",
+            "C5",
+            "C7"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none",
+          "reads_from_tier": [
+            1,
+            2
+          ],
+          "must_not_read": [
+            3
+          ],
+          "requires_helper": [
+            "offerings-loader"
+          ],
+          "description": "Mapeia processo as-is em formato agent-ready (trigger, steps, decision points, métricas, automatable hypotheses + agent_readiness_score)."
+        },
+        {
+          "id": "skill-forge-release-discipline",
+          "path": ".claude/skills/L1/forge-release-discipline.md",
+          "type": "skill",
+          "tier": 1,
+          "version": "1.0.0",
+          "sha256": "9076a803fd7c911b",
+          "description": "Disciplina de versionamento SemVer + git workflow para o Forge framework e consumer projects: checklist de release, padrão de commit, branches de vida curta, save point pattern. Adaptado de git-workflow-and-versioning (agent-skills).",
+          "linked_principles": [
+            "C4",
+            "C5"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        },
+        {
+          "id": "skill-context-engineering",
+          "path": ".claude/skills/L1/context-engineering.md",
+          "type": "skill",
+          "tier": 1,
+          "version": "1.0.0",
+          "sha256": null,
+          "description": "Curadoria deliberada do contexto do agente: hierarquia L0/L1/L2 como context engineering, CLAUDE.md como rules file, SessionStart hook, confusion management e anti-patterns. Adaptado de context-engineering (agent-skills).",
+          "linked_principles": [
+            "C1",
+            "C5",
+            "C6"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        },
+        {
+          "id": "skill-sdk-migration",
+          "path": ".claude/skills/L1/sdk-migration.md",
+          "type": "skill",
+          "tier": 1,
+          "version": "1.0.0",
+          "sha256": null,
+          "description": "Migracoes de SDK externo (Anthropic, Langfuse, Prisma), modelos depreciados e atualizacoes do Forge framework em consumers. Patterns: Strangler, Adapter, Feature Flag. Adaptado de deprecation-and-migration (agent-skills).",
+          "linked_principles": [
+            "C7",
+            "C4"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        },
+        {
+          "id": "skill-self-harness",
+          "path": ".claude/skills/L1/self-harness.md",
+          "type": "skill",
+          "tier": "L1",
+          "version": "1.0.0",
+          "sha256": "57204ceb0fdc588a",
+          "description": "Skill L1: ensina o pattern self-harness (loop fechado de aprendizado) para agentes Forge (Forge-20).",
+          "linked_principles": [
+            "C1",
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ]
+        }
+      ],
+      "L2": [
+        {
+          "id": "skill-artifact-prompt-builder",
+          "path": ".claude/skills/L2/artifact-prompt-builder.md",
+          "type": "skill",
+          "tier": 3,
+          "version": "0.1.0",
+          "sha256": "fda147fe146e14de",
+          "linked_principles": [
+            "C2",
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none",
+          "reads_from_tier": [
+            1,
+            2,
+            3
+          ],
+          "must_not_read": [],
+          "requires_helper": [
+            "company-dna",
+            "offerings-loader"
+          ],
+          "description": "Constrói system prompt versionado em 9 seções canônicas com prompt_hash, instrumentação C6 obrigatória e zero hardcode por tenant. Disparou recalc_unit_economics_required."
+        },
+        {
+          "id": "skill-eval-case-author",
+          "path": ".claude/skills/L2/eval-case-author.md",
+          "type": "skill",
+          "tier": 3,
+          "version": "0.1.0",
+          "sha256": "ff8db18e3b39b868",
+          "linked_principles": [
+            "C2",
+            "C4",
+            "C6"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none",
+          "reads_from_tier": [
+            1,
+            2,
+            3
+          ],
+          "must_not_read": [],
+          "requires_helper": [
+            "offerings-loader"
+          ],
+          "description": "Gera eval cases (real/synthetic/edge/adversarial) com sanitização PII, gabarito justificado e cobertura por outcome_category (≥30 para passar C4)."
+        },
+        {
+          "id": "skill-shadow-mode-runner",
+          "path": ".claude/skills/L2/shadow-mode-runner.md",
+          "type": "skill",
+          "tier": 3,
+          "version": "0.1.0",
+          "sha256": "abc5a3fdb90bfa10",
+          "linked_principles": [
+            "C4",
+            "C6"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none",
+          "reads_from_tier": [
+            1,
+            2,
+            3
+          ],
+          "must_not_read": [],
+          "requires_helper": [
+            "offerings-loader"
+          ],
+          "description": "Coordena modo SHADOW (start/tick/report) com mínimo 14 dias mandatórios, output isolado em runs/{client}/shadow/, métricas de concordância e recomendação de promoção (decisão humana)."
+        },
+        {
+          "id": "skill-doubt-driven-review",
+          "path": ".claude/skills/L2/doubt-driven-review.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "1.0.0",
+          "sha256": "538a8d3908b38191",
+          "description": "Revisão adversarial fresh-context de artefatos Forge antes de SHADOW/promote/merge. Adaptado de doubt-driven-development (agent-skills).",
+          "linked_principles": [
+            "C2",
+            "C4",
+            "C6",
+            "C7"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        },
+        {
+          "id": "skill-debugging-pipeline",
+          "path": ".claude/skills/L2/debugging-pipeline.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "1.0.0",
+          "sha256": "88183b23bb468f52",
+          "description": "Depuração sistemática de artefatos Forge: hooks com falha, regressão de eval, anomalia de SHADOW, prompt com comportamento inesperado. Adaptado de debugging-and-error-recovery (agent-skills).",
+          "linked_principles": [
+            "C4",
+            "C6"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        },
+        {
+          "id": "skill-prompt-simplification",
+          "path": ".claude/skills/L2/prompt-simplification.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "1.0.0",
+          "sha256": "995fe66f1698034c",
+          "description": "Simplificação de prompt Forge (redução de tokens C3) e código de consumer project (integra com pre-merge-check G1-G3). Adaptado de code-simplification (agent-skills).",
+          "linked_principles": [
+            "C3",
+            "C5",
+            "C6",
+            "C7"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        },
+        {
+          "id": "skill-source-driven-implementation",
+          "path": ".claude/skills/L2/source-driven-implementation.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "1.0.0",
+          "sha256": null,
+          "description": "Fundamenta decisoes de SDK em documentacao oficial antes de implementar. Detecta versoes de Anthropic SDK/Langfuse/Prisma, busca doc oficial, cita fontes. Adaptado de source-driven-development (agent-skills).",
+          "linked_principles": [
+            "C6",
+            "C7"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        },
+        {
+          "id": "skill-wave-implementation",
+          "path": ".claude/skills/L2/wave-implementation.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "1.0.0",
+          "sha256": null,
+          "description": "Implementa em ondas verticais finas com forge-doctor como gate entre commits. TDD-red first (Forge-10), disciplina de escopo C8, save point pattern. Adaptado de incremental-implementation (agent-skills).",
+          "linked_principles": [
+            "C3",
+            "C6",
+            "C8"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        },
+        {
+          "id": "skill-llm-security-hardening",
+          "path": ".claude/skills/L2/llm-security-hardening.md",
+          "type": "skill",
+          "tier": 2,
+          "version": "1.0.0",
+          "sha256": null,
+          "description": "Hardening LLM-especifico: prompt injection, PII em eval cases (LGPD/GDPR), secret leakage em traces Langfuse, validacao TenantContext na fronteira. Integra com secret-scan.sh e security-privacy-guardian. Adaptado de security-and-hardening (agent-skills).",
+          "linked_principles": [
+            "C6",
+            "C8"
+          ],
+          "helper_pattern": "none",
+          "cache_strategy": "none"
+        }
+      ],
+      "_status": "Forge-18 complete -- L0: 4/4, L1: 6/6, L2: 9/9. Skills SDLC: debugging-pipeline, prompt-simplification, forge-release-discipline (F51) + source-driven-implementation, wave-implementation, context-engineering (F52) + sdk-migration, llm-security-hardening (F53)."
+    },
+    "agents": {
+      "guardians_opus": [
+        {
+          "id": "agent-po-guardian",
+          "path": ".claude/agents/po-guardian.md",
+          "type": "subagent",
+          "model": "claude-opus-4-7",
+          "version": "0.1.0",
+          "sha256": "897ece9beb29c8eb",
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C8"
+          ],
+          "description": "Product Owner — valida outcome clause, ICP fit, scope. Cross-approver of /acme:promote (par com promotion-officer)."
+        },
+        {
+          "id": "agent-artifact-architect",
+          "path": ".claude/agents/artifact-architect.md",
+          "type": "subagent",
+          "model": "claude-opus-4-7",
+          "version": "0.1.0",
+          "sha256": "b7b1ef362998b221",
+          "linked_principles": [
+            "C5",
+            "C7",
+            "C8"
+          ],
+          "description": "Technical architect — valida agent_readiness, layers, abstractions. Renomeado de sku-architect (v0.2.0)."
+        },
+        {
+          "id": "agent-unit-economist",
+          "path": ".claude/agents/unit-economist.md",
+          "type": "subagent",
+          "model": "claude-opus-4-7",
+          "version": "0.1.0",
+          "sha256": "cc278035adc73274",
+          "linked_principles": [
+            "C3"
+          ],
+          "description": "Economic firewall — c3_check, baseline-cost, recalc_unit_economics. Bloqueia /acme:sla-threshold se unviable."
+        },
+        {
+          "id": "agent-forge-router",
+          "path": ".claude/agents/forge-router.md",
+          "type": "subagent",
+          "model": "claude-sonnet-4-6",
+          "version": "1.0.0",
+          "sha256": null,
+          "tier": "router",
+          "linked_principles": [
+            "C7"
+          ],
+          "description": "Roteador de linguagem natural → pipeline /acme:* canônico. Catálogo fechado de 9 intents (diagnose, create_artifact, compute_economics, plan_implementation, implement_now, run_eval, promote, audit, status). Modo persona-aware (vibe/dev/agent via .forge-mode). Output YAML parseável. Refuse-to-invent novos intents. Forge-14 / F34."
+        },
+        {
+          "id": "agent-promotion-officer",
+          "path": ".claude/agents/promotion-officer.md",
+          "type": "subagent",
+          "model": "claude-opus-4-7",
+          "version": "0.1.0",
+          "sha256": "f826910d5a3c638e",
+          "linked_principles": [
+            "C4"
+          ],
+          "description": "Promotion authority — assina transição de modo (Gate 5 do /acme:promote). Cross-approval mandatório com po-guardian."
+        }
+      ],
+      "guardians_sonnet": [
+        {
+          "id": "agent-eval-engineer",
+          "path": ".claude/agents/eval-engineer.md",
+          "type": "subagent",
+          "model": "claude-sonnet-4-6",
+          "version": "0.1.0",
+          "sha256": "14658f07008ce596",
+          "linked_principles": [
+            "C2",
+            "C4",
+            "C6"
+          ],
+          "description": "Eval suite quality — coverage por outcome_category, source_mode breakdown, ground-truth justification, regressão por prompt_hash."
+        },
+        {
+          "id": "agent-tenant-context-curator",
+          "path": ".claude/agents/tenant-context-curator.md",
+          "type": "subagent",
+          "model": "claude-sonnet-4-6",
+          "version": "0.1.0",
+          "sha256": "caf0ce5384a19b84",
+          "linked_principles": [
+            "C8"
+          ],
+          "description": "Anti-customização — TenantContext schema, lint regex C8 em src/skus, src/products, src/skills."
+        },
+        {
+          "id": "agent-observability-guardian",
+          "path": ".claude/agents/observability-guardian.md",
+          "type": "subagent",
+          "model": "claude-sonnet-4-6",
+          "version": "0.1.0",
+          "sha256": "78df64faf6e1b4c5",
+          "linked_principles": [
+            "C6"
+          ],
+          "description": "Telemetry coverage — Section 8 dos prompts, observe() wrapper, trace_coverage ≥99%, prompt_hash drift detection."
+        },
+        {
+          "id": "agent-security-privacy-guardian",
+          "path": ".claude/agents/security-privacy-guardian.md",
+          "type": "subagent",
+          "model": "claude-sonnet-4-6",
+          "version": "0.1.0",
+          "sha256": "ea0ffb33affeaedb",
+          "linked_principles": [
+            "C6",
+            "C8"
+          ],
+          "description": "PII/LGPD/secrets — lint em eval-cases, prompts, traces. Assinatura terceira mandatória para assisted_to_autonomous."
+        }
+      ],
+      "cross_llm_reviewers": [
+        {
+          "id": "agent-code-reviewer-claude",
+          "path": ".claude/agents/code-reviewer-claude.md",
+          "type": "subagent",
+          "model": "claude-sonnet-4-6",
+          "version": "0.1.0",
+          "sha256": "dec363deb43e2dd5",
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Code review nativo Claude — focado em PR diff (src/, prompts/, evals/) com checks C5-C8."
+        },
+        {
+          "id": "agent-code-reviewer-cross",
+          "path": ".claude/agents/code-reviewer-cross.md",
+          "type": "subagent",
+          "model": "claude-haiku-4-5-20251001",
+          "version": "0.1.0",
+          "sha256": "e1c3fcf137868d51",
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "delegates_to": "forge-auditor (DeepAgent skill)",
+          "description": "Bridge Claude Code → LangChain DeepAgent. Não revisa código diretamente — invoca deepagents CLI e traduz output. F17/F18."
+        }
+      ],
+      "_status": "Forge-3 — 10/10 agents delivered (4 Opus Guardians + 4 Sonnet Guardians + 2 cross-LLM reviewers). Pending: ADR-002 in consumer + first monthly audit run.",
+      "agent-learning-curator": {
+        "id": "agent-learning-curator",
+        "path": ".claude/agents/learning-curator.md",
+        "type": "agent",
+        "version": "1.0.0",
+        "sha256": "491b48df06ad16db",
+        "description": "Guardian: revisa learning snapshots e propõe patches ao agent-memory.md do consumer (Forge-20).",
+        "linked_principles": [
+          "C5",
+          "C6",
+          "C7",
+          "C8"
+        ]
+      }
+    },
+    "commands": {
+      "spec_economics": [
+        {
+          "id": "command-diagnose",
+          "path": ".claude/commands/acme/diagnose.md",
+          "type": "slash-command",
+          "version": "0.2.0",
+          "sha256": "bf5c3b92d9554a34",
+          "linked_principles": [
+            "C1",
+            "C2"
+          ],
+          "invokes_skills": [
+            "company-dna",
+            "icp-loader",
+            "offerings-loader",
+            "diagnostic-runner"
+          ],
+          "trace_required": true,
+          "project_type_aware": true,
+          "description": "Conduz Fase 0 cobrável (10 blocos) — porta de entrada do pipeline. v0.2.0 (Forge-9): aceita --project_type ∈ {agentic_saas, platform, automation, hybrid} e --ai_enabled. Output: docs/clients/{client_id}/diagnostic.md."
+        },
+        {
+          "id": "command-spec",
+          "path": ".claude/commands/acme/spec.md",
+          "type": "slash-command",
+          "version": "0.2.0",
+          "sha256": "3bdf1cbc1670e4c8",
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C8"
+          ],
+          "invokes_skills": [
+            "company-dna",
+            "offerings-loader",
+            "process-mapper"
+          ],
+          "trace_required": true,
+          "project_type_aware": true,
+          "description": "Gera spec do artefato com cláusula de outcome literal. v0.2.0 (Forge-9): --type ∈ {platform-sku, product, diagnostic, platform-module, automation-job} com type_compatibility_matrix por project_type."
+        },
+        {
+          "id": "command-unit-economics",
+          "path": ".claude/commands/acme/unit-economics.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "297017d90af15ed3",
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C3"
+          ],
+          "invokes_skills": [
+            "offerings-loader",
+            "baseline-cost-builder"
+          ],
+          "trace_required": true,
+          "description": "Calcula baseline humano e deriva preço mínimo C3. Bloqueia /acme:sla-threshold se c3_check.status == unviable."
+        },
+        {
+          "id": "command-sla-threshold",
+          "path": ".claude/commands/acme/sla-threshold.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "81a4a23dcf3566f4",
+          "linked_principles": [
+            "C2",
+            "C3",
+            "C4"
+          ],
+          "invokes_skills": [
+            "offerings-loader"
+          ],
+          "trace_required": true,
+          "human_approval_required": true,
+          "description": "Pré-contrata SLA mensurável (agreement_rate, latency_p95, cost_per_outcome, min_run_count, min_window_days). Persiste em spec.c4_thresholds com signature_hash."
+        }
+      ],
+      "implementation": [
+        {
+          "id": "command-plan",
+          "path": ".claude/commands/acme/plan.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "73c0c62d101c1ffb",
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "invokes_skills": [
+            "offerings-loader"
+          ],
+          "trace_required": true,
+          "description": "Plano técnico em 8 seções canônicas (escopo, camadas, fluxo, instrumentação, tenant, cronograma, riscos, critérios). Não escolhe modelo final."
+        },
+        {
+          "id": "command-tasks",
+          "path": ".claude/commands/acme/tasks.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "be168329714495ea",
+          "linked_principles": [
+            "C1",
+            "C5",
+            "C6"
+          ],
+          "invokes_skills": [],
+          "trace_required": true,
+          "description": "Quebra plan em DAG de tasks ordenadas em 5 ondas (scaffolding → prompt → eval seed → SHADOW prep → metrics) com gate de pronto por task."
+        },
+        {
+          "id": "command-implement",
+          "path": ".claude/commands/acme/implement.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "52c16a31968d3712",
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "invokes_skills": [
+            "artifact-prompt-builder",
+            "eval-case-author",
+            "offerings-loader"
+          ],
+          "trace_required": true,
+          "description": "Executa as 5 ondas do tasks.md, gera scaffolding com instrumentação obrigatória e camada de abstração; pausa em gates subjetivos. NÃO inicia SHADOW (responsabilidade de /acme:promote)."
+        }
+      ],
+      "validation": [
+        {
+          "id": "command-eval",
+          "path": ".claude/commands/acme/eval.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "cc9c85c113076f26",
+          "linked_principles": [
+            "C2",
+            "C4",
+            "C6"
+          ],
+          "invokes_skills": [
+            "offerings-loader"
+          ],
+          "trace_required": true,
+          "description": "Executa eval suite contra prompt atual; pass rate por outcome_category, source_mode breakdown, regressão vs último run com mesmo prompt_hash. Output: evals/{id}/runs/{date}-eval-{prompt_hash}.md."
+        },
+        {
+          "id": "command-promote",
+          "path": ".claude/commands/acme/promote.md",
+          "type": "slash-command",
+          "version": "0.3.0",
+          "sha256": "714438d6dd0a82c3",
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C6"
+          ],
+          "invokes_skills": [
+            "offerings-loader",
+            "shadow-mode-runner"
+          ],
+          "trace_required": true,
+          "human_approval_required": true,
+          "gate_count": 6,
+          "project_type_aware": true,
+          "description": "Único caminho legítimo para mudar estado/modo. v0.3.0 (Forge-9): aceita transições agentic (start_shadow/shadow_to_assisted/assisted_to_autonomous) OU platform (to_staging/to_pilot/to_canonical/to_deprecated). 6 gates reinterpretados quando ai_enabled=false. Persiste em subscriptions/{id}/promotions.md (agentic) ou docs/specs/{module}.pilot-state.md (platform)."
+        },
+        {
+          "id": "command-audit-monthly",
+          "path": ".claude/commands/acme/audit-monthly.md",
+          "type": "slash-command",
+          "version": "0.2.0",
+          "sha256": "541062aad872f622",
+          "linked_principles": [
+            "C1",
+            "C3",
+            "C4",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "invokes_skills": [
+            "offerings-loader"
+          ],
+          "trace_required": true,
+          "deep_agent_consumable": true,
+          "project_type_aware": true,
+          "description": "Sample 5-10% de runs (agentic) ou audited_actions (platform). v0.2.0 (Forge-9): ramifica auditoria por project_type — outcomes/Langfuse para agentic, audit_log/E2E tests para platform. Output: docs/forge/audits/{YYYY-MM}.md."
+        },
+        {
+          "id": "command-pre-merge-check",
+          "path": ".claude/commands/acme/pre-merge-check.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "6650bb0c72201e77",
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "invokes_skills": [],
+          "trace_required": false,
+          "read_only": true,
+          "gate_count": 5,
+          "description": "Read-only consolidação de 5 gates (C7 imports, C8 hardcode, C6 observe, manifest sync, eval green) — go/no-go para CI/pre-commit. Exit code 0/1/2 conforme overall."
+        }
+      ],
+      "_status": "Forge-2+5+6+7 — 15 commands: spec_economics 4/4 + implementation 3/3 + validation 4/4 + playbooks 1/1 + aios 3/3 (aios-init v0.2.0 copia de templates físicos a partir de Forge-7).",
+      "aios": [
+        {
+          "id": "command-aios-init",
+          "path": ".claude/commands/acme/aios-init.md",
+          "type": "slash-command",
+          "version": "0.2.0",
+          "sha256": "8a517474636c7d7e",
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "invokes_skills": [],
+          "trace_required": false,
+          "description": "Scaffolda aios/agents/{module}/ COPIANDO de templates/aios/ (Forge-7). Cobre 6 agentes (3 especializados + 3 compartilhados criados se ausentes). Gera orchestrator/config quando ausentes. Gate: 7 checks antes de copiar qualquer arquivo."
+        },
+        {
+          "id": "command-aios-run",
+          "path": ".claude/commands/acme/aios-run.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "bd280b51b61cd5b6",
+          "linked_principles": [
+            "C4",
+            "C6",
+            "C7"
+          ],
+          "invokes_skills": [],
+          "trace_required": true,
+          "description": "Wrapper para python aios/orchestrator.py pipeline. Health check, execução com gates humanos C4 obrigatórios, telemetria C6. Não re-executa automaticamente após gate rejeitado."
+        },
+        {
+          "id": "command-aios-status",
+          "path": ".claude/commands/acme/aios-status.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "f1a90195d4058fe5",
+          "linked_principles": [
+            "C4",
+            "C6"
+          ],
+          "invokes_skills": [],
+          "trace_required": false,
+          "read_only": true,
+          "description": "Read-only — exibe tabela de status de todos os módulos AIOS (spec/backend/frontend/testes/review/kernel). Detecta BLOCKERs em review. Fallback filesystem sem kernel."
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "command-playbook-extract",
+          "path": ".claude/commands/acme/playbook-extract.md",
+          "type": "slash-command",
+          "version": "0.1.0",
+          "sha256": "2a9613662afae6b6",
+          "linked_principles": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "invokes_skills": [
+            "offerings-loader"
+          ],
+          "trace_required": false,
+          "requires_autonomous_sku": true,
+          "description": "Extrai playbook vertical a partir de SKUs em AUTONOMOUS. Gera docs/playbooks/{vertical}/playbook.md + docs/retrospectives/{sku}/retrospective.md."
+        }
+      ]
+    },
+    "hooks": {
+      "_status": "Forge-15 complete — 10 hooks ativos (1 SessionStart + 5 PreToolUse + 4 PostToolUse + 2 Stop) + skill-security-scan + bypass auditado",
+      "bypass_env_var": "ACME_FORGE_BYPASS",
+      "bypass_log_path": "docs/forge/bypass-log/",
+      "pre_tool_use": [
+        {
+          "id": "hook-outcome-clause-guard",
+          "path": "hooks/pre-tool-use/outcome-clause-guard.sh",
+          "type": "hook",
+          "hook_type": "PreToolUse",
+          "matcher": "Edit|Write",
+          "version": "0.1.0",
+          "sha256": "3057c402e6190008",
+          "linked_principles": [
+            "C2"
+          ],
+          "exit_block": 2,
+          "bypass_aware": true,
+          "description": "Bloqueia edição de cláusulas de outcome aprovadas em docs/onda-*/clients/**."
+        },
+        {
+          "id": "hook-adr-approval-gate",
+          "path": "hooks/pre-tool-use/adr-approval-gate.sh",
+          "type": "hook",
+          "hook_type": "PreToolUse",
+          "matcher": "Edit|Write",
+          "version": "0.1.0",
+          "sha256": "f8c7fd5b18dd872e",
+          "linked_principles": [
+            "C7"
+          ],
+          "exit_block": 2,
+          "bypass_aware": true,
+          "description": "Bloqueia edição de ADRs com aprovação já assinada."
+        },
+        {
+          "id": "hook-secret-scan",
+          "path": "hooks/pre-tool-use/secret-scan.sh",
+          "type": "hook",
+          "hook_type": "PreToolUse",
+          "matcher": "Edit|Write",
+          "version": "0.1.0",
+          "sha256": "54e3bb052b81d61c",
+          "linked_principles": [
+            "C6",
+            "C8"
+          ],
+          "exit_block": 2,
+          "bypass_aware": true,
+          "description": "Detecta API keys, tokens e connection strings hardcoded antes de escrever."
+        },
+        {
+          "id": "hook-any-type-guard",
+          "path": "hooks/pre-tool-use/any-type-guard.sh",
+          "type": "hook",
+          "hook_type": "PreToolUse",
+          "matcher": "Edit|Write",
+          "version": "0.1.0",
+          "sha256": "4fb9e4cd6df576b3",
+          "linked_principles": [
+            "C7",
+            "C8"
+          ],
+          "exit_block": 2,
+          "bypass_aware": true,
+          "description": "Bloqueia uso de 'any' TypeScript em src/skus/** e src/agents/**."
+        },
+        {
+          "id": "hook-persona-detect",
+          "path": "hooks/pre-tool-use/persona-detect.sh",
+          "type": "hook",
+          "hook_type": "PreToolUse",
+          "matcher": "Edit|Write",
+          "version": "1.0.0",
+          "sha256": null,
+          "linked_principles": [
+            "C7"
+          ],
+          "exit_block": null,
+          "bypass_aware": false,
+          "lgpd_safe": true,
+          "description": "Detecta persona (vibe/dev/agent) na PRIMEIRA invocação baseado em sinais de FILESYSTEM (presença de src/, package.json, docs/clients/, TTY, team.has_non_technical_stakeholder em project.json). NUNCA lê conteúdo de prompts ou histórico shell (LGPD-safe). One-shot — após primeira detecção (.forge-mode existe) é no-op idempotente. Guard contra canonical repo. Log auditável em docs/forge/persona-detection.log. Forge-14 / F35."
+        }
+      ],
+      "post_tool_use": [
+        {
+          "id": "hook-langfuse-trace-check",
+          "path": "hooks/post-tool-use/langfuse-trace-check.sh",
+          "type": "hook",
+          "hook_type": "PostToolUse",
+          "matcher": "Edit|Write",
+          "version": "0.1.0",
+          "sha256": "4c906885a5666d34",
+          "linked_principles": [
+            "C6"
+          ],
+          "exit_warn": 1,
+          "description": "Avisa quando chamadas LLM em src/agents/** não têm trace Langfuse."
+        },
+        {
+          "id": "hook-unit-economics-recalc",
+          "path": "hooks/post-tool-use/unit-economics-recalc.sh",
+          "type": "hook",
+          "hook_type": "PostToolUse",
+          "matcher": "Edit|Write",
+          "version": "0.1.0",
+          "sha256": "5fb095ada95edf62",
+          "linked_principles": [
+            "C3"
+          ],
+          "exit_warn": 1,
+          "description": "Avisa quando prompt files mudam e /acme:unit-economics recalc é necessário."
+        },
+        {
+          "id": "hook-manifest-sync",
+          "path": "hooks/post-tool-use/manifest-sync.sh",
+          "type": "hook",
+          "hook_type": "PostToolUse",
+          "matcher": "Edit|Write",
+          "version": "0.1.0",
+          "sha256": "035574d8cd614b18",
+          "linked_principles": [
+            "C6"
+          ],
+          "exit_warn": 0,
+          "description": "Informa quando artefatos Forge mudam e manifest.json precisa ser atualizado."
+        },
+        {
+          "id": "hook-friendly-errors",
+          "path": "hooks/post-tool-use/friendly-errors.sh",
+          "type": "hook",
+          "hook_type": "PostToolUse",
+          "matcher": "Edit|Write",
+          "version": "2.0.0",
+          "sha256": null,
+          "linked_principles": [
+            "C7"
+          ],
+          "exit_warn": 0,
+          "patterns_covered": 18,
+          "description": "Intercepta mensagens de erro C1-C8 e traduz para linguagem amigável conforme .forge-mode (vibe=leigo, dev=técnico+tradução, agent=passa direto). v2.0.0 (Forge-14 / F44) expande de 10 para 18 padrões: C1-C8 + hash mismatch + secret + C9 drift + project.json missing + forge-router low confidence + TDD RED não falha + coverage Tier C + Gate 6 CI/CD + persona detect ambíguo + provider lock-in src/ + manifest órfão. Não bloqueia execução."
+        }
+      ],
+      "stop": [
+        {
+          "id": "hook-5-gates-summary",
+          "path": "hooks/stop/5-gates-summary.sh",
+          "type": "hook",
+          "hook_type": "Stop",
+          "version": "0.1.0",
+          "sha256": "25674a8a255b3a88",
+          "linked_principles": [
+            "C1",
+            "C3",
+            "C4",
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "exit_warn": 1,
+          "description": "Gera relatório dos 5 gates Forge (manifest, any, evals, secrets, ADRs) ao fim da sessão."
+        },
+        {
+          "id": "hook-eval-suite-fresh",
+          "path": "hooks/stop/eval-suite-fresh.sh",
+          "type": "hook",
+          "hook_type": "Stop",
+          "version": "0.1.0",
+          "sha256": "df40567ea50619ef",
+          "linked_principles": [
+            "C4"
+          ],
+          "exit_warn": 1,
+          "description": "Avisa ao fim da sessão se eval suites têm menos de 30 casos (mínimo C4)."
+        },
+        {
+          "id": "hook-learning-snapshot",
+          "path": "hooks/stop/learning-snapshot.sh",
+          "type": "hook",
+          "hook_type": "Stop",
+          "version": "1.0.0",
+          "sha256": "928b0368a2cb4bb4",
+          "description": "Captura learning snapshot ao fim de cada sessão; produz docs/learnings/{YYYY-MM}/{session-id}.md (Forge-20).",
+          "linked_principles": [
+            "C1",
+            "C6",
+            "C7",
+            "C8"
+          ]
+        }
+      ],
+      "scripts": [
+        {
+          "id": "script-forge-sync",
+          "path": "scripts/forge-sync.sh",
+          "type": "script",
+          "usage": "consumer-side — copia artefatos canônicos do Forge para o projeto consumidor",
+          "version": "1.0.0",
+          "sha256": null,
+          "linked_principles": [
+            "C7"
+          ],
+          "description": "Sincroniza .claude/{CONSTITUTION,agents,commands,skills}, hooks/, scripts/forge*, templates/, reviewer/* a partir do repo Forge canônico para o consumer. Preserva settings.json local, manifest local (atualizando apenas framework_version_required + last_synced_at), e CLAUDE.md local. Suporta --dry-run, --from, --force, --verbose. Guard: refuse se cwd for canônico. Audit trail em docs/forge/sync-history.md."
+        },
+        {
+          "id": "script-forge-doctor",
+          "path": "scripts/forge-doctor.sh",
+          "type": "script",
+          "usage": "standalone CI/PR/pre-push",
+          "version": "0.7.0",
+          "sha256": null,
+          "linked_principles": [
+            "C5",
+            "C6",
+            "C7"
+          ],
+          "description": "Validador CI com 10 checks: C1 JSON parse, C2 paths existem, C3 versões coerentes, C4 constitution coerente, C5 bash -n hooks, C6 artefatos órfãos, C7 permissions sanity, C8 AIOS TDD-ready, C9 drift vs canônico (consumer-only), C10 AIOS agent configs vs schema canônico (canonical-only). v0.7.0 (Forge-14 / F43) adiciona C10. v0.6.0 (Forge-13 Sprint 2 / F37) adicionou C9. v0.5.0 (Sprint 1 / F30) suporta --consumer/--canonical. Exit 0/1/2."
+        },
+        {
+          "id": "script-skill-security-scan",
+          "path": "hooks/scripts/skill-security-scan.sh",
+          "type": "script",
+          "usage": "standalone CI/PR",
+          "version": "0.1.0",
+          "sha256": "e7e19c9ae7cdc3e2",
+          "linked_principles": [
+            "C6",
+            "C7",
+            "C8"
+          ],
+          "description": "Escaneia skill files (S1-S5: secrets, URLs, comandos destrutivos, bypass, frontmatter). Uso: bash hooks/scripts/skill-security-scan.sh"
+        },
+        {
+          "id": "script-forge-cli",
+          "path": "scripts/forge",
+          "type": "script",
+          "usage": "interactive CLI wrapper",
+          "version": "1.0.0",
+          "sha256": "51a65deaa040957f",
+          "linked_principles": [
+            "C7"
+          ],
+          "description": "Forge-12 — CLI wrapper unificado. Verbos: start (wizard interativo), doctor (alias forge-doctor.sh), version, mode <vibe|dev|agent>, help. Detecta persona e salva preferência em .forge-mode. Compatível bash 4+ (git bash no Windows)."
+        }
+      ],
+      "session_start": [
+        {
+          "id": "hook-forge-context",
+          "path": "hooks/session-start/forge-context.sh",
+          "type": "hook",
+          "hook_type": "SessionStart",
+          "matcher": null,
+          "version": "0.2.0",
+          "sha256": "0f3a95ada9bd670e",
+          "linked_principles": [
+            "C5"
+          ],
+          "description": "SessionStart: injeta meta-skill + project context + agent soul/memory (Forge-20)."
+        }
+      ]
+    },
+    "references": [
+      {
+        "id": "ref-orchestration-patterns",
+        "path": "docs/forge/orchestration-patterns.md",
+        "type": "reference",
+        "version": "1.0.0",
+        "sha256": "0354e49d2530b38c",
+        "description": "Catálogo de padrões de orquestração endossados: invocação direta, fan-out, pipeline sequencial, isolamento de pesquisa. Anti-padrões: meta-orquestrador, Guardian-calls-Guardian, árvores profundas."
+      }
+    ]
+  },
+  "external_repos_absorbed": [
+    {
+      "repo": "github/spec-kit",
+      "absorbed": [
+        "Constitution pattern",
+        "Pipeline /diagnose → /promote"
+      ]
+    },
+    {
+      "repo": "vbomfim/sdlc-guardian-agents",
+      "absorbed": [
+        "Spec template structure",
+        "5 quality gates",
+        "Guardian roles"
+      ]
+    },
+    {
+      "repo": "addyosmani/agent-skills",
+      "absorbed": [
+        "Anti-rationalization tables",
+        "Verification gates"
+      ]
+    },
+    {
+      "repo": "aj-geddes/claude-code-bmad-skills",
+      "absorbed": [
+        "Helper pattern (token reduction in L0 only)"
+      ]
+    },
+    {
+      "repo": "carlrannaberg/claudekit",
+      "absorbed": [
+        "File-guard hook",
+        "Secret scan",
+        "Bash deny list"
+      ]
+    },
+    {
+      "repo": "peterkrueck/Claude-Code-Development-Kit",
+      "absorbed": [
+        "Documental structure",
+        "Cross-LLM review pattern"
+      ]
+    },
+    {
+      "repo": "VoltAgent/awesome-claude-code-subagents",
+      "absorbed": [
+        "Smart model routing Opus/Sonnet/Haiku"
+      ]
+    },
+    {
+      "repo": "anthropics/skills",
+      "absorbed": [
+        "Skill format reference (frontmatter)"
+      ]
+    },
+    {
+      "repo": "giuseppe-trisciuoglio/developer-kit",
+      "absorbed": [
+        "Path-scoped auto-activation"
+      ]
+    },
+    {
+      "repo": "alirezarezvani/claude-skills",
+      "absorbed": [
+        "Skill security auditor pattern"
+      ]
+    }
+  ],
+  "external_repos_excluded": [
+    {
+      "repo": "rohitg00/awesome-claude-code-toolkit",
+      "reason": "meta-list, redundant"
+    },
+    {
+      "repo": "feiskyer/claude-code-settings (multi-provider)",
+      "reason": "ADR 001 fixes Claude primary; OpenAI usado apenas para reviewer DeepAgent"
+    },
+    {
+      "repo": "lc-spec-driven",
+      "reason": "repo not found - awaiting confirmation of correct name"
+    }
+  ],
+  "checks_for_reviewer_summary": "Detalhe completo em reviewer/validation-rules.json. Reviewer deve carregar esse arquivo como input primário de checks.",
+  "_meta": {
+    "manifest_generator": "manual (hook manifest-sync informa quando atualizar)",
+    "next_update": "after each Forge-X wave completion",
+    "validation_schema_url": "https://acme.com.br/forge/manifest-v1.json (to be published in Forge-5)",
+    "sha256_policy": "post-install — hashes ficam null neste repo; consumidor e reviewer recomputam na auditoria via sha256sum no arquivo local (LF line endings). settings.json não é fonte canônica de versão — manifest é.",
+    "sha256_truncation": "first 16 hex chars of SHA-256; reviewer should recompute full hash for integrity check",
+    "sha256_method": "sha256sum on file bytes (LF line endings); cross-platform note: Windows CRLF may produce different hashes — normalize to LF for stable hashes",
+    "version_bumps": {
+      "0.1.0_to_0.2.0": "Repositioning as standalone framework consumable by external projects + DeepAgents. Constitution generalized; templates expanded from 4 to 9; reviewer/ folder added; examples/acme/ added.",
+      "0.2.0_to_0.3.0": "Forge-4 hooks runtime: 9 hooks activated (PreToolUse x4, PostToolUse x3, Stop x2), skill-security-scan script, bypass auditado em bypass-log/, settings.json _forge_version bumped to 0.3.0.",
+      "0.3.0_to_0.4.0": "Forge-5 infrastructure: playbook.template.md + retrospective.template.md, /acme:playbook-extract command, docs/playbooks/ + docs/retrospectives/, decisions F19-F21 (playbook strategy, global deploy eval, plugin eval).",
+      "0.4.0_to_0.4.1": "Doc sync (F22): README badges/status/estrutura atualizados para v0.4.1; settings.json _forge_version + _constitution_version corrigidos; decisions.md header F1-F22; roadmap.md header; manifest sha256_policy explicitado; reviewer/README.md criado; path_kind adicionado em examples/acme/.",
+      "0.4.1_to_0.5.0": "Forge-6 AIOS (F23): 3 novos commands (aios-init/run/status) + seção AIOS condicional em plan/tasks/implement + aios-telemetry-pattern.md + aios_tier no template spec + roadmap Forge-6 section.",
+      "0.5.0_to_0.6.0": "Forge-7 AIOS portable agents (F24): 6 agentes em templates/aios/agents/ (3 especializados + 3 compartilhados, sendo schema_agent stack-agnostic), orchestrator.py.template + config.yaml.template, /acme:aios-init bumped para v0.2.0 (copia de templates físicos em vez de boilerplate inline), README dos templates AIOS, F24 em decisions, Forge-7 section em roadmap.",
+      "0.6.0_to_0.7.0": "Forge-8 CI/CD esteira completa (F25): 4 templates em templates/cicd/ (github-actions-validate/eval/audit + cicd-checklist), Gate 6 adicionado ao /acme:promote (obrigatório para assisted_to_autonomous), Wave 6 no /acme:tasks (T6.1-T6.5), promotion-officer.md atualizado com Gate 6, F25 em decisions, Forge-8 section em roadmap.",
+      "0.7.0_to_0.8.0": "Forge-9 delivery-type agnostic (F26): Constitution v0.3.0 com matriz por project_type ({agentic_saas, platform, automation, hybrid} × {ai_enabled true/false}); novo templates/project.template.json como fonte canônica do consumidor; 4 novos templates platform (platform-module-spec, platform-pilot-state, platform-acceptance-report, delivery-economics); validation-rules v0.3.0 estruturado em common/agentic_saas/platform/automation com applies_when condicional; reviewer prompt v0.3.0 carrega project.json e ramifica checks; reviewer-contract v0.2.0; commands /acme:diagnose|spec|promote|audit-monthly ramificados (versões 0.2.0/0.2.0/0.3.0/0.2.0); supported_project_types e principles[].interpretation_modes adicionados ao manifest; F26 em decisions. Backwards compatible: defaults legados (agentic_saas + ai_enabled=true) quando docs/forge/project.json ausente no consumidor.",
+      "0.19.0_to_0.20.0": "Forge-19 Hermes integration (F27): workflow forge-headless.yml (dispatchable, matrix multi-consumer), skill agentskills.io para Codex, caminho rápido status-fast, env.example Railway, manual hermes-integration.md. Hermes (Railway) + Codex (OpenAI) como operador remoto-móvel do Forge via GitHub Actions executor. Zero dependência da máquina local na execução. Decisão F27 em decisions.md."
+    }
+  },
+  "integrations": {
+    "hermes": {
+      "version": "0.1.0",
+      "description": "Integração com Hermes Agent (Nous Research) hospedado no Railway. Codex como cérebro (OpenAI). Executor: GitHub Actions runner com claude --print headless.",
+      "host": "railway",
+      "brain": "codex-openai",
+      "executor": "github-actions",
+      "artifacts": [
+        {
+          "path": ".github/workflows/forge-headless.yml",
+          "type": "github-workflow",
+          "version": "0.1.0",
+          "sha256": "20c136f51ef23249",
+          "description": "Workflow dispatchable — recebe command/consumers/args de Hermes e executa claude --print em matrix multi-consumer",
+          "linked_principles": [
+            "C1",
+            "C6",
+            "C7"
+          ]
+        },
+        {
+          "path": "templates/hermes/forge.skill.md",
+          "type": "hermes-skill",
+          "version": "0.1.0",
+          "sha256": "249971e78178ca59",
+          "description": "Skill agentskills.io para o Hermes/Codex: catálogo de 9 intents, mapping intent → gh workflow run, política de allowlist",
+          "linked_principles": [
+            "C1",
+            "C6"
+          ]
+        },
+        {
+          "path": "templates/hermes/status-fast.md",
+          "type": "hermes-skill",
+          "version": "0.1.0",
+          "sha256": "3b7c04b85af94296",
+          "description": "Caminho rápido para intent #9 status via gh api REST — sem disparar runner, latência < 5s",
+          "linked_principles": [
+            "C6"
+          ]
+        },
+        {
+          "path": "templates/hermes/railway/env.example",
+          "type": "config-template",
+          "version": "0.1.0",
+          "sha256": "2b581b84274aaec6",
+          "description": "Variáveis de ambiente a configurar no Railway dashboard do serviço Hermes",
+          "linked_principles": [
+            "C1"
+          ]
+        },
+        {
+          "path": "docs/forge/hermes-integration.md",
+          "type": "documentation",
+          "version": "0.1.0",
+          "sha256": "53adc534e995df23",
+          "description": "Manual canônico de instalação e operação da integração Hermes + Forge",
+          "linked_principles": [
+            "C1",
+            "C6"
+          ]
+        }
+      ]
+    },
+    "forge-20-learning": {
+      "version": "1.0.0",
+      "description": "Self-harness loop — agent soul/memory/skills por projeto consumer + Hermes learning orchestrator.",
+      "artifacts": [
+        {
+          "path": "templates/hermes/learning/agent-soul.template.md",
+          "sha256": "51e52ac8209f4426"
+        },
+        {
+          "path": "templates/hermes/learning/agent-memory.template.md",
+          "sha256": "68335ce3719d1026"
+        },
+        {
+          "path": "templates/hermes/learning/skill-learnings.template.md",
+          "sha256": "f7dfc9e03d61a761"
+        },
+        {
+          "path": "templates/hermes/learning-loop.md",
+          "sha256": "b8f0b59cec5d5d80"
+        },
+        {
+          "path": "templates/hermes/hermes-plugin/agent-governance-framework-memory/plugin.yaml",
+          "sha256": "f66356ee8ba99061"
+        }
+      ]
+    }
+  }
+}
