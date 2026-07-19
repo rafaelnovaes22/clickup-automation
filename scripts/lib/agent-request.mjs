@@ -5,12 +5,12 @@ import { root } from "./env.mjs";
 import { selectedPlatforms, taskDescription, taskName, validatePayload } from "./tech-tasks.mjs";
 
 export const agentRequestTarget = {
-  space: "05 Institucional Acme",
+  space: "05 Institucional Novais Digital",
   list: "Solicitacoes de agente"
 };
 
 export const platformRequestTarget = {
-  space: "05 Institucional Acme",
+  space: "05 Institucional Novais Digital",
   list: "Solicitacoes de plataforma"
 };
 

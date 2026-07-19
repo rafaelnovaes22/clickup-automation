@@ -18,7 +18,7 @@ const args = process.argv.slice(2);
 const live = args.includes("--live");
 const dryRun = !live || args.includes("--dry-run");
 
-const spaceName = "05 Institucional Acme";
+const spaceName = "05 Institucional Novais Digital";
 const folderName = "Plataforma SchoolPlatform";
 const listName = "Modulos";
 const fieldName = "Semana";

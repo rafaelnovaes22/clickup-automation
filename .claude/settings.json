@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash hooks/session-start/forge-context.sh",
+            "command": "bash hooks/session-start/foundry-context.sh",
             "timeout": 5000
           }
         ]
@@ -59,15 +59,15 @@
       }
     ]
   },
-  "_comment": "Acme Forge layer (versioned). Per-developer overrides go in settings.local.json (gitignored).",
-  "_forge_version": "0.21.0",
+  "_comment": "Novais Digital Foundry layer (versioned). Per-developer overrides go in settings.local.json (gitignored).",
+  "_foundry_version": "0.21.0",
   "_constitution_version": "0.3.0",
-  "_forge_features": {
+  "_foundry_features": {
     "skills_path": ".claude/skills/{L0,L1,L2}/",
     "agents_path": ".claude/agents/",
     "hooks_path": "hooks/",
-    "bypass_env_var": "ACME_FORGE_BYPASS",
-    "bypass_log_path": "docs/forge/bypass-log/",
-    "bypass_note": "Set ACME_FORGE_BYPASS=<reason> in settings.local.json or env. All bypasses are logged."
+    "bypass_env_var": "NOVAIS_FOUNDRY_BYPASS",
+    "bypass_log_path": "docs/foundry/bypass-log/",
+    "bypass_note": "Set NOVAIS_FOUNDRY_BYPASS=<reason> in settings.local.json or env. All bypasses are logged."
   }
 }

@@ -8,7 +8,7 @@
       "name": "[TEMPLATE] Solicitacao de agente",
       "delivery_type": "agentic_saas",
       "target": {
-        "space": "05 Institucional Acme",
+        "space": "05 Institucional Novais Digital",
         "list": "Solicitacoes de agente",
         "desiredStatus": "rascunho"
       },
@@ -20,7 +20,7 @@
         "Status desejado: rascunho."
       ],
       "fields": [
-        { "key": "client_name", "label": "Cliente", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "client_name", "label": "Cliente", "type": "text", "required": true, "example": "Novais Digital Ltda" },
         { "key": "business_problem", "label": "Problema de negocio", "type": "long_text", "required": true, "example": "Comercial demora para qualificar leads e perde timing." },
         { "key": "expected_outcome", "label": "Outcome esperado", "type": "long_text", "required": true, "example": "Lead qualificado com score e proximo passo sugerido." },
         { "key": "agent_type", "label": "Tipo de agente", "type": "select", "required": true, "options": ["SDR", "suporte", "cobranca", "atendimento", "operacao", "analise", "outro"] },
@@ -31,7 +31,7 @@
         { "key": "success_metric", "label": "Metrica de sucesso", "type": "text", "required": false, "example": "% leads qualificados corretamente" },
         { "key": "delivery_due_date", "label": "Prazo desejado", "type": "date", "required": true, "example": "2026-05-15" },
         { "key": "tech_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "AI Engineer" },
-        { "key": "repository_url", "label": "Repositorio", "type": "url", "required": false, "example": "https://github.com/acme/acme" },
+        { "key": "repository_url", "label": "Repositorio", "type": "url", "required": false, "example": "https://github.com/novais-digital/novais-digital" },
         { "key": "environment", "label": "Ambiente", "type": "select", "required": true, "options": ["dev", "staging", "prod"] }
       ],
       "activities": [
@@ -64,9 +64,9 @@
         "Status desejado: novo."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
         { "key": "contact_name", "label": "Contato principal", "type": "text", "required": true, "example": "Maria Silva" },
-        { "key": "contact_email", "label": "Email", "type": "email", "required": false, "example": "maria@acme.com" },
+        { "key": "contact_email", "label": "Email", "type": "email", "required": false, "example": "maria@novais-digital.com" },
         { "key": "contact_phone", "label": "Telefone/WhatsApp", "type": "phone", "required": false, "example": "+55 11 99999-9999" },
         { "key": "source", "label": "Origem", "type": "select", "required": true, "options": ["indicacao", "evento", "outbound", "inbound", "parceiro", "manual"] },
         { "key": "pain_summary", "label": "Dor percebida", "type": "long_text", "required": true, "example": "Time perde muito tempo qualificando leads manualmente." },
@@ -101,12 +101,12 @@
         "Status desejado: vendido."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
         { "key": "lead_task_id", "label": "Task do lead", "type": "clickup_task_id", "required": false, "example": "86abc123" },
         { "key": "diagnostic_fee", "label": "Fee do diagnostico", "type": "currency_brl", "required": true, "example": 8000 },
         { "key": "payment_confirmed_at", "label": "Pagamento confirmado em", "type": "datetime", "required": true, "example": "2026-05-01T14:00:00-03:00" },
         { "key": "client_ceo_name", "label": "CEO do cliente", "type": "text", "required": true, "example": "Maria Silva" },
-        { "key": "client_ceo_email", "label": "Email do CEO", "type": "email", "required": false, "example": "maria@acme.com" },
+        { "key": "client_ceo_email", "label": "Email do CEO", "type": "email", "required": false, "example": "maria@novais-digital.com" },
         { "key": "start_date", "label": "Data de inicio", "type": "date", "required": true, "example": "2026-05-04" },
         { "key": "delivery_date", "label": "Data de devolucao", "type": "date", "required": true, "example": "2026-05-08" },
         { "key": "diagnostic_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "Tech Lead" }
@@ -143,7 +143,7 @@
         "Status desejado: enviada."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
         { "key": "diagnostic_task_id", "label": "Task do diagnostico", "type": "clickup_task_id", "required": true, "example": "86diag123" },
         { "key": "sku", "label": "SKU proposto", "type": "text", "required": true, "example": "Qualificacao de Leads SaaS2" },
         { "key": "platform_fee", "label": "Fee plataforma mensal", "type": "currency_brl", "required": true, "example": 3000 },
@@ -184,7 +184,7 @@
         "Status desejado: kickoff."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
         { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
         { "key": "proposal_task_id", "label": "Task da proposta", "type": "clickup_task_id", "required": true, "example": "86prop123" },
         { "key": "setup_fee", "label": "Setup fee", "type": "currency_brl", "required": true, "example": 15000 },
@@ -225,7 +225,7 @@
         "Status desejado: calibrando."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
         { "key": "setup_task_id", "label": "Task do setup", "type": "clickup_task_id", "required": true, "example": "86setup123" },
         { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": true, "example": "sub_123" },
         { "key": "agent_name", "label": "Nome do agente", "type": "text", "required": true, "example": "Lead Qualifier" },
@@ -264,7 +264,7 @@
         "Status desejado: agendada."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
         { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": true, "example": "86cli123" },
         { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": true, "example": "sub_123" },
         { "key": "billing_month", "label": "Mes de referencia", "type": "month", "required": true, "example": "2026-05" },
@@ -302,7 +302,7 @@
         "Status desejado: aberto."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": false, "example": "Acme Ltda" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": false, "example": "Novais Digital Ltda" },
         { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
         { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": false, "example": "sub_123" },
         { "key": "severity", "label": "Severidade", "type": "select", "required": true, "options": ["P1", "P2", "P3"] },
@@ -330,7 +330,7 @@
       "name": "[TEMPLATE] Solicitacao de plataforma",
       "delivery_type": "platform",
       "target": {
-        "space": "05 Institucional Acme",
+        "space": "05 Institucional Novais Digital",
         "list": "Solicitacoes de plataforma",
         "desiredStatus": "rascunho"
       },
@@ -342,8 +342,8 @@
         "Status desejado: rascunho."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
-        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
         { "key": "business_problem", "label": "Problema de negocio", "type": "long_text", "required": true, "example": "Controles internos em planilhas, sem rastreabilidade e sem integracao com ERP." },
         { "key": "legacy_system_to_replace", "label": "Sistema legado a substituir", "type": "text", "required": true, "example": "ERP legado + planilhas Excel" },
         { "key": "module_count", "label": "Numero estimado de modulos", "type": "number", "required": true, "example": 15 },
@@ -353,7 +353,7 @@
         { "key": "ai_enabled", "label": "Plataforma usa IA?", "type": "select", "required": true, "options": ["sim", "nao"] },
         { "key": "tech_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "Delivery" },
         { "key": "delivery_due_date", "label": "Prazo de entrega", "type": "date", "required": true, "example": "2026-12-31" },
-        { "key": "repository_url", "label": "Repositorio", "type": "url", "required": false, "example": "https://github.com/acme/acme-platform" },
+        { "key": "repository_url", "label": "Repositorio", "type": "url", "required": false, "example": "https://github.com/novais-digital/novais-digital-platform" },
         { "key": "environment", "label": "Ambiente inicial", "type": "select", "required": true, "options": ["dev", "staging", "prod"] }
       ],
       "activities": [
@@ -387,8 +387,8 @@
         "Status desejado: draft."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
-        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
         { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
         { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
         { "key": "proposal_task_id", "label": "Task da proposta", "type": "clickup_task_id", "required": true, "example": "86prop123" },
@@ -429,8 +429,8 @@
         "Status desejado: piloto aberto."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
-        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
         { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
         { "key": "rollout_task_id", "label": "Task do rollout", "type": "clickup_task_id", "required": true, "example": "86roll123" },
         { "key": "pilot_started_at", "label": "Piloto iniciado em", "type": "datetime", "required": true, "example": "2026-05-15T09:00:00-03:00" },
@@ -471,14 +471,14 @@
         "Status desejado: aguardando."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
-        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
         { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
         { "key": "pilot_task_id", "label": "Task do piloto", "type": "clickup_task_id", "required": true, "example": "86pilot123" },
         { "key": "acceptance_criteria_doc", "label": "Documento de criterios de aceite", "type": "url", "required": true, "example": "https://..." },
         { "key": "comparison_evidence", "label": "Evidencia comparacao legado x nova", "type": "url", "required": true, "example": "https://..." },
-        { "key": "client_signoff_owner", "label": "Quem assina pelo cliente", "type": "text", "required": true, "example": "Maria Silva (CFO Acme)" },
-        { "key": "tech_signoff_owner", "label": "Quem assina pela Acme", "type": "person_or_text", "required": true, "example": "Tech Lead" }
+        { "key": "client_signoff_owner", "label": "Quem assina pelo cliente", "type": "text", "required": true, "example": "Maria Silva (CFO Novais Digital)" },
+        { "key": "tech_signoff_owner", "label": "Quem assina pela Novais Digital", "type": "person_or_text", "required": true, "example": "Tech Lead" }
       ],
       "activities": [
         { "trigger": "template_instantiated", "action": "Criar task Aceite operacional" },
@@ -510,8 +510,8 @@
         "Status desejado: solicitada."
       ],
       "fields": [
-        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Acme Ltda" },
-        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Acme" },
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
         { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
         { "key": "acceptance_task_id", "label": "Task do aceite operacional", "type": "clickup_task_id", "required": true, "example": "86acc123" },
         { "key": "cutover_date", "label": "Data planejada de cutover", "type": "date", "required": true, "example": "2026-06-01" },

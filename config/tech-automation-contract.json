@@ -4,7 +4,7 @@
   "purpose": "Gerar automaticamente tarefas tecnicas para dev a partir das plataformas identificadas. Funciona para qualquer delivery_type; campos especificos sao validados conforme delivery_type.",
   "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
   "target": {
-    "space": "05 Institucional Acme",
+    "space": "05 Institucional Novais Digital",
     "list": "Backlog tecnico"
   },
   "requiredFields": [

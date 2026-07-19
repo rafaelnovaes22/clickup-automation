@@ -1,8 +1,8 @@
-# ClickUp Acme - Governanca
+# ClickUp Novais Digital - Governanca
 
-Plano unico de como o ClickUp deve ser estruturado para refletir todo o trabalho do time Acme, do primeiro lead ao churn do cliente.
+Plano unico de como o ClickUp deve ser estruturado para refletir todo o trabalho do time Novais Digital, do primeiro lead ao churn do cliente.
 
-Substitui o blueprint anterior (`acme-governanca-ia/docs/clickup-blueprint.md`), que cresceu antes de ter mapa do ciclo completo do time.
+Substitui o blueprint anterior (`novais-digital-governanca-ia/docs/clickup-blueprint.md`), que cresceu antes de ter mapa do ciclo completo do time.
 
 ## O que esta aqui
 
@@ -12,7 +12,7 @@ Substitui o blueprint anterior (`acme-governanca-ia/docs/clickup-blueprint.md`),
 
 ## Principios fundadores
 
-1. ClickUp e 100% interno Acme. Cliente final nunca acessa.
+1. ClickUp e 100% interno Novais Digital. Cliente final nunca acessa.
 2. Reflete a jornada do cliente. Cada Space corresponde a um momento dela.
 3. Uma entidade nasce e morre em uma unica lista. Nada de pasta-por-cliente.
 4. Simplicidade > completude. E melhor comecar com poucas listas que o time usa do que muitas que ninguem abre.
@@ -74,11 +74,11 @@ set CLICKUP_TOKEN=pk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 set CLICKUP_TEAM_ID=123456789
 ```
 
-O script tambem aceita os aliases usados no backend Acme:
+O script tambem aceita os aliases usados no backend Novais Digital:
 
 ```bash
-set ACME_INTERNAL_CLICKUP_TOKEN=pk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-set ACME_INTERNAL_WORKSPACE_ID=123456789
+set NOVAIS_INTERNAL_CLICKUP_TOKEN=pk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+set NOVAIS_INTERNAL_WORKSPACE_ID=123456789
 ```
 
 Depois rode:
@@ -97,7 +97,7 @@ O `GOVERNANCE.md` cita "23 listas", mas as listas detalhadas nas secoes dos 5 Sp
 - Implantacao: 3
 - Clientes: 6
 - Saude Operacional: 5
-- Institucional Acme: 5
+- Institucional Novais Digital: 5
 
 O bootstrap aplica as 22 listas descritas nominalmente no documento. A 23a lista deve ser uma decisao explicita antes de entrar no blueprint.
 
@@ -117,7 +117,7 @@ npm run templates:seed
 
 Esses templates sao a ponte para os hooks do backend: cada evento tera uma task pai concisa e subtasks padrao.
 
-Para revisar e criar os campos customizados de entrada operacional, incluindo a lista `05 Institucional Acme / Solicitacoes de agente`:
+Para revisar e criar os campos customizados de entrada operacional, incluindo a lista `05 Institucional Novais Digital / Solicitacoes de agente`:
 
 ```bash
 npm run fields:dry
@@ -156,7 +156,7 @@ npm run tech:dry
 Para gerar tarefas reais no Backlog tecnico, passe um payload JSON:
 
 ```bash
-npm run tech:generate -- --payload="{\"client_name\":\"Acme\",\"client_task_id\":\"86xxx\",\"technical_platforms\":[\"ai_agent\",\"whatsapp\",\"node_backend\"],\"tech_owner\":\"AI Engineer\",\"delivery_due_date\":\"2026-05-15\",\"environment\":\"dev\"}"
+npm run tech:generate -- --payload="{\"client_name\":\"Novais Digital\",\"client_task_id\":\"86xxx\",\"technical_platforms\":[\"ai_agent\",\"whatsapp\",\"node_backend\"],\"tech_owner\":\"AI Engineer\",\"delivery_due_date\":\"2026-05-15\",\"environment\":\"dev\"}"
 ```
 
 No PowerShell, prefira arquivo de payload:
@@ -169,15 +169,15 @@ Para ler a evolucao das tarefas tech:
 
 ```bash
 npm run tech:progress
-npm run tech:progress -- --client=Acme
+npm run tech:progress -- --client=Novais Digital
 ```
 
 Para sincronizar o status das tarefas tech sem atualizacao manual do time, usando evidencias de GitHub/CI:
 
 ```bash
 npm run tech:sync
-npm run tech:sync -- --client=Acme
-npm run tech:sync -- --live --client=Acme
+npm run tech:sync -- --client=Novais Digital
+npm run tech:sync -- --live --client=Novais Digital
 ```
 
 Por padrao o comando roda em dry-run: ele le o ClickUp, consulta o repositorio GitHub indicado na descricao da task e mostra qual status aplicaria. Com `--live`, ele atualiza a task e comenta as evidencias encontradas. O matching procura termos do cliente, `platform_key`, `task_key` e `client_task_id` no titulo/corpo/branch do PR.
@@ -192,7 +192,7 @@ npm run tech:sync -- --offline
 
 Para iniciar a governanca de um cliente `delivery_type=platform` (ex: SchoolPlatform, Aicfo), use o template de solicitacao de plataforma:
 
-1. No ClickUp: `05 Institucional Acme / Solicitacoes de plataforma` -> usar `[TEMPLATE] Solicitacao de plataforma`
+1. No ClickUp: `05 Institucional Novais Digital / Solicitacoes de plataforma` -> usar `[TEMPLATE] Solicitacao de plataforma`
 2. Preencher: empresa, problema de negocio, sistema legado, numero de modulos, stage inicial
 3. Mudar status para `escopo pronto`
 4. O webhook gera a estrutura AIOS (Folder + List + modules) automaticamente
@@ -208,7 +208,7 @@ npm run templates:dry
 Para projetos onde 1 cliente = **plataforma SaaS multi-tenant com varios modulos** (ex: SchoolPlatform), o fluxo e diferente do `tech:*`. Em vez de tarefas flat no `Backlog tecnico`, criamos uma **Folder dedicada por plataforma** com uma List `Modulos`. Cada modulo e uma task pai com **subtasks por stage AIOS** (spec -> backend -> frontend -> tests -> review -> merge), dando visao de produto pra CEO.
 
 ```
-05 Institucional Acme / 
+05 Institucional Novais Digital / 
 └── [Folder] Plataforma SchoolPlatform
     └── [List] Modulos
         ├── cadastros · Cadastros gerais (equipes, turnos, perfis...)
@@ -344,7 +344,7 @@ Endpoints:
 
 Fluxo automatizado:
 
-1. Usuario cria task em `05 Institucional Acme / Solicitacoes de agente`.
+1. Usuario cria task em `05 Institucional Novais Digital / Solicitacoes de agente`.
 2. Usuario preenche os campos customizados.
 3. Usuario muda status para `escopo pronto`.
 4. Webhook recebe o evento, le a task, gera o backlog tecnico em `Backlog tecnico` e muda a solicitacao para `gerado`.
@@ -352,8 +352,8 @@ Fluxo automatizado:
 Variaveis necessarias no Railway:
 
 ```bash
-ACME_INTERNAL_CLICKUP_TOKEN=pk_xxx
-ACME_INTERNAL_WORKSPACE_ID=90171198309
+NOVAIS_INTERNAL_CLICKUP_TOKEN=pk_xxx
+NOVAIS_INTERNAL_WORKSPACE_ID=90171198309
 CLICKUP_WEBHOOK_SECRET=...
 ```
 
@@ -377,3 +377,9 @@ npm run tech:model
 4. Setar `CLICKUP_WEBHOOK_SECRET` no Railway (obrigatorio em producao).
 5. Registrar o webhook apos publicar: `npm run webhook:register -- --url=https://sua-url.up.railway.app`.
 6. Migrar clientes existentes: adicionar `delivery_type` nos payloads de cada cliente e rodar `npm run aios:generate`.
+
+## Licença
+
+Copyright (c) 2026 Rafael Novaes.
+
+Licenciado sob [PolyForm Noncommercial License 1.0.0](./LICENSE.md) — leitura, estudo e uso não comercial permitidos; uso comercial requer autorização expressa do autor.

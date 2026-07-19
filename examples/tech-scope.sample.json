@@ -5,7 +5,7 @@
   "technical_platforms": ["ai_agent", "frontend_web", "frontend_dashboard"],
   "tech_owner": "AI Engineer",
   "delivery_due_date": "2026-05-15",
-  "repository_url": "https://github.com/acme/example",
+  "repository_url": "https://github.com/novais-digital/example",
   "environment": "dev",
   "notes": "Exemplo de escopo com agente de IA como produto."
 }

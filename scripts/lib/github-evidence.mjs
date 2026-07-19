@@ -3,7 +3,7 @@ const GITHUB_API_BASE = "https://api.github.com";
 export function createGitHubClient({ token, apiBase = GITHUB_API_BASE, fetchImpl = fetch } = {}) {
   const headers = {
     Accept: "application/vnd.github+json",
-    "User-Agent": "clickup-acme-tech-sync"
+    "User-Agent": "clickup-novais-digital-tech-sync"
   };
 
   if (token) headers.Authorization = `Bearer ${token}`;

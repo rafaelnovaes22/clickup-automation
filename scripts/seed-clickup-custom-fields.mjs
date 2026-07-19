@@ -19,7 +19,7 @@ const clickUp = createClickUpClient({ token });
 
 if (live && (!token || !teamId)) {
   console.error("Missing ClickUp credentials.");
-  console.error("Expected CLICKUP_TOKEN + CLICKUP_TEAM_ID or ACME_INTERNAL_CLICKUP_TOKEN + ACME_INTERNAL_WORKSPACE_ID.");
+  console.error("Expected CLICKUP_TOKEN + CLICKUP_TEAM_ID or NOVAIS_INTERNAL_CLICKUP_TOKEN + NOVAIS_INTERNAL_WORKSPACE_ID.");
   process.exit(1);
 }
 
@@ -92,7 +92,7 @@ async function ensureFieldSet(fieldSet) {
 }
 
 async function main() {
-  console.log(`ClickUp Acme custom fields seed ${dryRun ? "(dry-run)" : "(live)"}`);
+  console.log(`ClickUp Novais Digital custom fields seed ${dryRun ? "(dry-run)" : "(live)"}`);
   console.log(`Field sets: ${config.version}`);
 
   for (const fieldSet of config.fieldSets) {

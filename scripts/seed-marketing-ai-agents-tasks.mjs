@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // seed-marketing-ai-agents-tasks.mjs
-// Cria/atualiza tasks dos 7 SKUs do Acme Social no ClickUp.
-// Lê estado real de cada SKU em C:\Users\Rafael\Projetos\Acme_Social\docs\forge\sku\<sku>\
+// Cria/atualiza tasks dos 7 SKUs do Novais Digital Social no ClickUp.
+// Lê estado real de cada SKU em C:\Users\Rafael\Projetos\Novais_Social\docs\foundry\sku\<sku>\
 // e reflete progresso (Wave entregue, lifecycle stage, custo aprovado).
 //
 // Uso:
@@ -9,7 +9,7 @@
 //   node scripts/seed-marketing-ai-agents-tasks.mjs --live      # cria/atualiza no ClickUp
 //
 // Onde:
-//   Space: "05 Institucional Acme"
+//   Space: "05 Institucional Novais Digital"
 //   List:  "Solicitacoes de agente"
 //   Tasks: 7 pais + 6 subtasks por agente (Waves 1-6)
 
@@ -25,14 +25,14 @@ const args = process.argv.slice(2);
 const live = args.includes("--live");
 const dryRun = !live || args.includes("--dry-run");
 
-const ACME_SOCIAL_ROOT = "C:/Users/Rafael/Projetos/Acme_Social";
+const NOVAIS_SOCIAL_ROOT = "C:/Users/Rafael/Projetos/Novais_Social";
 const TARGET = {
-  space: "05 Institucional Acme",
+  space: "05 Institucional Novais Digital",
   list: "Solicitacoes de agente"
 };
 
 // ─── Estado real dos 7 SKUs (D2 — 2026-05-13) ────────────────────────
-// Calculado a partir de docs/forge/sku/<sku>/ + project.json + entregas reais.
+// Calculado a partir de docs/foundry/sku/<sku>/ + project.json + entregas reais.
 
 const SKUS = [
   {
@@ -50,7 +50,7 @@ const SKUS = [
       wave_2_use_cases:    { status: "done",   note: "✅ GenerateCarrosselUseCase + PublishMultiNetworkUseCase + 5 fakes + 7 integration tests" },
       wave_3_tdd_red:      { status: "done",   note: "✅ Gate G6 satisfeito — 16 RED tests para ImagenAdapter, IdeogramAdapter, TwitterAdapter" },
       wave_4_build_real:   { status: "pending", note: "⏳ Impl real Imagen 4 + Ideogram + Twitter API — requer credenciais Google Cloud / Ideogram / Twitter dev account" },
-      wave_5_eval_suite:   { status: "pending", note: "⏳ Eval runner CLI + LLM-as-judge + 22 eval-cases curados + CI workflow forge-test" },
+      wave_5_eval_suite:   { status: "pending", note: "⏳ Eval runner CLI + LLM-as-judge + 22 eval-cases curados + CI workflow foundry-test" },
       wave_6_ship_shadow:  { status: "pending", note: "⏳ Zernio integration sandbox → produção SHADOW + promoção draft → SHADOW (5 gates)" }
     },
     progress_percent: 50, // 3 waves de 6 done
@@ -84,7 +84,7 @@ const SKUS = [
     priority: "P0",
     price_brl: 20.0,
     sla_seconds: 1200,
-    outcome: "Carrossel de 5-7 slides com brand Acme ≥ 99% em 20 min (gate hard individual por slide)",
+    outcome: "Carrossel de 5-7 slides com brand Novais Digital ≥ 99% em 20 min (gate hard individual por slide)",
     margin_percent: 89.9,
     cost_brl: 2.03,
     current_stage: "draft",
@@ -117,7 +117,7 @@ const SKUS = [
       wave_5_eval_suite:   { status: "pending", note: "⏳ 24 eval-cases (5 objetivos Meta + 5 convergência bandit + 3 rejeição + targeting + edge cases)" },
       wave_6_ship_shadow:  { status: "pending", note: "⏳ Special Ad Categories OUT (ADR-005-TF) + separação contratual ad spend (ADR-004-TF) + SHADOW 30d" }
     },
-    progress_percent: 5, // Apenas spec/diagnose/plan/tasks/eval-cases/decisions (pipeline forge done; code pending)
+    progress_percent: 5, // Apenas spec/diagnose/plan/tasks/eval-cases/decisions (pipeline foundry done; code pending)
     adrs: ["ADR-001-TF", "ADR-002-TF", "ADR-003-TF", "ADR-004-TF", "ADR-005-TF"]
   },
   {
@@ -179,11 +179,11 @@ const SKUS = [
       wave_3_tdd_red:      { status: "pending", note: "⏳ RED phase tests adversariais (criticality A)" },
       wave_4_build_real:   { status: "pending", note: "⏳ Claude Haiku 4.5 + Meta APIs + CRM integrations" },
       wave_5_eval_suite:   { status: "pending", note: "⏳ 25+ eval-cases adversarial-heavy (jailbreak, off-topic, abuso, latência)" },
-      wave_6_ship_shadow:  { status: "blocked", note: "🔴 BLOQUEADO: SHADOW interno-only (Acme própria) — externo exige DPO designado + DPA LGPD assinado (ADR-003-PROJ). Decisão founder até 2026-06-01." }
+      wave_6_ship_shadow:  { status: "blocked", note: "🔴 BLOQUEADO: SHADOW interno-only (Novais Digital própria) — externo exige DPO designado + DPA LGPD assinado (ADR-003-PROJ). Decisão founder até 2026-06-01." }
     },
     progress_percent: 5,
     adrs: ["ADR-001-DM", "ADR-002-DM", "ADR-003-DM", "ADR-004-DM"],
-    notes: "⚠️ Criticality A — LGPD blocking. Wave 6 externa só após DPO. Plano de mitigação em docs/forge/sku/atendimento-dm-agent/lgpd-mitigation.md"
+    notes: "⚠️ Criticality A — LGPD blocking. Wave 6 externa só após DPO. Plano de mitigação em docs/foundry/sku/atendimento-dm-agent/lgpd-mitigation.md"
   }
 ];
 
@@ -204,7 +204,7 @@ function waveLabel(key) {
 }
 
 function buildParentTaskName(sku) {
-  return `[ACME-SOCIAL] ${sku.name} (${sku.priority})`;
+  return `[NOVAIS DIGITAL-SOCIAL] ${sku.name} (${sku.priority})`;
 }
 
 function buildParentTaskDescription(sku) {
@@ -233,9 +233,9 @@ function buildParentTaskDescription(sku) {
     sku.notes ? `\n## Observações\n${sku.notes}` : "",
     ``,
     `---`,
-    `🔗 **Repositório:** https://github.com/acme-startup/marketing-ai-agents`,
-    `📂 **Artefatos forge:** \`docs/forge/sku/${sku.id}/\``,
-    `📊 **Status global:** \`docs/forge/STATUS_D2.md\``
+    `🔗 **Repositório:** https://github.com/novais-digital/marketing-ai-agents`,
+    `📂 **Artefatos foundry:** \`docs/foundry/sku/${sku.id}/\``,
+    `📊 **Status global:** \`docs/foundry/STATUS_D2.md\``
   ].filter(Boolean).join("\n");
 }
 
@@ -276,14 +276,14 @@ function clickUpStatusForParent(sku) {
 // ─── Main ────────────────────────────────────────────────────────────
 
 async function run() {
-  console.log(`\n🎯 Acme Social — Seed de tasks no ClickUp`);
+  console.log(`\n🎯 Novais Digital Social — Seed de tasks no ClickUp`);
   console.log(`   Mode:  ${live ? "🔴 LIVE (vai criar/atualizar)" : "🔵 DRY-RUN (só preview)"}`);
   console.log(`   Space: "${TARGET.space}"`);
   console.log(`   List:  "${TARGET.list}"`);
   console.log(`   SKUs:  ${SKUS.length}\n`);
 
   if (live && (!token || !teamId)) {
-    console.error("❌ Missing ClickUp credentials (CLICKUP_TOKEN ou ACME_INTERNAL_CLICKUP_TOKEN).");
+    console.error("❌ Missing ClickUp credentials (CLICKUP_TOKEN ou NOVAIS_INTERNAL_CLICKUP_TOKEN).");
     process.exit(1);
   }
 

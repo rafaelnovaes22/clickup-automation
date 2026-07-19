@@ -30,9 +30,9 @@ const SOURCES = [
     args: ["--live", "--platform=Plataforma Aicfo"]
   },
   {
-    name: "Acme Social",
+    name: "Novais Digital Social",
     type: "agentic_saas",
-    script: "scripts/sync-marketing-ai-agents-from-forge.mjs",
+    script: "scripts/sync-marketing-ai-agents-from-foundry.mjs",
     args: ["--live"],
     // Setup roda antes do sync para garantir filesystem atualizado.
     // Em produção (Railway): clona/atualiza o repo marketing-ai-agents.

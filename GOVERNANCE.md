@@ -1,4 +1,4 @@
-# ClickUp Acme — Governança Operacional
+# ClickUp Novais Digital — Governança Operacional
 
 > **Versão**: 0.2 — 2026-05-08
 > **Audiência**: você (decisor técnico) + CEO (decisor executivo)
@@ -8,7 +8,7 @@
 
 ## 1. Sumário executivo
 
-O ClickUp Acme é a **governança operacional interna para múltiplos tipos de entrega** que a Acme conduz. Nem todo cliente recebe um agente de IA. Alguns recebem uma plataforma SaaS operacional; outros recebem automações pontuais; outros, uma combinação.
+O ClickUp Novais Digital é a **governança operacional interna para múltiplos tipos de entrega** que a Novais Digital conduz. Nem todo cliente recebe um agente de IA. Alguns recebem uma plataforma SaaS operacional; outros recebem automações pontuais; outros, uma combinação.
 
 Para refletir isso, o sistema reconhece quatro **tipos de entrega** (`delivery_type`):
 
@@ -19,7 +19,7 @@ Para refletir isso, o sistema reconhece quatro **tipos de entrega** (`delivery_t
 
 O modelo **Service-as-a-Software (SaaS²)** continua suportado e é a forma natural do `agentic_saas`: vender outcomes entregues por agentes de IA, não software para o cliente operar. Mas ele é **um caso suportado, não o único default**.
 
-O ClickUp continua sendo o **journey log canônico** desse trabalho. Não é onde o cliente loga (o cliente nunca loga). É onde o time Acme prova o que aconteceu, em ordem, com quem fez, quando, e qual foi o resultado — independente do tipo de entrega.
+O ClickUp continua sendo o **journey log canônico** desse trabalho. Não é onde o cliente loga (o cliente nunca loga). É onde o time Novais Digital prova o que aconteceu, em ordem, com quem fez, quando, e qual foi o resultado — independente do tipo de entrega.
 
 Este documento descreve como o ClickUp deve ser estruturado para que:
 
@@ -43,7 +43,7 @@ Este documento descreve como o ClickUp deve ser estruturado para que:
 
 ## 2.A — Tipos de entrega (`delivery_type`)
 
-Toda entrega da Acme é classificada em **um e apenas um** dos quatro tipos abaixo. Esse campo determina:
+Toda entrega da Novais Digital é classificada em **um e apenas um** dos quatro tipos abaixo. Esse campo determina:
 
 - qual **lifecycle** a entrega segue (ver §2.B);
 - quais **listas** do ClickUp são usadas;
@@ -52,7 +52,7 @@ Toda entrega da Acme é classificada em **um e apenas um** dos quatro tipos abai
 
 | `delivery_type` | Quando usar | Exemplo | Lifecycle |
 |---|---|---|---|
-| `agentic_saas` | Vendemos outcomes entregues por **agente de IA** com cobrança por evento (SaaS²). Cliente paga por lead qualificado, ticket resolvido, etc. | "Qualificador de leads B2B" para Acme | SHADOW → ASSISTED → AUTONOMOUS |
+| `agentic_saas` | Vendemos outcomes entregues por **agente de IA** com cobrança por evento (SaaS²). Cliente paga por lead qualificado, ticket resolvido, etc. | "Qualificador de leads B2B" para Novais Digital | SHADOW → ASSISTED → AUTONOMOUS |
 | `platform` | Entregamos uma **plataforma SaaS multi-módulo** que substitui sistema legado ou cobre uma operação inteira. Pode ter ou não módulos com IA. | SchoolPlatform (operação escolar), Aicfo (CFO-IA self-serve) | DRAFT → STAGING → PILOT → CANONICAL → DEPRECATED |
 | `automation` | Script, integração ou robô **pontual** — entrega pequena, sem evolução em fases. | "Importar planilha mensal de comissões para o ERP" | a fazer → em desenvolvimento → em revisão → bloqueado → concluído |
 | `hybrid` | A mesma entrega combina dois ou mais tipos. Cada bloco (módulo, agente) declara o **próprio** `delivery_type`; o pai herda `hybrid`. | Plataforma SchoolPlatform com módulo `tele_pesquisa` em modo agentic_saas | Lifecycle por bloco |
@@ -116,7 +116,7 @@ Não tem lifecycle próprio — cada bloco interno declara seu próprio `deliver
 
 ---
 
-## 3. A jornada do cliente Acme (visão CEO)
+## 3. A jornada do cliente Novais Digital (visão CEO)
 
 ```
                   ┌──────────────────────────────────────┐
@@ -197,7 +197,7 @@ Esse é o **caminho do cliente**. A estrutura ClickUp espelha isso.
 
 ---
 
-## 4. Os 5 Spaces do ClickUp Acme
+## 4. Os 5 Spaces do ClickUp Novais Digital
 
 Decisão deliberada: **menos é mais**. O blueprint anterior tinha 6 Spaces e 13 listas só na primeira camada — antes de qualquer cliente real existir. Aqui são **5 Spaces** que cobrem todo o ciclo, com listas mínimas mas suficientes.
 
@@ -205,13 +205,13 @@ Decisão deliberada: **menos é mais**. O blueprint anterior tinha 6 Spaces e 13
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  WORKSPACE Acme — interno                                      │
+│  WORKSPACE Novais Digital — interno                                      │
 │                                                                  │
 │  📈 1. PIPELINE      🛠️ 2. IMPLANTAÇÃO    👥 3. CLIENTES        │
 │      COMERCIAL                                                   │
 │                                                                  │
 │  🚨 4. SAÚDE         🧠 5. INSTITUCIONAL                         │
-│      OPERACIONAL         Acme                                  │
+│      OPERACIONAL         Novais Digital                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -221,7 +221,7 @@ Decisão deliberada: **menos é mais**. O blueprint anterior tinha 6 Spaces e 13
 | 2 | 🛠️ Implantação | Onboarding técnico do cliente: do contrato ao AUTONOMOUS | Time de delivery |
 | 3 | 👥 Clientes | Operação contínua dos clientes ativos: faturamento, expansão, renovação | Time de relacionamento + CEO |
 | 4 | 🚨 Saúde Operacional | Cockpit reativo: gates, incidentes, auditorias, SLA | Time todo + CEO |
-| 5 | 🧠 Institucional Acme | Estratégia, catálogo, decisões, time interno | CEO + Tech Lead |
+| 5 | 🧠 Institucional Novais Digital | Estratégia, catálogo, decisões, time interno | CEO + Tech Lead |
 
 **Regra operacional aplicada**: dentro de cada Space, **1 entidade = 1 lista**. Não há pasta-por-cliente. Um cliente em operação é uma task na lista "Clientes ativos" do Space 3, vinculada por relacionamento a tasks em outros Spaces (subscriptions, faturas, etc.).
 
@@ -402,9 +402,9 @@ SLA breaches:   detectado  →  comunicado ao cliente  →  fatura ajustada  →
 
 ---
 
-### 4.6 — 🧠 Space 5: Institucional Acme
+### 4.6 — 🧠 Space 5: Institucional Novais Digital
 
-Cobre **estratégia + catálogo + decisões + backlog interno**. Não é cliente-específico. É como o time Acme opera **a si mesmo**.
+Cobre **estratégia + catálogo + decisões + backlog interno**. Não é cliente-específico. É como o time Novais Digital opera **a si mesmo**.
 
 #### Listas
 
@@ -412,8 +412,8 @@ Cobre **estratégia + catálogo + decisões + backlog interno**. Não é cliente
 |---|---|---|
 | **Catálogo de SKUs** | SKU | 1 task por SKU (em produção / em dev / depreciado) |
 | **Decisões e ADRs** | Decisão | Constitution, ADRs, decisões D1-D7 da Onda 0, etc. |
-| **Backlog técnico** | Iniciativa | Forge-N, Onda-N, refactors, pesquisas |
-| **Time Acme** | Pessoa | 1 task por membro do time, com role, áreas, links de doc interno |
+| **Backlog técnico** | Iniciativa | Foundry-N, Onda-N, refactors, pesquisas |
+| **Time Novais Digital** | Pessoa | 1 task por membro do time, com role, áreas, links de doc interno |
 | **Auditoria DeepAgents** | Relatório | 1 task por relatório mensal do reviewer externo |
 
 #### Status
@@ -450,13 +450,13 @@ Auditoria reviewer: em curso  →  publicada  →  ações em andamento  →  fe
 
 | # | Atividade | Quem | Onde | Quando |
 |---|---|---|---|---|
-| 8 | Sessão estruturada 90min com CEO | Tech Lead + CEO Acme | 📈 / Diagnósticos / em execução (sub-task D+1) | Dia 1 |
+| 8 | Sessão estruturada 90min com CEO | Tech Lead + CEO Novais Digital | 📈 / Diagnósticos / em execução (sub-task D+1) | Dia 1 |
 | 9 | Entrevistas 30min com 2-3 pessoas-chave | Tech Lead | 📈 / Diagnósticos / em execução (sub-task D+1) | Dia 1 |
 | 10 | Auditoria express dados/ferramentas | Tech Lead | 📈 / Diagnósticos / em execução (sub-task D+2) | Dia 2 |
 | 11 | Análise: 3 candidatos + critérios SaaS² | Tech Lead | 📈 / Diagnósticos / em execução (sub-task D+3) | Dia 3 |
 | 12 | Cálculo unit economics por candidato | Tech Lead | 📈 / Diagnósticos / em execução (sub-task D+3) | Dia 3 |
 | 13 | Redação do relatório (5-10pp PDF) | Tech Lead | 📈 / Diagnósticos / em execução (sub-task D+4) | Dia 4 |
-| 14 | Sessão de devolução 1h | Tech Lead + CEO Acme + cliente | 📈 / Diagnósticos / entregue | Dia 5 |
+| 14 | Sessão de devolução 1h | Tech Lead + CEO Novais Digital + cliente | 📈 / Diagnósticos / entregue | Dia 5 |
 | 15 | Aguardar decisão do cliente (7 dias) | — | 📈 / Diagnósticos / aguardando decisão | Imediatamente após D+5 |
 
 ### 5.3 — Fase: Contratação
@@ -523,11 +523,11 @@ Auditoria reviewer: em curso  →  publicada  →  ações em andamento  →  fe
 
 | # | Atividade | Quem | Onde | Quando |
 |---|---|---|---|---|
-| 51 | Check-in semanal nas primeiras 4 semanas pós-AUTONOMOUS | CEO Acme | 👥 / Relacionamento / próximo | Semanal |
-| 52 | Check-in mensal recorrente | CEO Acme + cliente | 👥 / Relacionamento / próximo (recorrente) | 1×/mês |
+| 51 | Check-in semanal nas primeiras 4 semanas pós-AUTONOMOUS | CEO Novais Digital | 👥 / Relacionamento / próximo | Semanal |
+| 52 | Check-in mensal recorrente | CEO Novais Digital + cliente | 👥 / Relacionamento / próximo (recorrente) | 1×/mês |
 | 53 | NPS trimestral | Comercial | 👥 / Relacionamento / próximo | Trimestralmente |
-| 54 | QBR (Quarterly Business Review) | CEO Acme + CEO cliente | 👥 / Relacionamento / próximo | Trimestralmente |
-| 55 | Identificar oportunidades de expansão | CEO Acme | 👥 / Expansões / identificada | Conforme conversa |
+| 54 | QBR (Quarterly Business Review) | CEO Novais Digital + CEO cliente | 👥 / Relacionamento / próximo | Trimestralmente |
+| 55 | Identificar oportunidades de expansão | CEO Novais Digital | 👥 / Expansões / identificada | Conforme conversa |
 
 ### 5.9 — Fase: Expansão (Wave 2+, upsell)
 
@@ -544,7 +544,7 @@ Auditoria reviewer: em curso  →  publicada  →  ações em andamento  →  fe
 | # | Atividade | Quem | Onde | Quando |
 |---|---|---|---|---|
 | 61 | Trigger 90 dias antes do vencimento | Sistema | 👥 / Renovações / a vencer 90d | Auto |
-| 62 | Conversa de renovação (escutar dores recentes) | CEO Acme | 👥 / Renovações / conversa iniciada | Após trigger |
+| 62 | Conversa de renovação (escutar dores recentes) | CEO Novais Digital | 👥 / Renovações / conversa iniciada | Após trigger |
 | 63 | Preparar proposta de renovação (com ajustes) | Comercial | 👥 / Renovações / proposta enviada | Pós-conversa |
 | 64 | Cliente assina renovação | Comercial | 👥 / Renovações / renovada | Aceitação |
 | 65 | Cliente decide não renovar | Comercial | 👥 / Renovações / perdida | Recusa |
@@ -553,8 +553,8 @@ Auditoria reviewer: em curso  →  publicada  →  ações em andamento  →  fe
 
 | # | Atividade | Quem | Onde | Quando |
 |---|---|---|---|---|
-| 66 | Análise de causa do churn | Tech Lead + CEO Acme | 👥 / Pós-churn / encerrado (sub-task) | Cliente sinaliza saída |
-| 67 | Conversa de retenção (última tentativa) | CEO Acme | 👥 / Pós-churn / encerrado (sub-task) | Antes de encerrar |
+| 66 | Análise de causa do churn | Tech Lead + CEO Novais Digital | 👥 / Pós-churn / encerrado (sub-task) | Cliente sinaliza saída |
+| 67 | Conversa de retenção (última tentativa) | CEO Novais Digital | 👥 / Pós-churn / encerrado (sub-task) | Antes de encerrar |
 | 68 | Encerramento técnico (canal, dados, cobrança final) | Delivery + Financeiro | 👥 / Pós-churn / encerrado (sub-task) | Decisão final |
 | 69 | Post-mortem público interno (lessons learned) | Tech Lead | 🧠 / Decisões e ADRs (em curso) | Pós-encerramento |
 
@@ -564,8 +564,8 @@ Auditoria reviewer: em curso  →  publicada  →  ações em andamento  →  fe
 |---|---|---|---|---|
 | 70 | Manter catálogo de SKUs atualizado | Tech Lead | 🧠 / Catálogo de SKUs | Conforme evolução |
 | 71 | Tomar decisões estratégicas (D-N) | CEO + Tech Lead | 🧠 / Decisões e ADRs | Conforme demanda |
-| 72 | Backlog técnico Forge / Ondas | Tech Lead | 🧠 / Backlog técnico | Planejamento |
-| 73 | Onboarding de novo membro | Quem contratou | 🧠 / Time Acme | Contratação |
+| 72 | Backlog técnico Foundry / Ondas | Tech Lead | 🧠 / Backlog técnico | Planejamento |
+| 73 | Onboarding de novo membro | Quem contratou | 🧠 / Time Novais Digital | Contratação |
 | 74 | Auditoria mensal DeepAgents | Reviewer externo | 🧠 / Auditoria DeepAgents | Cron mensal |
 
 **Total**: ~74 atividades padrão cobrindo o ciclo completo do time. Não é exaustivo (incidentes específicos, conversas pontuais não estão), mas cobre as recorrentes.
@@ -657,16 +657,16 @@ Entregáveis:
 | Pasta-por-cliente | Anti-padrão operacional. Use lista única de Clientes com vínculo a outras entidades por relacionamento. |
 | Custom fields complexos no Onda 1 | Inflam o setup sem ROI imediato. Adicionados na Onda 2/3 conforme demanda real. |
 | Permissões granulares por Space | Time inteiro tem acesso. Cliente final nunca acessa. Granularidade vira problema com 10+ pessoas. |
-| Spaces para cliente final | Premissa ADR-003: cliente nunca loga no ClickUp da Acme. |
+| Spaces para cliente final | Premissa ADR-003: cliente nunca loga no ClickUp da Novais Digital. |
 | Automações nativas ClickUp | Toda lógica de criação fica no backend, auditável e versionada. ClickUp é só interface visual. |
 | Migração do PMO clássico | Sunset programado em 90 dias com comunicação aos clientes legados (D3 da Onda 0). |
-| Substituir Forge ou a metodologia operacional | Este documento implementa essas metodologias, não as substitui. |
+| Substituir Foundry ou a metodologia operacional | Este documento implementa essas metodologias, não as substitui. |
 
 ---
 
 ## 9. Anti-padrões aprendidos com a tentativa anterior
 
-A versão anterior (`acme-governanca-ia/docs/clickup-blueprint.md` + scripts) cresceu antes de termos clareza do ciclo. Lições:
+A versão anterior (`novais-digital-governanca-ia/docs/clickup-blueprint.md` + scripts) cresceu antes de termos clareza do ciclo. Lições:
 
 1. **Não criar 17 paletas de status antes de testar com cliente real.** A API ClickUp não aplicou várias delas — o gap só foi descoberto em produção. **Lição**: começar com 2-3 paletas universais (`open / in-progress / done` + variantes), customizar depois.
 
@@ -720,7 +720,7 @@ Antes de implementar, decidir juntos:
 | 1 | Aprovar este plano ou ajustar antes da Onda 1 | Aprovar / ajustar / rejeitar | Você + CEO |
 | 2 | Quem opera no ClickUp diariamente | Só você + CEO / + 1 delivery / + comercial | CEO |
 | 3 | Confirmar Diagnóstico Fase 0 = porta de entrada paga | Sim (R$ ____) / Não / Outro modelo | CEO |
-| 4 | Quem é o "Time Acme" inicialmente | Lista de pessoas com role | CEO |
+| 4 | Quem é o "Time Novais Digital" inicialmente | Lista de pessoas com role | CEO |
 | 5 | Cliente piloto entra por qual via | Diagnóstico Fase 0 pago / Diagnóstico grátis (design partner) / pula direto | CEO |
 | 6 | Cadência de revisão deste documento | Mensal / Trimestral / Por demanda | Você |
 

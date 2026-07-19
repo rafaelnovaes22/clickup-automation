@@ -71,7 +71,7 @@ const requirementsSection = Object.keys(requirementsByDt).length
   : [];
 
 const content = [
-  "# Modelo operacional - ClickUp Acme",
+  "# Modelo operacional - ClickUp Novais Digital",
   "",
   "Este documento e gerado a partir de `config/activity-catalog.json` e `config/diagnostic-output-contract.json`.",
   "",

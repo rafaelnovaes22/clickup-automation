@@ -67,9 +67,9 @@ const listDeliveryTypes = new Map([
   ["02 Implantacao/Pilotos ativos",           new Set(["platform", "hybrid"])],
   ["04 Saude Operacional/Aceites operacionais", new Set(["platform", "automation", "hybrid"])],
   ["04 Saude Operacional/Promocoes de modo",  new Set(["platform", "hybrid"])],
-  ["05 Institucional Acme/Solicitacoes de agente",    new Set(["agentic_saas"])],
-  ["05 Institucional Acme/Solicitacoes de plataforma", new Set(["platform", "hybrid"])],
-  ["05 Institucional Acme/Backlog tecnico", new Set(["agentic_saas", "platform", "automation", "hybrid"])],
+  ["05 Institucional Novais Digital/Solicitacoes de agente",    new Set(["agentic_saas"])],
+  ["05 Institucional Novais Digital/Solicitacoes de plataforma", new Set(["platform", "hybrid"])],
+  ["05 Institucional Novais Digital/Backlog tecnico", new Set(["agentic_saas", "platform", "automation", "hybrid"])],
 ]);
 
 // ── testes: assertDeliveryType ───────────────────────────────────────────────
@@ -175,7 +175,7 @@ test("template agentic correto em lista agentic nao gera erros", () => {
   const template = {
     key: "agent_request",
     delivery_type: "agentic_saas",
-    target: { space: "05 Institucional Acme", list: "Solicitacoes de agente", desiredStatus: "rascunho" }
+    target: { space: "05 Institucional Novais Digital", list: "Solicitacoes de agente", desiredStatus: "rascunho" }
   };
   const errs = collectErrors((fail) => validateTemplateAgainstBlueprint(template, listDeliveryTypes, fail));
   assert.deepEqual(errs, []);
@@ -185,7 +185,7 @@ test("template platform_request correto em lista de plataforma nao gera erros", 
   const template = {
     key: "platform_request",
     delivery_type: "platform",
-    target: { space: "05 Institucional Acme", list: "Solicitacoes de plataforma", desiredStatus: "rascunho" }
+    target: { space: "05 Institucional Novais Digital", list: "Solicitacoes de plataforma", desiredStatus: "rascunho" }
   };
   const errs = collectErrors((fail) => validateTemplateAgainstBlueprint(template, listDeliveryTypes, fail));
   assert.deepEqual(errs, []);
@@ -205,7 +205,7 @@ test("template any em qualquer lista nao gera erro de delivery_type", () => {
   const template = {
     key: "lead_new",
     delivery_type: "any",
-    target: { space: "05 Institucional Acme", list: "Backlog tecnico", desiredStatus: "a fazer" }
+    target: { space: "05 Institucional Novais Digital", list: "Backlog tecnico", desiredStatus: "a fazer" }
   };
   const errs = collectErrors((fail) => validateTemplateAgainstBlueprint(template, listDeliveryTypes, fail));
   assert.deepEqual(errs, []);

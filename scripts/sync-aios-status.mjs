@@ -65,7 +65,7 @@ async function loadPlatformTasks() {
     };
   }
 
-  const spaceName = contract.target?.space ?? "05 Institucional Acme";
+  const spaceName = contract.target?.space ?? "05 Institucional Novais Digital";
   const folderName = platformOverride;
   if (!folderName) {
     throw new Error("--platform=<folder name> e obrigatorio em modo online (ex: --platform=\"Plataforma SchoolPlatform\")");

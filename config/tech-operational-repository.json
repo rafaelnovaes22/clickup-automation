@@ -139,7 +139,7 @@
       "inputs": ["diagnostic_task_id", "selected_candidate", "technical_platforms"],
       "outputs": ["technical_scope_approved", "platform_task_plan"],
       "artifact": "payload_contract",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "Gerar tarefas tech por plataforma apos payload aprovado.",
         "next": "Validar automaticamente se plataformas do diagnostico existem no catalogo."
@@ -155,7 +155,7 @@
       "inputs": ["client_name", "client_task_id", "technical_platforms", "tech_owner", "delivery_due_date"],
       "outputs": ["clickup_tech_tasks"],
       "artifact": "platform_task_plan",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "scripts/generate-tech-tasks.mjs",
         "next": "Expor como endpoint interno POST /admin/tech-scope."
@@ -171,7 +171,7 @@
       "inputs": ["task_key", "repository_url", "commit_sha", "pull_request_url"],
       "outputs": ["clickup_comment_with_code_reference"],
       "artifact": "pull_request_url",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "Manual: dev comenta link do PR/task.",
         "next": "Webhook GitHub identifica task_key e comenta automaticamente no ClickUp."
@@ -187,7 +187,7 @@
       "inputs": ["client_name_optional"],
       "outputs": ["progress_percent", "blocked_tasks", "task_status_summary"],
       "artifact": "tech_progress_report",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "scripts/read-tech-progress.mjs",
         "next": "Gerar comentario diario no cliente ou dashboard executivo."
@@ -203,7 +203,7 @@
       "inputs": ["client_name", "selected_candidate", "agent_outcome", "technical_platforms"],
       "outputs": ["agent_outcome_contract", "agent_behavior_spec", "agent_tool_contracts"],
       "artifact": "agent_outcome_contract",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "Gerar tarefas da plataforma ai_agent pelo catalogo tecnico.",
         "next": "Gerar automaticamente documento de especificacao do agente a partir do Diagnostico Fase 0."
@@ -219,7 +219,7 @@
       "inputs": ["agent_task_id", "eval_dataset", "expected_outcomes"],
       "outputs": ["agent_eval_report", "promotion_recommendation"],
       "artifact": "agent_eval_suite",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "Task tecnica exige suite de avaliacao e evidencia de resultado.",
         "next": "Rodar avaliacoes automaticamente no CI e atualizar status no ClickUp."
@@ -235,7 +235,7 @@
       "inputs": ["tech_task_id", "test_result", "evidence_url_or_notes"],
       "outputs": ["clickup_comment", "task_ready_for_review"],
       "artifact": "smoke_test_evidence",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "Manual: anexar evidencia e mover status.",
         "next": "Teste automatizado comenta resultado e move status para em revisao/concluido."
@@ -251,7 +251,7 @@
       "inputs": ["tech_task_id", "screen_url_or_route", "desktop_screenshot", "mobile_screenshot"],
       "outputs": ["responsive_review", "task_ready_for_review"],
       "artifact": "responsive_screenshots",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "Manual: anexar screenshots e mover status.",
         "next": "Playwright captura screenshots e comenta automaticamente na task."
@@ -267,7 +267,7 @@
       "inputs": ["tech_task_id", "test_command", "test_result"],
       "outputs": ["frontend_e2e_result", "task_ready_for_review"],
       "artifact": "frontend_e2e_test_result",
-      "clickup": { "space": "05 Institucional Acme", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
+      "clickup": { "space": "05 Institucional Novais Digital", "list": "Backlog tecnico", "taskPrefix": "[TECH]" },
       "automation": {
         "current": "Manual: rodar teste e comentar resultado.",
         "next": "CI/Playwright atualiza status da task automaticamente."

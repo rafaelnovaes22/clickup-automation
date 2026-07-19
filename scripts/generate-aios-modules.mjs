@@ -66,7 +66,7 @@ function samplePayload() {
     ],
     tech_owner: "Rafael Novaes",
     delivery_due_date: "2026-07-15",
-    repository_url: "https://github.com/acme/example-saas",
+    repository_url: "https://github.com/novais-digital/example-saas",
     project_root: "c:/Users/Rafael/Projetos/Exemplo",
     environment: "dev"
   };
@@ -86,7 +86,7 @@ async function resolvePayload() {
 async function generate(input) {
   validateAiosPayload(input, contract);
 
-  const spaceName = contract.target?.space ?? "05 Institucional Acme";
+  const spaceName = contract.target?.space ?? "05 Institucional Novais Digital";
   const folderName = input.platform_name;
   const listName = input.list_name ?? "Modulos";
 

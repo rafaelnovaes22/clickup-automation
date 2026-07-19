@@ -43,7 +43,7 @@ function renderTemplate(template) {
 }
 
 const content = [
-  "# Contratos de eventos ClickUp Acme",
+  "# Contratos de eventos ClickUp Novais Digital",
   "",
   "Este documento e gerado a partir de `config/clickup-task-templates.json`.",
   "Ele define os campos que o backend deve receber antes de criar tasks e disparar atividades correspondentes.",

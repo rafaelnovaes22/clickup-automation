@@ -15,13 +15,13 @@ const dryRun = !live || args.has("--dry-run");
 
 await loadLocalEnv();
 
-const token = process.env.CLICKUP_TOKEN ?? process.env.ACME_INTERNAL_CLICKUP_TOKEN;
-const teamId = process.env.CLICKUP_TEAM_ID ?? process.env.ACME_INTERNAL_WORKSPACE_ID;
+const token = process.env.CLICKUP_TOKEN ?? process.env.NOVAIS_INTERNAL_CLICKUP_TOKEN;
+const teamId = process.env.CLICKUP_TEAM_ID ?? process.env.NOVAIS_INTERNAL_WORKSPACE_ID;
 const templateConfig = JSON.parse(await readFile(templatesPath, "utf8"));
 
 if (live && (!token || !teamId)) {
   console.error("Missing ClickUp credentials.");
-  console.error("Expected CLICKUP_TOKEN + CLICKUP_TEAM_ID or ACME_INTERNAL_CLICKUP_TOKEN + ACME_INTERNAL_WORKSPACE_ID.");
+  console.error("Expected CLICKUP_TOKEN + CLICKUP_TEAM_ID or NOVAIS_INTERNAL_CLICKUP_TOKEN + NOVAIS_INTERNAL_WORKSPACE_ID.");
   process.exit(1);
 }
 
@@ -175,7 +175,7 @@ async function ensureTemplate(template) {
 }
 
 async function main() {
-  console.log(`ClickUp Acme template seed ${dryRun ? "(dry-run)" : "(live)"}`);
+  console.log(`ClickUp Novais Digital template seed ${dryRun ? "(dry-run)" : "(live)"}`);
   console.log(`Templates: ${templateConfig.version}\n`);
 
   for (const template of templateConfig.templates) {

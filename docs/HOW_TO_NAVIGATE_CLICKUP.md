@@ -1,6 +1,6 @@
 # Como navegar este ClickUp
 
-Este ClickUp e o journey log interno da Acme. O cliente final nunca acessa.
+Este ClickUp e o journey log interno da Novais Digital. O cliente final nunca acessa.
 
 ## Regra principal
 
@@ -15,13 +15,13 @@ Exemplos:
 
 ## Tipos de entrega (delivery_type)
 
-A Acme conduz quatro tipos de entrega. Cada lista declara quais delivery_types ela aceita.
+A Novais Digital conduz quatro tipos de entrega. Cada lista declara quais delivery_types ela aceita.
 
 | `delivery_type` | Quando usar | Lifecycle | Espaco/lista exclusivo |
 |---|---|---|---|
 | `agentic_saas` | Agente de IA cobrado por outcome (SaaS2). | SHADOW -> ASSISTED -> AUTONOMOUS | `02 Implantacao / SHADOWs ativos`, `02 Implantacao / ASSISTEDs ativos`, `04 Saude Operacional / Gates pendentes`, `04 Saude Operacional / SLA breaches`. |
-| `platform` | Plataforma SaaS multi-modulo que substitui sistema legado. | DRAFT -> STAGING -> PILOT -> CANONICAL -> DEPRECATED | `02 Implantacao / Rollouts em andamento`, `02 Implantacao / Pilotos ativos`, `03 Clientes / Fontes canonicas`, `04 Saude Operacional / Aceites operacionais`, `05 Institucional Acme / Solicitacoes de plataforma`. |
-| `automation` | Script/integracao/RPA pontual. | a fazer -> em desenvolvimento -> em revisao -> bloqueado -> concluido | Sem listas exclusivas. Usa `05 Institucional Acme / Backlog tecnico`. |
+| `platform` | Plataforma SaaS multi-modulo que substitui sistema legado. | DRAFT -> STAGING -> PILOT -> CANONICAL -> DEPRECATED | `02 Implantacao / Rollouts em andamento`, `02 Implantacao / Pilotos ativos`, `03 Clientes / Fontes canonicas`, `04 Saude Operacional / Aceites operacionais`, `05 Institucional Novais Digital / Solicitacoes de plataforma`. |
+| `automation` | Script/integracao/RPA pontual. | a fazer -> em desenvolvimento -> em revisao -> bloqueado -> concluido | Sem listas exclusivas. Usa `05 Institucional Novais Digital / Backlog tecnico`. |
 | `hybrid` | Combina dois ou mais tipos no mesmo cliente. | Lifecycle por bloco. | Pai vive na lista mais geral; cada bloco interno usa as listas do seu delivery_type. |
 
 > **Importante**: SHADOW/ASSISTED/AUTONOMOUS sao exclusivos de `agentic_saas`. PILOT/CANONICAL/DEPRECATED sao exclusivos de `platform`. Nao misture.
@@ -34,7 +34,7 @@ A Acme conduz quatro tipos de entrega. Cada lista declara quais delivery_types e
 | `02 Implantacao` | Do contrato assinado ate a entrega entrar em operacao. Setup eh universal; depois a rota se divide entre listas agentic (SHADOWs/ASSISTEDs) e platform (Rollouts/Pilotos). |
 | `03 Clientes` | Operacao continua, faturamento, relacionamento, expansao, renovacao e churn. `Fontes canonicas` so aceita modulos `platform` em CANONICAL. |
 | `04 Saude Operacional` | Tudo que pede atencao operacional: gates (so agentic), aceites operacionais (so platform/automation), incidentes, auditorias, promocoes e SLA. |
-| `05 Institucional Acme` | Decisoes internas, catalogo de SKUs, backlog, time e auditorias da propria Acme. `Solicitacoes de agente` so para agentic_saas; `Solicitacoes de plataforma` so para platform. |
+| `05 Institucional Novais Digital` | Decisoes internas, catalogo de SKUs, backlog, time e auditorias da propria Novais Digital. `Solicitacoes de agente` so para agentic_saas; `Solicitacoes de plataforma` so para platform. |
 
 ## Tags transversais
 

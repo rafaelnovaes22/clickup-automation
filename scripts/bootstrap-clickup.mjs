@@ -16,15 +16,15 @@ const dryRun = !live || args.has("--dry-run");
 
 await loadLocalEnv();
 
-const token = process.env.CLICKUP_TOKEN ?? process.env.ACME_INTERNAL_CLICKUP_TOKEN;
-const teamId = process.env.CLICKUP_TEAM_ID ?? process.env.ACME_INTERNAL_WORKSPACE_ID;
+const token = process.env.CLICKUP_TOKEN ?? process.env.NOVAIS_INTERNAL_CLICKUP_TOKEN;
+const teamId = process.env.CLICKUP_TEAM_ID ?? process.env.NOVAIS_INTERNAL_WORKSPACE_ID;
 
 const blueprint = JSON.parse(await readFile(blueprintPath, "utf8"));
 const navigationDoc = await readFile(navigationPath, "utf8");
 
 if (live && (!token || !teamId)) {
   console.error("Missing ClickUp credentials.");
-  console.error("Expected CLICKUP_TOKEN + CLICKUP_TEAM_ID or ACME_INTERNAL_CLICKUP_TOKEN + ACME_INTERNAL_WORKSPACE_ID.");
+  console.error("Expected CLICKUP_TOKEN + CLICKUP_TEAM_ID or NOVAIS_INTERNAL_CLICKUP_TOKEN + NOVAIS_INTERNAL_WORKSPACE_ID.");
   console.error("Run dry mode with: npm run bootstrap:dry");
   process.exit(1);
 }
@@ -219,7 +219,7 @@ function printStatusChecklist() {
 }
 
 async function main() {
-  console.log(`ClickUp Acme bootstrap ${dryRun ? "(dry-run)" : "(live)"}`);
+  console.log(`ClickUp Novais Digital bootstrap ${dryRun ? "(dry-run)" : "(live)"}`);
   console.log(`Blueprint: ${blueprint.version} from ${blueprint.source}\n`);
 
   let existingSpaces = [];

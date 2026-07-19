@@ -21,7 +21,7 @@ nao automaticamente apenas pelo merge.
 O AIOS Server e os agentes que rodam dentro de um projeto consumidor (ex: `SchoolPlatform`) **nao
 emitem eventos** para o clickup-automation. O fluxo é o inverso: o clickup-automation roda um sync
 periodico que le o estado canonico do filesystem do projeto consumidor e do GitHub, e atualiza
-as tasks correspondentes em `05 Institucional Acme / Backlog tecnico`.
+as tasks correspondentes em `05 Institucional Novais Digital / Backlog tecnico`.
 
 ```
 +---------------+       +-------------------+

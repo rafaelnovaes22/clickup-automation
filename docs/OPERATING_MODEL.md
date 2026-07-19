@@ -1,4 +1,4 @@
-# Modelo operacional - ClickUp Acme
+# Modelo operacional - ClickUp Novais Digital
 
 Este documento e gerado a partir de `config/activity-catalog.json` e `config/diagnostic-output-contract.json`.
 
@@ -34,13 +34,13 @@ Suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 | 5 | `any` | Pre-venda / Captacao | Apresentar pitch do Diagnostico Fase 0 | Comercial | 01 Pipeline Comercial / Leads | qualificado |  |
 | 6 | `any` | Pre-venda / Captacao | Negociar fee do Diagnostico | Comercial | 01 Pipeline Comercial / Leads | qualificado |  |
 | 7 | `any` | Pre-venda / Captacao | Cliente assina e paga Diagnostico | Comercial + Financeiro | 01 Pipeline Comercial / Diagnosticos Fase 0 | vendido | comprovante_pagamento |
-| 8 | `any` | Diagnostico Fase 0 | Sessao estruturada 90min com CEO | Tech Lead + CEO Acme | 01 Pipeline Comercial / Diagnosticos Fase 0 | em execucao | ceo_session_notes |
+| 8 | `any` | Diagnostico Fase 0 | Sessao estruturada 90min com CEO | Tech Lead + CEO Novais Digital | 01 Pipeline Comercial / Diagnosticos Fase 0 | em execucao | ceo_session_notes |
 | 9 | `any` | Diagnostico Fase 0 | Entrevistas 30min com 2-3 pessoas-chave | Tech Lead | 01 Pipeline Comercial / Diagnosticos Fase 0 | em execucao | stakeholder_interview_notes |
 | 10 | `any` | Diagnostico Fase 0 | Auditoria express dados/ferramentas | Tech Lead | 01 Pipeline Comercial / Diagnosticos Fase 0 | em execucao | data_tooling_audit |
 | 11 | `agentic_saas` | Diagnostico Fase 0 | Analise: 3 candidatos + criterios SaaS2 | Tech Lead | 01 Pipeline Comercial / Diagnosticos Fase 0 | em execucao | automation_candidate_matrix |
 | 12 | `agentic_saas` | Diagnostico Fase 0 | Calculo unit economics de inferencia por candidato | Tech Lead | 01 Pipeline Comercial / Diagnosticos Fase 0 | em execucao | unit_economics_model |
 | 13 | `any` | Diagnostico Fase 0 | Redacao do relatorio 5-10pp PDF | Tech Lead | 01 Pipeline Comercial / Diagnosticos Fase 0 | em execucao | diagnostic_report_pdf |
-| 14 | `any` | Diagnostico Fase 0 | Sessao de devolucao 1h | Tech Lead + CEO Acme + cliente | 01 Pipeline Comercial / Diagnosticos Fase 0 | entregue | playback_notes |
+| 14 | `any` | Diagnostico Fase 0 | Sessao de devolucao 1h | Tech Lead + CEO Novais Digital + cliente | 01 Pipeline Comercial / Diagnosticos Fase 0 | entregue | playback_notes |
 | 15 | `any` | Diagnostico Fase 0 | Aguardar decisao do cliente | Comercial | 01 Pipeline Comercial / Diagnosticos Fase 0 | aguardando decisao |  |
 | 16 | `any` | Contratacao | Redigir proposta personalizada | Comercial + Tech Lead | 01 Pipeline Comercial / Propostas | enviada | proposal_doc |
 | 17 | `agentic_saas` | Contratacao | Negociar clausula de outcome | Comercial | 01 Pipeline Comercial / Propostas | em negociacao |  |
@@ -58,23 +58,23 @@ Suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 | 45 | `any` | Operacao continua | Gerar fatura mensal | Financeiro | 03 Clientes / Faturamento mensal | em curso | monthly_invoice |
 | 46 | `any` | Operacao continua | Verificar pagamento e cobrar inadimplencia | Financeiro | 03 Clientes / Faturamento mensal | pago |  |
 | 47 | `any` | Operacao continua | Emitir NF e enviar relatorio executivo | Financeiro + Tech Lead | 03 Clientes / Faturamento mensal | pago | executive_monthly_report |
-| 51 | `any` | Pos-venda / Relacionamento | Check-in semanal nas primeiras 4 semanas pos-go-live | CEO Acme | 03 Clientes / Relacionamento | proximo |  |
-| 52 | `any` | Pos-venda / Relacionamento | Check-in mensal recorrente | CEO Acme + cliente | 03 Clientes / Relacionamento | proximo |  |
+| 51 | `any` | Pos-venda / Relacionamento | Check-in semanal nas primeiras 4 semanas pos-go-live | CEO Novais Digital | 03 Clientes / Relacionamento | proximo |  |
+| 52 | `any` | Pos-venda / Relacionamento | Check-in mensal recorrente | CEO Novais Digital + cliente | 03 Clientes / Relacionamento | proximo |  |
 | 53 | `any` | Pos-venda / Relacionamento | NPS trimestral | Comercial | 03 Clientes / Relacionamento | proximo | nps_response |
-| 54 | `any` | Pos-venda / Relacionamento | QBR | CEO Acme + CEO cliente | 03 Clientes / Relacionamento | proximo | qbr_deck |
-| 55 | `any` | Pos-venda / Relacionamento | Identificar oportunidades de expansao | CEO Acme | 03 Clientes / Expansoes | identificada |  |
+| 54 | `any` | Pos-venda / Relacionamento | QBR | CEO Novais Digital + CEO cliente | 03 Clientes / Relacionamento | proximo | qbr_deck |
+| 55 | `any` | Pos-venda / Relacionamento | Identificar oportunidades de expansao | CEO Novais Digital | 03 Clientes / Expansoes | identificada |  |
 | 56 | `any` | Expansao | Documentar oportunidade de expansao (Wave/modulo) | Tech Lead | 03 Clientes / Expansoes | identificada | wave_opportunity_note |
 | 57 | `any` | Expansao | Preparar proposta de expansao | Comercial | 03 Clientes / Expansoes | proposta | wave_proposal |
 | 58 | `any` | Expansao | Cliente assina expansao | Comercial | 03 Clientes / Expansoes | contratada | wave_signed_contract |
 | 59 | `any` | Expansao | Delivery da expansao | Delivery | 03 Clientes / Expansoes | em delivery |  |
 | 60 | `any` | Expansao | Expansao entregue, em producao | Tech Lead | 03 Clientes / Expansoes | concluida |  |
 | 61 | `any` | Renovacao anual | Trigger 90 dias antes do vencimento | Sistema | 03 Clientes / Renovacoes | a vencer 90d |  |
-| 62 | `any` | Renovacao anual | Conversa de renovacao | CEO Acme | 03 Clientes / Renovacoes | conversa iniciada |  |
+| 62 | `any` | Renovacao anual | Conversa de renovacao | CEO Novais Digital | 03 Clientes / Renovacoes | conversa iniciada |  |
 | 63 | `any` | Renovacao anual | Preparar proposta de renovacao | Comercial | 03 Clientes / Renovacoes | proposta enviada | renewal_proposal |
 | 64 | `any` | Renovacao anual | Cliente assina renovacao | Comercial | 03 Clientes / Renovacoes | renovada | renewal_signed_contract |
 | 65 | `any` | Renovacao anual | Cliente decide nao renovar | Comercial | 03 Clientes / Renovacoes | perdida |  |
-| 66 | `any` | Churn / Sunset | Analise de causa do churn | Tech Lead + CEO Acme | 03 Clientes / Pos-churn | encerrado | churn_cause_analysis |
-| 67 | `any` | Churn / Sunset | Conversa de retencao | CEO Acme | 03 Clientes / Pos-churn | retencao tentada |  |
+| 66 | `any` | Churn / Sunset | Analise de causa do churn | Tech Lead + CEO Novais Digital | 03 Clientes / Pos-churn | encerrado | churn_cause_analysis |
+| 67 | `any` | Churn / Sunset | Conversa de retencao | CEO Novais Digital | 03 Clientes / Pos-churn | retencao tentada |  |
 | 68 | `any` | Churn / Sunset | Encerramento tecnico | Delivery + Financeiro | 03 Clientes / Pos-churn | fechado | technical_sunset_checklist |
 | 120 | `platform` | Operacao canonical | Promover modulo para CANONICAL e desligar legado paralelo | Tech Lead | 03 Clientes / Fontes canonicas | canonical | canonical_cutover_note |
 | 123 | `platform` | Operacao canonical | Depreciar modulo (CANONICAL -> DEPRECATED) | Tech Lead | 03 Clientes / Fontes canonicas | depreciado | deprecation_note |
@@ -128,16 +128,16 @@ Suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 | 121 | `platform` | Operacao canonical | Monitorar incidentes pos-canonical | Delivery | 04 Saude Operacional / Incidentes | aberto | incident_postmortem |
 | 122 | `platform` | Operacao canonical | Auditoria operacional mensal (consistencia canonical x legado quando ainda houver leitura paralela) | Delivery | 04 Saude Operacional / Auditorias mensais | em revisao | operational_consistency_report |
 
-## 05 Institucional Acme
+## 05 Institucional Novais Digital
 
 | # | Delivery type | Fase | Atividade | Dono | Onde | Status | Artefato |
 |---|---|---|---|---|---|---|---|
-| 69 | `any` | Churn / Sunset | Post-mortem publico interno | Tech Lead | 05 Institucional Acme / Decisoes e ADRs | em curso | internal_lessons_learned |
-| 70 | `any` | Transversal | Manter catalogo de SKUs atualizado | Tech Lead | 05 Institucional Acme / Catalogo de SKUs | dev |  |
-| 71 | `any` | Transversal | Tomar decisoes estrategicas | CEO + Tech Lead | 05 Institucional Acme / Decisoes e ADRs | em curso | adr |
-| 72 | `any` | Transversal | Backlog tecnico Forge / Ondas | Tech Lead | 05 Institucional Acme / Backlog tecnico | em curso |  |
-| 73 | `any` | Transversal | Onboarding de novo membro | Quem contratou | 05 Institucional Acme / Time Acme | onboarding |  |
-| 74 | `agentic_saas` | Transversal | Auditoria mensal DeepAgents | Reviewer externo | 05 Institucional Acme / Auditoria DeepAgents | em curso | deepagents_review |
+| 69 | `any` | Churn / Sunset | Post-mortem publico interno | Tech Lead | 05 Institucional Novais Digital / Decisoes e ADRs | em curso | internal_lessons_learned |
+| 70 | `any` | Transversal | Manter catalogo de SKUs atualizado | Tech Lead | 05 Institucional Novais Digital / Catalogo de SKUs | dev |  |
+| 71 | `any` | Transversal | Tomar decisoes estrategicas | CEO + Tech Lead | 05 Institucional Novais Digital / Decisoes e ADRs | em curso | adr |
+| 72 | `any` | Transversal | Backlog tecnico Foundry / Ondas | Tech Lead | 05 Institucional Novais Digital / Backlog tecnico | em curso |  |
+| 73 | `any` | Transversal | Onboarding de novo membro | Quem contratou | 05 Institucional Novais Digital / Time Novais Digital | onboarding |  |
+| 74 | `agentic_saas` | Transversal | Auditoria mensal DeepAgents | Reviewer externo | 05 Institucional Novais Digital / Auditoria DeepAgents | em curso | deepagents_review |
 
 ## Contrato de saida do Diagnostico Fase 0
 

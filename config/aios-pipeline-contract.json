@@ -4,7 +4,7 @@
   "purpose": "Gerar tarefas AIOS por modulo de plataforma SaaS multi-tenant. delivery_type=platform por default; suporta hybrid quando modulos individuais forem agentic.",
   "delivery_type": "platform",
   "target": {
-    "space": "05 Institucional Acme",
+    "space": "05 Institucional Novais Digital",
     "folder": "{platform_name}",
     "list": "{list_name}"
   },

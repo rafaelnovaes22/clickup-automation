@@ -36,7 +36,7 @@ function samplePayload() {
     technical_platforms: ["ai_agent", "whatsapp", "node_backend"],
     tech_owner: "AI Engineer",
     delivery_due_date: "2026-05-15",
-    repository_url: "https://github.com/acme/example",
+    repository_url: "https://github.com/novais-digital/example",
     environment: "dev",
     notes: "Payload de exemplo para dry-run."
   };

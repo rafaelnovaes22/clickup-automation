@@ -37,8 +37,8 @@ export async function loadLocalEnv(path = envPath) {
 
 export function clickUpCredentials(env = process.env) {
   return {
-    token: env.CLICKUP_TOKEN ?? env.ACME_INTERNAL_CLICKUP_TOKEN,
-    teamId: env.CLICKUP_TEAM_ID ?? env.ACME_INTERNAL_WORKSPACE_ID
+    token: env.CLICKUP_TOKEN ?? env.NOVAIS_INTERNAL_CLICKUP_TOKEN,
+    teamId: env.CLICKUP_TEAM_ID ?? env.NOVAIS_INTERNAL_WORKSPACE_ID
   };
 }
 

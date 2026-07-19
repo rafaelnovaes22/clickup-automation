@@ -152,5 +152,5 @@ const server = http.createServer(async (request, response) => {
 });
 
 server.listen(port, () => {
-  console.log(`ClickUp Acme webhook backend listening on :${port} (NODE_ENV=${nodeEnv})`);
+  console.log(`ClickUp Novais Digital webhook backend listening on :${port} (NODE_ENV=${nodeEnv})`);
 });

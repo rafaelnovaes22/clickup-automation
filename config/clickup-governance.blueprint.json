@@ -1,7 +1,7 @@
 {
   "version": "0.2",
   "source": "GOVERNANCE.md",
-  "workspaceName": "Acme",
+  "workspaceName": "Novais Digital",
   "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
   "tags": [
     "ia-gerado",
@@ -173,7 +173,7 @@
       ]
     },
     {
-      "name": "05 Institucional Acme",
+      "name": "05 Institucional Novais Digital",
       "purpose": "Estrategia, catalogo, decisoes, backlog e time interno.",
       "lists": [
         {
@@ -207,7 +207,7 @@
           "statuses": ["bloqueado", "em curso", "em revisao", "concluido"]
         },
         {
-          "name": "Time Acme",
+          "name": "Time Novais Digital",
           "entity": "Pessoa",
           "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
           "statuses": ["ativo", "onboarding", "offboarding"]
@@ -222,7 +222,7 @@
     }
   ],
   "navigationDocTask": {
-    "space": "05 Institucional Acme",
+    "space": "05 Institucional Novais Digital",
     "list": "Decisoes e ADRs",
     "name": "Como navegar este ClickUp"
   }

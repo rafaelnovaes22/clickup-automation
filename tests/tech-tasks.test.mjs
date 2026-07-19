@@ -31,12 +31,12 @@ const catalog = {
 };
 
 const payload = {
-  client_name: "Acme",
+  client_name: "Novais Digital",
   client_task_id: "86abc",
   technical_platforms: ["ai_agent"],
   tech_owner: "AI Engineer",
   delivery_due_date: "2026-05-15",
-  repository_url: "https://github.com/acme/acme",
+  repository_url: "https://github.com/novais-digital/novais-digital",
   environment: "dev"
 };
 
@@ -54,7 +54,7 @@ test("taskName and taskDescription include matching metadata", () => {
   const platform = catalog.platforms[0];
   const task = platform.tasks[0];
 
-  assert.equal(taskName(payload, platform, task), "[TECH] Acme / Agente de IA / Criar suite de avaliacao do agente");
+  assert.equal(taskName(payload, platform, task), "[TECH] Novais Digital / Agente de IA / Criar suite de avaliacao do agente");
 
   const description = taskDescription(payload, platform, task);
   assert.match(description, /platform_key=ai_agent/);
@@ -72,16 +72,16 @@ test("parseTechTask extracts client, platform, task key and repository", () => {
     status: { status: "to do" }
   });
 
-  assert.equal(parsed.clientName, "Acme");
+  assert.equal(parsed.clientName, "Novais Digital");
   assert.equal(parsed.platformKey, "ai_agent");
   assert.equal(parsed.taskKey, "agent_evaluation_suite");
-  assert.equal(parsed.repositoryUrl, "https://github.com/acme/acme");
+  assert.equal(parsed.repositoryUrl, "https://github.com/novais-digital/novais-digital");
   assert.equal(canonicalStatus(parsed.status), "a fazer");
 });
 
 test("decideStatus maps evidence to operational status", () => {
   assert.equal(decideStatus({ prs: [], branches: [], ci: null }), "a fazer");
-  assert.equal(decideStatus({ prs: [], branches: [{ name: "acme-ai-agent" }], ci: null }), "em desenvolvimento");
+  assert.equal(decideStatus({ prs: [], branches: [{ name: "novais-digital-ai-agent" }], ci: null }), "em desenvolvimento");
   assert.equal(decideStatus({ prs: [{ state: "open", updated_at: "2026-05-01T00:00:00Z" }], branches: [], ci: null }), "em revisao");
   assert.equal(decideStatus({ prs: [{ state: "open", updated_at: "2026-05-01T00:00:00Z" }], branches: [], ci: { state: "failing" } }), "bloqueado");
   assert.equal(decideStatus({ prs: [{ state: "closed", merged_at: "2026-05-01T00:00:00Z", updated_at: "2026-05-01T00:00:00Z" }], branches: [], ci: { state: "passing" } }), "concluido");
@@ -93,7 +93,7 @@ test("agentRequestToPayload converts ClickUp custom fields into tech payload", (
     id: "86request",
     name: "Criar agente SDR",
     custom_fields: [
-      { name: "Cliente", type: "text", value: "Acme" },
+      { name: "Cliente", type: "text", value: "Novais Digital" },
       { name: "Plataformas tecnicas", type: "text", value: "ai_agent,whatsapp,node_backend" },
       { name: "Responsavel tecnico", type: "text", value: "AI Engineer" },
       { name: "Prazo desejado", type: "date", value: String(date) },
@@ -102,7 +102,7 @@ test("agentRequestToPayload converts ClickUp custom fields into tech payload", (
     ]
   });
 
-  assert.equal(payloadFromTask.client_name, "Acme");
+  assert.equal(payloadFromTask.client_name, "Novais Digital");
   assert.deepEqual(payloadFromTask.technical_platforms, ["ai_agent", "whatsapp", "node_backend"]);
   assert.equal(payloadFromTask.client_task_id, "86request");
   assert.equal(payloadFromTask.delivery_due_date, "2026-05-15");

@@ -1,5 +1,5 @@
 {
-  "name": "clickup-acme-governance",
+  "name": "clickup-novais-digital-governance",
   "version": "0.2.0",
   "private": true,
   "type": "module",
@@ -45,8 +45,8 @@
     "aicfo:update-descriptions:dry": "node scripts/update-aicfo-descriptions.mjs --dry-run",
     "aicfo:update-descriptions": "node scripts/update-aicfo-descriptions.mjs --live",
     "marketing-ai-agents:bootstrap": "node scripts/bootstrap-marketing-ai-agents-repo.mjs",
-    "marketing-ai-agents:sync:dry": "node scripts/sync-marketing-ai-agents-from-forge.mjs --dry-run",
-    "marketing-ai-agents:sync": "node scripts/sync-marketing-ai-agents-from-forge.mjs --live"
+    "marketing-ai-agents:sync:dry": "node scripts/sync-marketing-ai-agents-from-foundry.mjs --dry-run",
+    "marketing-ai-agents:sync": "node scripts/sync-marketing-ai-agents-from-foundry.mjs --live"
   },
   "engines": {
     "node": ">=18"

@@ -1,4 +1,4 @@
-# Contratos de eventos ClickUp Acme
+# Contratos de eventos ClickUp Novais Digital
 
 Este documento e gerado a partir de `config/clickup-task-templates.json`.
 Ele define os campos que o backend deve receber antes de criar tasks e disparar atividades correspondentes.
@@ -11,14 +11,14 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 - Evento: `agent_request`
 - Delivery type: `agentic_saas`
-- Destino: `05 Institucional Acme / Solicitacoes de agente`
+- Destino: `05 Institucional Novais Digital / Solicitacoes de agente`
 - Status desejado: `rascunho`
 
 ### Campos
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `client_name` | Cliente | text | sim |  | Acme Ltda |
+| `client_name` | Cliente | text | sim |  | Novais Digital Ltda |
 | `business_problem` | Problema de negocio | long_text | sim |  | Comercial demora para qualificar leads e perde timing. |
 | `expected_outcome` | Outcome esperado | long_text | sim |  | Lead qualificado com score e proximo passo sugerido. |
 | `agent_type` | Tipo de agente | select | sim | SDR, suporte, cobranca, atendimento, operacao, analise, outro |  |
@@ -29,7 +29,7 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 | `success_metric` | Metrica de sucesso | text | nao |  | % leads qualificados corretamente |
 | `delivery_due_date` | Prazo desejado | date | sim |  | 2026-05-15 |
 | `tech_owner` | Responsavel tecnico | person_or_text | sim |  | AI Engineer |
-| `repository_url` | Repositorio | url | nao |  | https://github.com/acme/acme |
+| `repository_url` | Repositorio | url | nao |  | https://github.com/novais-digital/novais-digital |
 | `environment` | Ambiente | select | sim | dev, staging, prod |  |
 
 ### Atividades disparadas
@@ -57,9 +57,9 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
 | `contact_name` | Contato principal | text | sim |  | Maria Silva |
-| `contact_email` | Email | email | nao |  | maria@acme.com |
+| `contact_email` | Email | email | nao |  | maria@novais-digital.com |
 | `contact_phone` | Telefone/WhatsApp | phone | nao |  | +55 11 99999-9999 |
 | `source` | Origem | select | sim | indicacao, evento, outbound, inbound, parceiro, manual |  |
 | `pain_summary` | Dor percebida | long_text | sim |  | Time perde muito tempo qualificando leads manualmente. |
@@ -89,12 +89,12 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
 | `lead_task_id` | Task do lead | clickup_task_id | nao |  | 86abc123 |
 | `diagnostic_fee` | Fee do diagnostico | currency_brl | sim |  | 8000 |
 | `payment_confirmed_at` | Pagamento confirmado em | datetime | sim |  | 2026-05-01T14:00:00-03:00 |
 | `client_ceo_name` | CEO do cliente | text | sim |  | Maria Silva |
-| `client_ceo_email` | Email do CEO | email | nao |  | maria@acme.com |
+| `client_ceo_email` | Email do CEO | email | nao |  | maria@novais-digital.com |
 | `start_date` | Data de inicio | date | sim |  | 2026-05-04 |
 | `delivery_date` | Data de devolucao | date | sim |  | 2026-05-08 |
 | `diagnostic_owner` | Responsavel tecnico | person_or_text | sim |  | Tech Lead |
@@ -126,7 +126,7 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
 | `diagnostic_task_id` | Task do diagnostico | clickup_task_id | sim |  | 86diag123 |
 | `sku` | SKU proposto | text | sim |  | Qualificacao de Leads SaaS2 |
 | `platform_fee` | Fee plataforma mensal | currency_brl | sim |  | 3000 |
@@ -162,7 +162,7 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
 | `client_task_id` | Task do cliente | clickup_task_id | nao |  | 86cli123 |
 | `proposal_task_id` | Task da proposta | clickup_task_id | sim |  | 86prop123 |
 | `setup_fee` | Setup fee | currency_brl | sim |  | 15000 |
@@ -198,7 +198,7 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
 | `setup_task_id` | Task do setup | clickup_task_id | sim |  | 86setup123 |
 | `subscription_id` | Subscription ID no backend | text | sim |  | sub_123 |
 | `agent_name` | Nome do agente | text | sim |  | Lead Qualifier |
@@ -232,7 +232,7 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
 | `client_task_id` | Task do cliente | clickup_task_id | sim |  | 86cli123 |
 | `subscription_id` | Subscription ID no backend | text | sim |  | sub_123 |
 | `billing_month` | Mes de referencia | month | sim |  | 2026-05 |
@@ -265,7 +265,7 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | nao |  | Acme Ltda |
+| `company_name` | Empresa | text | nao |  | Novais Digital Ltda |
 | `client_task_id` | Task do cliente | clickup_task_id | nao |  | 86cli123 |
 | `subscription_id` | Subscription ID no backend | text | nao |  | sub_123 |
 | `severity` | Severidade | select | sim | P1, P2, P3 |  |
@@ -300,8 +300,8 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
-| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Acme |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Novais Digital |
 | `module_key` | Modulo | text | sim |  | cadastros |
 | `client_task_id` | Task do cliente | clickup_task_id | nao |  | 86cli123 |
 | `proposal_task_id` | Task da proposta | clickup_task_id | sim |  | 86prop123 |
@@ -337,8 +337,8 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
-| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Acme |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Novais Digital |
 | `module_key` | Modulo | text | sim |  | cadastros |
 | `rollout_task_id` | Task do rollout | clickup_task_id | sim |  | 86roll123 |
 | `pilot_started_at` | Piloto iniciado em | datetime | sim |  | 2026-05-15T09:00:00-03:00 |
@@ -374,14 +374,14 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
-| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Acme |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Novais Digital |
 | `module_key` | Modulo | text | sim |  | cadastros |
 | `pilot_task_id` | Task do piloto | clickup_task_id | sim |  | 86pilot123 |
 | `acceptance_criteria_doc` | Documento de criterios de aceite | url | sim |  | https://... |
 | `comparison_evidence` | Evidencia comparacao legado x nova | url | sim |  | https://... |
-| `client_signoff_owner` | Quem assina pelo cliente | text | sim |  | Maria Silva (CFO Acme) |
-| `tech_signoff_owner` | Quem assina pela Acme | person_or_text | sim |  | Tech Lead |
+| `client_signoff_owner` | Quem assina pelo cliente | text | sim |  | Maria Silva (CFO Novais Digital) |
+| `tech_signoff_owner` | Quem assina pela Novais Digital | person_or_text | sim |  | Tech Lead |
 
 ### Atividades disparadas
 
@@ -408,8 +408,8 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 
 | Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
 |---|---|---|---|---|---|
-| `company_name` | Empresa | text | sim |  | Acme Ltda |
-| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Acme |
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Novais Digital |
 | `module_key` | Modulo | text | sim |  | cadastros |
 | `acceptance_task_id` | Task do aceite operacional | clickup_task_id | sim |  | 86acc123 |
 | `cutover_date` | Data planejada de cutover | date | sim |  | 2026-06-01 |

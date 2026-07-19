@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Atualiza descricoes das tasks ja criadas em "05 Institucional Acme / Plataforma Aicfo / Modulos"
+// Atualiza descricoes das tasks ja criadas em "05 Institucional Novais Digital / Plataforma Aicfo / Modulos"
 // para incluir o titulo, resumo e funcionalidades em linguagem de negocios (CEO-friendly).
 //
 // Por que existe: o generate-aios-modules.mjs faz [skip] em tasks ja existentes, sem atualizar
@@ -38,7 +38,7 @@ const moduleFilter = moduleFilterArg ? moduleFilterArg.split("=")[1] : null;
 
 const { token, teamId } = clickUpCredentials();
 if (live && (!token || !teamId)) {
-  console.error("Missing ClickUp credentials. Set ACME_INTERNAL_CLICKUP_TOKEN + ACME_INTERNAL_WORKSPACE_ID.");
+  console.error("Missing ClickUp credentials. Set NOVAIS_INTERNAL_CLICKUP_TOKEN + NOVAIS_INTERNAL_WORKSPACE_ID.");
   process.exit(1);
 }
 const clickUp = token && teamId ? createClickUpClient({ token }) : null;
@@ -53,7 +53,7 @@ const [payload, functionalities, catalog] = await Promise.all([
   readFile(catalogPath, "utf8").then(JSON.parse)
 ]);
 
-const spaceName = "05 Institucional Acme";
+const spaceName = "05 Institucional Novais Digital";
 const folderName = payload.platform_name || "Plataforma Aicfo";
 const listName = payload.list_name || "Modulos";
 

@@ -66,7 +66,7 @@ Este documento e gerado a partir de `config/tech-operational-repository.json` e 
 - Tipo: `manual`
 - Papel: `tech_lead`
 - Gatilho: `diagnostic_completed`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `payload_contract`
 
 Entradas:
@@ -88,7 +88,7 @@ Proxima automacao: Validar automaticamente se plataformas do diagnostico existem
 - Tipo: `automatic`
 - Papel: `system`
 - Gatilho: `tech_scope_identified`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `platform_task_plan`
 
 Entradas:
@@ -111,7 +111,7 @@ Proxima automacao: Expor como endpoint interno POST /admin/tech-scope.
 - Tipo: `hybrid`
 - Papel: `backend_dev`
 - Gatilho: `commit_or_pr_created`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `pull_request_url`
 
 Entradas:
@@ -133,7 +133,7 @@ Proxima automacao: Webhook GitHub identifica task_key e comenta automaticamente 
 - Tipo: `automatic`
 - Papel: `system`
 - Gatilho: `daily_or_on_demand`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `tech_progress_report`
 
 Entradas:
@@ -154,7 +154,7 @@ Proxima automacao: Gerar comentario diario no cliente ou dashboard executivo.
 - Tipo: `hybrid`
 - Papel: `ai_engineer`
 - Gatilho: `ai_agent_selected`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `agent_outcome_contract`
 
 Entradas:
@@ -178,7 +178,7 @@ Proxima automacao: Gerar automaticamente documento de especificacao do agente a 
 - Tipo: `hybrid`
 - Papel: `ai_engineer`
 - Gatilho: `agent_implementation_ready`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `agent_eval_suite`
 
 Entradas:
@@ -200,7 +200,7 @@ Proxima automacao: Rodar avaliacoes automaticamente no CI e atualizar status no 
 - Tipo: `hybrid`
 - Papel: `delivery_engineer`
 - Gatilho: `smoke_test_completed`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `smoke_test_evidence`
 
 Entradas:
@@ -222,7 +222,7 @@ Proxima automacao: Teste automatizado comenta resultado e move status para em re
 - Tipo: `hybrid`
 - Papel: `frontend_dev`
 - Gatilho: `frontend_screen_ready`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `responsive_screenshots`
 
 Entradas:
@@ -245,7 +245,7 @@ Proxima automacao: Playwright captura screenshots e comenta automaticamente na t
 - Tipo: `hybrid`
 - Papel: `frontend_dev`
 - Gatilho: `frontend_flow_ready`
-- Onde: `05 Institucional Acme / Backlog tecnico`
+- Onde: `05 Institucional Novais Digital / Backlog tecnico`
 - Artefato: `frontend_e2e_test_result`
 
 Entradas:

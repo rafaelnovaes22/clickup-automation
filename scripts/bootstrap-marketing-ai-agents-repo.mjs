@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // bootstrap-marketing-ai-agents-repo.mjs
-// Garante que o repo acme-startup/marketing-ai-agents está clonado e atualizado
-// em ACME_SOCIAL_PATH antes do sync ler o filesystem.
+// Garante que o repo novais-digital/marketing-ai-agents está clonado e atualizado
+// em NOVAIS_SOCIAL_PATH antes do sync ler o filesystem.
 //
 // Comportamento:
 // - Se pasta não existe: git clone
@@ -13,7 +13,7 @@
 //
 // Uso:
 //   node scripts/bootstrap-marketing-ai-agents-repo.mjs           # auto-detecta path
-//   ACME_SOCIAL_PATH=/app/marketing-ai-agents npm run marketing-ai-agents:bootstrap
+//   NOVAIS_SOCIAL_PATH=/app/marketing-ai-agents npm run marketing-ai-agents:bootstrap
 
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -22,21 +22,21 @@ import { loadLocalEnv } from "./lib/env.mjs";
 
 await loadLocalEnv();
 
-const REPO_URL_HTTPS = "https://github.com/acme-startup/marketing-ai-agents.git";
+const REPO_URL_HTTPS = "https://github.com/novais-digital/marketing-ai-agents.git";
 const REPO_BRANCH = "main";
 
 // Path resolvido por ordem de prioridade:
-// 1. env ACME_SOCIAL_PATH
+// 1. env NOVAIS_SOCIAL_PATH
 // 2. ./marketing-ai-agents (mono-repo style)
-// 3. ../Acme_Social (sibling, local dev)
-function resolveAcmeSocialPath() {
-  const envPath = process.env.ACME_SOCIAL_PATH?.trim();
+// 3. ../Novais_Social (sibling, local dev)
+function resolveNovaisSocialPath() {
+  const envPath = process.env.NOVAIS_SOCIAL_PATH?.trim();
   if (envPath) return envPath;
 
   const monorepo = resolve(process.cwd(), "marketing-ai-agents");
   if (existsSync(monorepo)) return monorepo;
 
-  const sibling = resolve(process.cwd(), "..", "Acme_Social");
+  const sibling = resolve(process.cwd(), "..", "Novais_Social");
   if (existsSync(sibling)) return sibling;
 
   // Default: clonar em ./marketing-ai-agents
@@ -79,7 +79,7 @@ async function isGitRepo(path) {
 }
 
 async function main() {
-  const targetPath = resolveAcmeSocialPath();
+  const targetPath = resolveNovaisSocialPath();
   console.log(`[bootstrap-marketing-ai-agents] Target path: ${targetPath}`);
 
   if (!existsSync(targetPath)) {

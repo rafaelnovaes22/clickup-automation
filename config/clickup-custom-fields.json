@@ -4,7 +4,7 @@
     {
       "key": "aios_backlog_tecnico",
       "target": {
-        "space": "05 Institucional Acme",
+        "space": "05 Institucional Novais Digital",
         "list": "Backlog tecnico"
       },
       "purpose": "Campos auxiliares preenchidos pelo gerador AIOS para que o sync identifique modulo, stage, tier e localizacao do projeto.",
@@ -48,7 +48,7 @@
     {
       "key": "agent_request",
       "target": {
-        "space": "05 Institucional Acme",
+        "space": "05 Institucional Novais Digital",
         "list": "Solicitacoes de agente"
       },
       "purpose": "Campos para CEO/comercial criar uma solicitacao de agente sem precisar escrever escopo tecnico.",

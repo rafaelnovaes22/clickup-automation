@@ -1,14 +1,14 @@
 #!/bin/bash
-# Acme Forge — SessionStart hook
-# Injects Forge meta-skill + project context + agent soul/memory into every new session.
+# Novais Digital Foundry — SessionStart hook
+# Injects Foundry meta-skill + project context + agent soul/memory into every new session.
 # Adapted from agent-skills/hooks/session-start.sh by addyosmani.
-# Forge-20: carrega agent-soul.md e agent-memory.md de docs/clients/{id}/ (self-harness loop).
+# Foundry-20: carrega agent-soul.md e agent-memory.md de docs/clients/{id}/ (self-harness loop).
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-META_SKILL="$REPO_ROOT/.claude/skills/L0/using-forge.md"
-MANIFEST="$REPO_ROOT/docs/forge/manifest.json"
-PROJECT_JSON="$REPO_ROOT/docs/forge/project.json"
+META_SKILL="$REPO_ROOT/.claude/skills/L0/using-foundry.md"
+MANIFEST="$REPO_ROOT/docs/foundry/manifest.json"
+PROJECT_JSON="$REPO_ROOT/docs/foundry/project.json"
 CLIENTS_DIR="$REPO_ROOT/docs/clients"
 
 if ! command -v jq >/dev/null 2>&1; then
@@ -19,15 +19,15 @@ data = json.load(open('$MANIFEST'))
 print(data.get('framework', {}).get('version', 'unknown'))
 " 2>/dev/null || echo "unknown"
   }
-  FORGE_VERSION=$(jq 2>/dev/null || echo "unknown")
-  echo "{\"priority\": \"INFO\", \"message\": \"Acme Forge v$FORGE_VERSION loaded. Install jq for full context injection.\"}"
+  FOUNDRY_VERSION=$(jq 2>/dev/null || echo "unknown")
+  echo "{\"priority\": \"INFO\", \"message\": \"Novais Digital Foundry v$FOUNDRY_VERSION loaded. Install jq for full context injection.\"}"
   exit 0
 fi
 
 # Read framework version from manifest
-FORGE_VERSION="unknown"
+FOUNDRY_VERSION="unknown"
 if [ -f "$MANIFEST" ]; then
-  FORGE_VERSION=$(jq -r '.framework.version // "unknown"' "$MANIFEST" 2>/dev/null)
+  FOUNDRY_VERSION=$(jq -r '.framework.version // "unknown"' "$MANIFEST" 2>/dev/null)
 fi
 
 # Read project context if available (consumer project)
@@ -43,7 +43,7 @@ if [ -f "$PROJECT_JSON" ]; then
   ACTIVE_ARTIFACTS=$(jq -r '.artifacts | length // 0' "$PROJECT_JSON" 2>/dev/null)
 fi
 
-# ─── Agent soul + memory (Forge-20 self-harness) ─────────────────────
+# ─── Agent soul + memory (Foundry-20 self-harness) ─────────────────────
 SOUL_CONTENT=""
 MEMORY_CONTENT=""
 SOUL_CLIENT=""
@@ -63,7 +63,7 @@ if [ -d "$CLIENTS_DIR" ]; then
 fi
 
 # ─── Build context header ─────────────────────────────────────────────
-CONTEXT_HEADER="Acme Forge v$FORGE_VERSION loaded."
+CONTEXT_HEADER="Novais Digital Foundry v$FOUNDRY_VERSION loaded."
 
 if [ "$PROJECT_TYPE" != "unknown" ]; then
   CONTEXT_HEADER="$CONTEXT_HEADER
@@ -86,7 +86,7 @@ $META_CONTENT"
 else
   FULL_MESSAGE="$FULL_MESSAGE
 
-Meta-skill using-forge.md not found at .claude/skills/L0/using-forge.md.
+Meta-skill using-foundry.md not found at .claude/skills/L0/using-foundry.md.
 Skills still available individually via @skill-name."
 fi
 

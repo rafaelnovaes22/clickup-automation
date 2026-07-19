@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-// sync-marketing-ai-agents-from-forge.mjs
-// Auto-discovery: lê o estado real dos 7 SKUs do Acme Social no filesystem
+// sync-marketing-ai-agents-from-foundry.mjs
+// Auto-discovery: lê o estado real dos 7 SKUs do Novais Digital Social no filesystem
 // (project.json + filesystem do código + lifecycle-stage.md + unit-economics.md)
 // e sincroniza com ClickUp.
 //
 // SEM JSON hardcoded. SEM editar JS quando algo muda.
-// Fonte de verdade: docs/forge/project.json + estrutura de src/tests/docs/forge/sku/
+// Fonte de verdade: docs/foundry/project.json + estrutura de src/tests/docs/foundry/sku/
 //
 // Uso:
-//   node scripts/sync-marketing-ai-agents-from-forge.mjs --dry-run   # preview
-//   node scripts/sync-marketing-ai-agents-from-forge.mjs --live      # sync com ClickUp
+//   node scripts/sync-marketing-ai-agents-from-foundry.mjs --dry-run   # preview
+//   node scripts/sync-marketing-ai-agents-from-foundry.mjs --live      # sync com ClickUp
 
 import { readFile, access } from "node:fs/promises";
 import { resolve, join } from "node:path";
@@ -25,29 +25,29 @@ const live = args.includes("--live");
 const dryRun = !live || args.includes("--dry-run");
 
 // Path do repo marketing-ai-agents. Resolução por ordem:
-// 1. env ACME_SOCIAL_PATH (Railway worker injeta isso)
+// 1. env NOVAIS_SOCIAL_PATH (Railway worker injeta isso)
 // 2. ./marketing-ai-agents (mono-repo style — clonado pelo bootstrap)
-// 3. C:/Users/Rafael/Projetos/Acme_Social (fallback dev local)
-function resolveAcmeSocialPath() {
-  if (process.env.ACME_SOCIAL_PATH?.trim()) {
-    return process.env.ACME_SOCIAL_PATH.trim();
+// 3. C:/Users/Rafael/Projetos/Novais_Social (fallback dev local)
+function resolveNovaisSocialPath() {
+  if (process.env.NOVAIS_SOCIAL_PATH?.trim()) {
+    return process.env.NOVAIS_SOCIAL_PATH.trim();
   }
   const monorepo = resolve(process.cwd(), "marketing-ai-agents");
   if (existsSync(monorepo)) return monorepo;
-  return "C:/Users/Rafael/Projetos/Acme_Social";
+  return "C:/Users/Rafael/Projetos/Novais_Social";
 }
 
-const ACME_SOCIAL_ROOT = resolveAcmeSocialPath();
+const NOVAIS_SOCIAL_ROOT = resolveNovaisSocialPath();
 
 // Target no ClickUp: folder dedicada (estrutura igual a Plataforma SchoolPlatform / Aicfo)
-// Space "05 Institucional Acme" → Folder "Acme Social Agentes" → List "Agentes"
+// Space "05 Institucional Novais Digital" → Folder "Novais Digital Social Agentes" → List "Agentes"
 const TARGET = {
-  space: "05 Institucional Acme",
-  folder: "Acme Social Agentes",
+  space: "05 Institucional Novais Digital",
+  folder: "Novais Digital Social Agentes",
   list: "Agentes"
 };
 
-const FOLDER_DESCRIPTION = "Os 7 agentes IA do projeto Acme Social. Cada task pai = 1 agente; subtasks = Waves (1-6) com due_date (D1-D14 dias úteis). Sincronizado a cada 15min via worker Railway a partir do repo acme-startup/marketing-ai-agents.";
+const FOLDER_DESCRIPTION = "Os 7 agentes IA do projeto Novais Digital Social. Cada task pai = 1 agente; subtasks = Waves (1-6) com due_date (D1-D14 dias úteis). Sincronizado a cada 15min via worker Railway a partir do repo novais-digital/marketing-ai-agents.";
 
 // ─── Mapeamento SKU → estrutura de código esperada ───────────────────
 // Apenas declaração dos paths que cada SKU usa. O script detecta o resto.
@@ -77,7 +77,7 @@ const SKU_LAYOUT = {
     label: "Designer",
     emoji: "🎨",
     objetivo: "Carrossel com brand 99%+ em 20 min",
-    o_que_faz: "Recebe um briefing visual e entrega 5-7 slides de carrossel com a identidade visual da Acme aplicada em 99%+ dos elementos (cores, tipografia, layout). Substitui designer humano para volume alto.",
+    o_que_faz: "Recebe um briefing visual e entrega 5-7 slides de carrossel com a identidade visual da Novais Digital aplicada em 99%+ dos elementos (cores, tipografia, layout). Substitui designer humano para volume alto.",
     domain_paths: ["src/domain/designer"],
     application_path: "src/application/designer-agent",
     tests_path: "tests/designer-agent",
@@ -237,7 +237,7 @@ async function readFileSafe(path) {
  * Retorna objeto { wave_1_foundation: {status, note, evidence}, ... }
  */
 async function detectWaves(skuId, layout, lifecycleNotes) {
-  const root = ACME_SOCIAL_ROOT;
+  const root = NOVAIS_SOCIAL_ROOT;
   const waves = {};
 
   // Wave 1 — Foundation: domain entities existem + smoke test passou
@@ -408,14 +408,14 @@ function parseAdrs(content, skuId) {
 /**
  * Para 1 SKU, monta a estrutura completa lida do filesystem.
  */
-async function detectSkuFromForge(module) {
+async function detectSkuFromFoundry(module) {
   const layout = SKU_LAYOUT[module.id];
   if (!layout) {
     return null;
   }
 
-  const root = ACME_SOCIAL_ROOT;
-  const skuDocs = join(root, "docs", "forge", "sku", module.id);
+  const root = NOVAIS_SOCIAL_ROOT;
+  const skuDocs = join(root, "docs", "foundry", "sku", module.id);
 
   const lifecycleContent = await readFileSafe(join(skuDocs, "lifecycle-stage.md")) || "";
   const economicsContent = await readFileSafe(join(skuDocs, "unit-economics.md"));
@@ -457,7 +457,7 @@ function extractNotesFromDoc(doc) {
     return "⚠️ Split aprovado (ADR-001-PROJ): este SKU = corte de input. Premium R$ 150 (Veo 3) diferido.";
   }
   if (doc.includes("ADR-003-PROJ") || doc.includes("LGPD")) {
-    return "⚠️ Criticality A — LGPD blocking. Wave 6 externa só após DPO. Plano em docs/forge/sku/atendimento-dm-agent/lgpd-mitigation.md";
+    return "⚠️ Criticality A — LGPD blocking. Wave 6 externa só após DPO. Plano em docs/foundry/sku/atendimento-dm-agent/lgpd-mitigation.md";
   }
   return null;
 }
@@ -468,18 +468,18 @@ function computeProgress(waves) {
   const done = Object.values(waves).filter((w) => w.status === "done").length;
   const pct = Math.round((done / total) * 100);
 
-  // Mínimo de 5% se forge pipeline existe (diagnostic/spec/plan/etc.)
+  // Mínimo de 5% se foundry pipeline existe (diagnostic/spec/plan/etc.)
   return Math.max(pct, 5);
 }
 
-async function discoverSkusFromForge() {
-  const projectJsonPath = join(ACME_SOCIAL_ROOT, "docs", "forge", "project.json");
+async function discoverSkusFromFoundry() {
+  const projectJsonPath = join(NOVAIS_SOCIAL_ROOT, "docs", "foundry", "project.json");
   const projectJson = JSON.parse(await readFile(projectJsonPath, "utf8"));
   const skus = [];
 
   for (const mod of projectJson.modules) {
     if (mod.current_stage === "deferred_wave_2") continue;
-    const sku = await detectSkuFromForge(mod);
+    const sku = await detectSkuFromFoundry(mod);
     if (sku) skus.push(sku);
   }
 
@@ -563,7 +563,7 @@ function computeNextMilestone(sku) {
     wave_2_use_cases: { label: "Implementar lógica de execução", detail: "Use cases que orquestram LLM + image-gen + brand validator + publisher." },
     wave_2_split_usecases: { label: "Especializar lógica por tipo de output", detail: "Use cases separados para landing, email e ad." },
     wave_2_curation: { label: "Calibrar validador visual", detail: "Curadoria humana de 50 imagens para treinar o BrandValidator." },
-    wave_3_tdd_red: { label: "Escrever testes de proteção", detail: "Gate G6 do Forge — testes antes do código, garantia mecânica de não-quebra." },
+    wave_3_tdd_red: { label: "Escrever testes de proteção", detail: "Gate G6 do Foundry — testes antes do código, garantia mecânica de não-quebra." },
     wave_4_build_real: { label: "Conectar APIs reais (Imagen 4, Veo 3, Ideogram, Twitter, etc.)", detail: "Aguardando credenciais externas (Google Cloud project, Ideogram key, Twitter dev account)." },
     wave_5_eval_suite: { label: "Suite de validação de qualidade", detail: "20+ casos curados + LLM-as-judge + CI workflow." },
     wave_6_ship_shadow: { label: "🚀 Liberar em modo SHADOW", detail: "Roda em produção sem cobrar para calibrar 7-14 dias." }
@@ -592,7 +592,7 @@ function findPendingDecisions(sku) {
  * Marker invisível no corpo da task para match estável entre runs.
  */
 function buildSkuMarker(skuId) {
-  return `<!-- forge:sku:${skuId} -->`;
+  return `<!-- foundry:sku:${skuId} -->`;
 }
 
 function buildParentTaskName(sku) {
@@ -668,7 +668,7 @@ function buildParentTaskDescription(sku) {
   lines.push(`<details>`);
   lines.push(`<summary>🔧 Detalhes técnicos (para o time de dev)</summary>`);
   lines.push(``);
-  lines.push(`**Lifecycle Forge:** \`${sku.current_stage}\` → SHADOW → ASSISTED → AUTONOMOUS`);
+  lines.push(`**Lifecycle Foundry:** \`${sku.current_stage}\` → SHADOW → ASSISTED → AUTONOMOUS`);
   lines.push(`**Outcome (C2):** ${sku.outcome.slice(0, 200)}`);
   lines.push(`**Detalhamento por Wave:**`);
   lines.push(wavesText);
@@ -677,9 +677,9 @@ function buildParentTaskDescription(sku) {
     lines.push(`**ADRs locais (${sku.adrs.length}):** ${sku.adrs.join(", ")}`);
   }
   lines.push(``);
-  lines.push(`**Repositório:** https://github.com/acme-startup/marketing-ai-agents`);
-  lines.push(`**Artefatos forge:** \`docs/forge/sku/${sku.id}/\``);
-  lines.push(`**Auto-sync:** ClickUp ← \`scripts/sync-marketing-ai-agents-from-forge.mjs\``);
+  lines.push(`**Repositório:** https://github.com/novais-digital/marketing-ai-agents`);
+  lines.push(`**Artefatos foundry:** \`docs/foundry/sku/${sku.id}/\``);
+  lines.push(`**Auto-sync:** ClickUp ← \`scripts/sync-marketing-ai-agents-from-foundry.mjs\``);
   lines.push(``);
   lines.push(`</details>`);
 
@@ -758,13 +758,13 @@ function clickUpStatusForParent(sku) {
 // ─── Main ────────────────────────────────────────────────────────────
 
 async function run() {
-  console.log(`\n🤖 Acme Social — Auto-sync ClickUp ← filesystem`);
+  console.log(`\n🤖 Novais Digital Social — Auto-sync ClickUp ← filesystem`);
   console.log(`   Mode:  ${live ? "🔴 LIVE (vai atualizar)" : "🔵 DRY-RUN"}`);
-  console.log(`   Fonte: ${ACME_SOCIAL_ROOT}/docs/forge/project.json + filesystem`);
+  console.log(`   Fonte: ${NOVAIS_SOCIAL_ROOT}/docs/foundry/project.json + filesystem`);
   console.log(`   Alvo:  ${TARGET.space} → ${TARGET.folder} → ${TARGET.list}\n`);
 
   console.log(`🔍 Auto-discovery dos SKUs...`);
-  const skus = await discoverSkusFromForge();
+  const skus = await discoverSkusFromFoundry();
   console.log(`   ${skus.length} SKUs detectados\n`);
 
   // Preview
@@ -813,7 +813,7 @@ async function run() {
   for (const t of allTasks) {
     if (t.parent) continue; // só pais aqui
     const desc = t.description || t.text_content || "";
-    const markerMatch = desc.match(/<!--\s*forge:sku:([a-z0-9_-]+)\s*-->/);
+    const markerMatch = desc.match(/<!--\s*foundry:sku:([a-z0-9_-]+)\s*-->/);
     if (markerMatch) {
       parentsByMarker.set(markerMatch[1], t);
     }
@@ -843,19 +843,19 @@ async function run() {
     const parentName = buildParentTaskName(sku);
     // 1. Tenta por marker invisível (estável)
     let existingParent = parentsByMarker.get(sku.id);
-    // 2. Fallback: nome legacy "[ACME-SOCIAL] {nome antigo}"
+    // 2. Fallback: nome legacy "[NOVAIS DIGITAL-SOCIAL] {nome antigo}"
     if (!existingParent) {
       const legacyNames = [
-        `[ACME-SOCIAL] ${SKU_LAYOUT[sku.id].label} Agent (${sku.priority})`,
-        `[ACME-SOCIAL] ${SKU_LAYOUT[sku.id].label} (${sku.priority})`,
+        `[NOVAIS DIGITAL-SOCIAL] ${SKU_LAYOUT[sku.id].label} Agent (${sku.priority})`,
+        `[NOVAIS DIGITAL-SOCIAL] ${SKU_LAYOUT[sku.id].label} (${sku.priority})`,
         // Casos especiais conhecidos
-        `[ACME-SOCIAL] Gestor de Tráfego Agent (${sku.priority})`,
-        `[ACME-SOCIAL] Editor de Vídeo Agent (${sku.priority})`,
-        `[ACME-SOCIAL] Atendimento DM Agent (24/7) (${sku.priority})`,
-        `[ACME-SOCIAL] Social Media Agent (${sku.priority})`,
-        `[ACME-SOCIAL] Copywriter Agent (${sku.priority})`,
-        `[ACME-SOCIAL] Designer Agent (${sku.priority})`,
-        `[ACME-SOCIAL] Estrategista Agent (${sku.priority})`
+        `[NOVAIS DIGITAL-SOCIAL] Gestor de Tráfego Agent (${sku.priority})`,
+        `[NOVAIS DIGITAL-SOCIAL] Editor de Vídeo Agent (${sku.priority})`,
+        `[NOVAIS DIGITAL-SOCIAL] Atendimento DM Agent (24/7) (${sku.priority})`,
+        `[NOVAIS DIGITAL-SOCIAL] Social Media Agent (${sku.priority})`,
+        `[NOVAIS DIGITAL-SOCIAL] Copywriter Agent (${sku.priority})`,
+        `[NOVAIS DIGITAL-SOCIAL] Designer Agent (${sku.priority})`,
+        `[NOVAIS DIGITAL-SOCIAL] Estrategista Agent (${sku.priority})`
       ];
       for (const ln of legacyNames) {
         if (parentsByLegacyName.has(ln)) {
