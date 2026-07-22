@@ -41,7 +41,7 @@
           "name": "Project root local",
           "type": "text",
           "required": false,
-          "help": "Caminho absoluto do projeto consumidor. Ex: c:/Users/Rafael/Projetos/SchoolPlatform."
+          "help": "Caminho absoluto do projeto consumidor. Ex: /path/to/school-platform."
         }
       ]
     },

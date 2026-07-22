@@ -67,7 +67,7 @@ function samplePayload() {
     tech_owner: "Rafael Novaes",
     delivery_due_date: "2026-07-15",
     repository_url: "https://github.com/novais-digital/example-saas",
-    project_root: "c:/Users/Rafael/Projetos/Exemplo",
+    project_root: "/path/to/example-project",
     environment: "dev"
   };
 }

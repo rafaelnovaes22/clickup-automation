@@ -137,7 +137,7 @@ export function moduleParentDescription(input, module, info) {
 }
 
 export function moduleParentTags(module) {
-  const tags = ["projeto:edix", `tier:${module.tier}`, `semana:${module.week}`];
+  const tags = ["projeto:school-platform", `tier:${module.tier}`, `semana:${module.week}`];
   if (isManualModule(module)) tags.push("rafael-implementa");
   if (module.key === "cnab") tags.push("bloqueador-cnab");
   return tags;
@@ -195,7 +195,7 @@ export function stageSubtaskDescription(input, plan, parentTaskId, info) {
 
 export function stageSubtaskTags(plan) {
   const stageKey = plan.manual ? "manual_implementation" : plan.stage.key;
-  const tags = ["projeto:edix", `tier:${plan.module.tier}`, `stage:${stageKey}`];
+  const tags = ["projeto:school-platform", `tier:${plan.module.tier}`, `stage:${stageKey}`];
   if (plan.manual) tags.push("rafael-implementa");
   if (plan.module.key === "cnab") tags.push("bloqueador-cnab");
   return tags;

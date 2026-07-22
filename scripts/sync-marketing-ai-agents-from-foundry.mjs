@@ -27,14 +27,14 @@ const dryRun = !live || args.includes("--dry-run");
 // Path do repo marketing-ai-agents. Resolução por ordem:
 // 1. env NOVAIS_SOCIAL_PATH (Railway worker injeta isso)
 // 2. ./marketing-ai-agents (mono-repo style — clonado pelo bootstrap)
-// 3. C:/Users/Rafael/Projetos/Novais_Social (fallback dev local)
+// 3. ../marketing-ai-agents (fallback dev local: repo irmao)
 function resolveNovaisSocialPath() {
   if (process.env.NOVAIS_SOCIAL_PATH?.trim()) {
     return process.env.NOVAIS_SOCIAL_PATH.trim();
   }
   const monorepo = resolve(process.cwd(), "marketing-ai-agents");
   if (existsSync(monorepo)) return monorepo;
-  return "C:/Users/Rafael/Projetos/Novais_Social";
+  return resolve(process.cwd(), "..", "marketing-ai-agents");
 }
 
 const NOVAIS_SOCIAL_ROOT = resolveNovaisSocialPath();

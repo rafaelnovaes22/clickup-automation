@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "purpose": "Mapeamento de cada modulo da Plataforma SchoolPlatform para suas funcionalidades de produto. Fonte: c:/Users/Rafael/Projetos/SchoolPlatform/funcionalidades-edix.md.",
+  "purpose": "Mapeamento de cada modulo da Plataforma SchoolPlatform para suas funcionalidades de produto. Fonte: catalogo de funcionalidades do projeto consumidor.",
   "modules": {
     "schema": {
       "title": "Modelo de dados (Prisma) e isolamento multi-tenant",

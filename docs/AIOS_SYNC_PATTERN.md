@@ -1,7 +1,7 @@
 # AIOS Sync Pattern
 
 Como o clickup-automation acompanha o estado de projetos AIOS (multi-modulo) sem acoplar
-o projeto consumidor (ex: SchoolPlatform/EDIX) a esta governança.
+o projeto consumidor (ex: SchoolPlatform) a esta governança.
 
 > **Delivery type**: este pattern serve para entregas com `delivery_type: platform` (e tambem `hybrid`
 > quando a plataforma tem modulos agentic). O contrato `config/aios-pipeline-contract.json` carrega

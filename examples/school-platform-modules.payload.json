@@ -22,8 +22,8 @@
   "tech_owner": "Rafael Novaes",
   "delivery_due_date": "2026-07-15",
   "repository_url": "https://github.com/novais-digital/school-platform",
-  "project_root": "c:/Users/Rafael/Projetos/SchoolPlatform",
+  "project_root": "/path/to/school-platform",
   "environment": "dev",
   "delivery_type": "platform",
-  "notes": "Plataforma EDIX - 15 modulos via AIOS Server. Tier C nao passa pelo pipeline."
+  "notes": "Plataforma SchoolPlatform - 15 modulos via AIOS Server. Tier C nao passa pelo pipeline."
 }

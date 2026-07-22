@@ -289,6 +289,46 @@ Delivery types suportados: `agentic_saas`, `platform`, `automation`, `hybrid`.
 - Comunicar envolvidos
 - Escrever postmortem se P1/P2
 
+## [TEMPLATE] Solicitacao de plataforma
+
+- Evento: `platform_request`
+- Delivery type: `platform`
+- Destino: `05 Institucional Novais Digital / Solicitacoes de plataforma`
+- Status desejado: `rascunho`
+
+### Campos
+
+| Key | Label | Tipo | Obrigatorio | Opcoes | Exemplo |
+|---|---|---|---|---|---|
+| `company_name` | Empresa | text | sim |  | Novais Digital Ltda |
+| `platform_name` | Nome da plataforma | text | sim |  | Plataforma Novais Digital |
+| `business_problem` | Problema de negocio | long_text | sim |  | Controles internos em planilhas, sem rastreabilidade e sem integracao com ERP. |
+| `legacy_system_to_replace` | Sistema legado a substituir | text | sim |  | ERP legado + planilhas Excel |
+| `module_count` | Numero estimado de modulos | number | sim |  | 15 |
+| `recommended_platform_stage` | Stage inicial sugerido | select | sim | DRAFT, STAGING, PILOT |  |
+| `subscription_fee` | Mensalidade contratada (R$) | currency | nao |  | 5000 |
+| `setup_fee` | Setup fee (R$) | currency | nao |  | 15000 |
+| `ai_enabled` | Plataforma usa IA? | select | sim | sim, nao |  |
+| `tech_owner` | Responsavel tecnico | person_or_text | sim |  | Delivery |
+| `delivery_due_date` | Prazo de entrega | date | sim |  | 2026-12-31 |
+| `repository_url` | Repositorio | url | nao |  | https://github.com/novais-digital/novais-digital-platform |
+| `environment` | Ambiente inicial | select | sim | dev, staging, prod |  |
+
+### Atividades disparadas
+
+- Quando `template_instantiated`: Criar task Solicitacao de plataforma
+- Quando `custom_fields preenchidos`: Validar escopo minimo (empresa, sistema legado, modulos)
+- Quando `status=escopo pronto`: Disparar geracao de Folder AIOS + tasks de rollout por modulo
+- Quando `ai_enabled=sim`: Exigir campo observability_url e checklist de prompts/eval em cada rollout
+
+### Subtasks padrao
+
+- Preencher empresa, problema e sistema legado
+- Estimar numero de modulos e stage inicial
+- Confirmar responsavel tecnico e prazo
+- Validar stage inicial com Tech Lead
+- Marcar status como escopo pronto
+
 ## [TEMPLATE] Plataforma - rollout
 
 - Evento: `platform_rollout`

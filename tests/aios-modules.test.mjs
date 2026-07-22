@@ -31,7 +31,7 @@ function test(name, fn) {
 
 const catalog = JSON.parse(await readFile(resolve(root, "config/aios-module-catalog.json"), "utf8"));
 const contract = JSON.parse(await readFile(resolve(root, "config/aios-pipeline-contract.json"), "utf8"));
-const edixPayload = JSON.parse(await readFile(resolve(root, "examples/edix-modules.payload.json"), "utf8"));
+const schoolPlatformPayload = JSON.parse(await readFile(resolve(root, "examples/school-platform-modules.payload.json"), "utf8"));
 
 const validPayload = {
   client_name: "SchoolPlatform",
@@ -41,7 +41,7 @@ const validPayload = {
   modules: [{ key: "cadastros", tier: "A", week: 3 }],
   tech_owner: "Rafael",
   delivery_due_date: "2026-07-15",
-  project_root: "c:/Users/Rafael/Projetos/SchoolPlatform",
+  project_root: "/path/to/school-platform",
   environment: "dev"
 };
 
@@ -108,8 +108,8 @@ test("planTasksForModule treats cnab as manual even though tier is C", () => {
   assert.equal(plans[0].manual, true);
 });
 
-test("EDIX payload generates exactly 70 tasks", () => {
-  const total = edixPayload.modules.reduce((acc, module) => {
+test("SchoolPlatform payload generates exactly 70 tasks", () => {
+  const total = schoolPlatformPayload.modules.reduce((acc, module) => {
     return acc + planTasksForModule(module, catalog).length;
   }, 0);
   assert.equal(total, 70);
@@ -120,9 +120,9 @@ test("moduleParentName combines key with feature title", () => {
   assert.equal(moduleParentName(module, cadastrosInfo), "cadastros · Cadastros gerais");
 });
 
-test("moduleParentTags includes tier, week and projeto:edix", () => {
+test("moduleParentTags includes tier, week and projeto:school-platform", () => {
   const tags = moduleParentTags({ key: "cadastros", tier: "A", week: 3 });
-  assert.ok(tags.includes("projeto:edix"));
+  assert.ok(tags.includes("projeto:school-platform"));
   assert.ok(tags.includes("tier:A"));
   assert.ok(tags.includes("semana:3"));
 });
@@ -179,7 +179,7 @@ test("parseAiosTask reads role/module/stage from description", () => {
   assert.equal(parsed.moduleKey, "cadastros");
   assert.equal(parsed.moduleTier, "A");
   assert.equal(parsed.stageKey, "backend");
-  assert.equal(parsed.projectRoot, "c:/Users/Rafael/Projetos/SchoolPlatform");
+  assert.equal(parsed.projectRoot, "/path/to/school-platform");
   assert.equal(parsed.isStage, true);
   assert.equal(parsed.isModuleParent, false);
   assert.equal(parsed.isManual, false);
@@ -200,8 +200,8 @@ test("parseAiosTask flags manual_implementation as manual", () => {
   assert.equal(parsed.moduleKey, "cnab");
 });
 
-test("collectAiosEvidence returns found:false when artefato ausente", () => {
-  const evidence = collectAiosEvidence({
+test("collectAiosEvidence returns found:false when artefato ausente", async () => {
+  const evidence = await collectAiosEvidence({
     module: "cadastros",
     stage: "spec",
     projectRoot: "c:/path/that/does/not/exist"
@@ -210,12 +210,12 @@ test("collectAiosEvidence returns found:false when artefato ausente", () => {
   assert.match(evidence.reason, /arquivo ausente|project_root/);
 });
 
-test("collectAiosEvidence returns found:true when artefato existe", () => {
+test("collectAiosEvidence returns found:true when artefato existe", async () => {
   const tmp = mkdtempSync(join(tmpdir(), "aios-test-"));
   try {
     mkdirSync(join(tmp, "docs/specs"), { recursive: true });
     writeFileSync(join(tmp, "docs/specs/cadastros.md"), "# Spec cadastros");
-    const evidence = collectAiosEvidence({ module: "cadastros", stage: "spec", projectRoot: tmp });
+    const evidence = await collectAiosEvidence({ module: "cadastros", stage: "spec", projectRoot: tmp });
     assert.equal(evidence.found, true);
     assert.equal(evidence.stage, "spec");
     assert.ok(evidence.sizeBytes > 0);
@@ -224,17 +224,17 @@ test("collectAiosEvidence returns found:true when artefato existe", () => {
   }
 });
 
-test("collectAiosEvidence detects review approval and blocker", () => {
+test("collectAiosEvidence detects review approval and blocker", async () => {
   const tmp = mkdtempSync(join(tmpdir(), "aios-test-"));
   try {
     mkdirSync(join(tmp, "docs/specs"), { recursive: true });
     writeFileSync(join(tmp, "docs/specs/_review_crm.md"), "Review do crm.\nAPROVADO PARA MERGE: Sim");
-    const approved = collectAiosEvidence({ module: "crm", stage: "review", projectRoot: tmp });
+    const approved = await collectAiosEvidence({ module: "crm", stage: "review", projectRoot: tmp });
     assert.equal(approved.reviewApproved, true);
     assert.equal(approved.reviewBlocked, false);
 
     writeFileSync(join(tmp, "docs/specs/_review_jovens.md"), "Review.\nBLOCKER: schema invalido");
-    const blocked = collectAiosEvidence({ module: "jovens", stage: "review", projectRoot: tmp });
+    const blocked = await collectAiosEvidence({ module: "jovens", stage: "review", projectRoot: tmp });
     assert.equal(blocked.reviewBlocked, true);
   } finally {
     rmSync(tmp, { recursive: true, force: true });

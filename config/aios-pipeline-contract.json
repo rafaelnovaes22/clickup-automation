@@ -60,7 +60,7 @@
     { "when": "tier=A or tier=B", "action": "Criar 6 tasks (uma por stage AIOS) com depends_on encadeado" },
     { "when": "tier=C",           "action": "Criar 1 task manual_implementation com tag rafael-implementa" },
     { "when": "module.key=cnab",  "action": "Sobrescrever - criar 1 task manual_implementation sem subtarefas AIOS" },
-    { "when": "task criada",      "action": "Adicionar tags ia-gerado, revisao-humana, projeto:edix, tier:{tier}" }
+    { "when": "task criada",      "action": "Adicionar tags ia-gerado, revisao-humana, projeto:school-platform, tier:{tier}" }
   ],
   "syncRules": [
     { "status": "to do",              "evidence": "nenhum artefato AIOS encontrado E nenhum PR/branch" },

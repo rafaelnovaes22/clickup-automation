@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // seed-marketing-ai-agents-tasks.mjs
 // Cria/atualiza tasks dos 7 SKUs do Novais Digital Social no ClickUp.
-// Lê estado real de cada SKU em C:\Users\Rafael\Projetos\Novais_Social\docs\foundry\sku\<sku>\
+// Le estado real de cada SKU em <NOVAIS_SOCIAL_PATH>/docs/foundry/sku/<sku>/
 // e reflete progresso (Wave entregue, lifecycle stage, custo aprovado).
 //
 // Uso:
@@ -25,7 +25,7 @@ const args = process.argv.slice(2);
 const live = args.includes("--live");
 const dryRun = !live || args.includes("--dry-run");
 
-const NOVAIS_SOCIAL_ROOT = "C:/Users/Rafael/Projetos/Novais_Social";
+const NOVAIS_SOCIAL_ROOT = process.env.NOVAIS_SOCIAL_PATH?.trim() || resolve(process.cwd(), "..", "marketing-ai-agents");
 const TARGET = {
   space: "05 Institucional Novais Digital",
   list: "Solicitacoes de agente"

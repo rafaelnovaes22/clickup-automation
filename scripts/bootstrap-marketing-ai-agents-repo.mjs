@@ -28,7 +28,7 @@ const REPO_BRANCH = "main";
 // Path resolvido por ordem de prioridade:
 // 1. env NOVAIS_SOCIAL_PATH
 // 2. ./marketing-ai-agents (mono-repo style)
-// 3. ../Novais_Social (sibling, local dev)
+// 3. ../marketing-ai-agents (sibling, local dev)
 function resolveNovaisSocialPath() {
   const envPath = process.env.NOVAIS_SOCIAL_PATH?.trim();
   if (envPath) return envPath;
@@ -36,7 +36,7 @@ function resolveNovaisSocialPath() {
   const monorepo = resolve(process.cwd(), "marketing-ai-agents");
   if (existsSync(monorepo)) return monorepo;
 
-  const sibling = resolve(process.cwd(), "..", "Novais_Social");
+  const sibling = resolve(process.cwd(), "..", "marketing-ai-agents");
   if (existsSync(sibling)) return sibling;
 
   // Default: clonar em ./marketing-ai-agents

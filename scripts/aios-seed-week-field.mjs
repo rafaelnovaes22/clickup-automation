@@ -25,7 +25,7 @@ const fieldName = "Semana";
 
 const clickUp = createClickUpClient({ token });
 
-const payload = JSON.parse(await readFile(resolve(root, "examples/edix-modules.payload.json"), "utf8"));
+const payload = JSON.parse(await readFile(resolve(root, "examples/school-platform-modules.payload.json"), "utf8"));
 const weekByModule = new Map(payload.modules.map((m) => [m.key, m.week]));
 
 console.log(`AIOS week field seed ${dryRun ? "(dry-run)" : "(live)"}`);

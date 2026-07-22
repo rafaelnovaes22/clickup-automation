@@ -20,7 +20,7 @@ const jsonFiles = [
   "config/tech-operational-repository.json",
   "config/tech-platform-catalog.json",
   "examples/clickup-tech-tasks.fixture.json",
-  "examples/edix-modules.payload.json",
+  "examples/school-platform-modules.payload.json",
   "examples/aicfo-modules.payload.json",
   "examples/tech-scope.sample.json"
 ];
@@ -231,7 +231,7 @@ if (diagnosticContract) {
 
 const aiosCatalog = parsed.get("config/aios-module-catalog.json");
 const aiosContract = parsed.get("config/aios-pipeline-contract.json");
-const aiosPayload = parsed.get("examples/edix-modules.payload.json");
+const aiosPayload = parsed.get("examples/school-platform-modules.payload.json");
 const aicfoPayload = parsed.get("examples/aicfo-modules.payload.json");
 
 if (aiosCatalog) {
@@ -305,7 +305,7 @@ function validateAiosPayloadShape(payload, label, contract, catalog) {
   }
 }
 
-validateAiosPayloadShape(aiosPayload, "examples/edix-modules.payload.json", aiosContract, aiosCatalog);
+validateAiosPayloadShape(aiosPayload, "examples/school-platform-modules.payload.json", aiosContract, aiosCatalog);
 validateAiosPayloadShape(aicfoPayload, "examples/aicfo-modules.payload.json", aiosContract, aiosCatalog);
 
 if (aiosModuleFunctionalities && Array.isArray(aiosModuleFunctionalities.modules)) {
