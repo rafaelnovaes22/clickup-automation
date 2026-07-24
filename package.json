@@ -42,6 +42,8 @@
     "aicfo:daemon": "node scripts/aios-sync-daemon.mjs --live --platform=\"Plataforma Aicfo\"",
     "aicfo:frontend:dry": "node scripts/generate-aicfo-frontend-list.mjs",
     "aicfo:frontend:generate": "node scripts/generate-aicfo-frontend-list.mjs --live",
+    "aicfo:frontend:sync": "node scripts/sync-aios-status.mjs --dry-run --platform=\"Plataforma Aicfo\" --list=\"Frontend\"",
+    "aicfo:frontend:sync:live": "node scripts/sync-aios-status.mjs --live --platform=\"Plataforma Aicfo\" --list=\"Frontend\"",
     "aicfo:update-descriptions:dry": "node scripts/update-aicfo-descriptions.mjs --dry-run",
     "aicfo:update-descriptions": "node scripts/update-aicfo-descriptions.mjs --live",
     "marketing-ai-agents:bootstrap": "node scripts/bootstrap-marketing-ai-agents-repo.mjs",
