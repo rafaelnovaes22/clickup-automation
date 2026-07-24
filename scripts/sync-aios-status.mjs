@@ -30,10 +30,14 @@ const dryRun = !live || args.includes("--dry-run");
 const offline = args.includes("--offline");
 const commentAlways = args.includes("--comment-always");
 const platformArg = args.find((arg) => arg.startsWith("--platform="));
+const listArg = args.find((arg) => arg.startsWith("--list="));
+const repositoryUrlArg = args.find((arg) => arg.startsWith("--repository-url="));
 const moduleArg = args.find((arg) => arg.startsWith("--module="));
 const fixtureArg = args.find((arg) => arg.startsWith("--fixture="));
 
 const platformOverride = platformArg ? platformArg.slice("--platform=".length) : null;
+const listOverride = listArg ? listArg.slice("--list=".length) : null;
+const repositoryUrlOverride = repositoryUrlArg ? repositoryUrlArg.slice("--repository-url=".length) : null;
 const moduleFilter = moduleArg ? moduleArg.slice("--module=".length).toLowerCase() : null;
 const fixturePath = fixtureArg ? resolve(root, fixtureArg.slice("--fixture=".length)) : null;
 
@@ -76,11 +80,15 @@ async function loadPlatformTasks() {
     throw new Error(`Folder "${folderName}" nao existe ainda - rode aios:generate primeiro`);
   }
 
-  // Find the only list inside (or first one named "Modulos")
+  // --list= escolhe a list pelo nome; sem a flag, mantem o padrao ("Modulos" ou a primeira)
   const lists = await clickUp.request("GET", `/folder/${folderResult.folder.id}/list?archived=false`);
-  const list = (lists.lists ?? []).find((l) => l.name === "Modulos") ?? (lists.lists ?? [])[0];
+  const list = listOverride
+    ? (lists.lists ?? []).find((l) => l.name === listOverride)
+    : (lists.lists ?? []).find((l) => l.name === "Modulos") ?? (lists.lists ?? [])[0];
   if (!list) {
-    throw new Error(`Nenhuma list encontrada na folder "${folderName}"`);
+    throw new Error(listOverride
+      ? `List "${listOverride}" nao encontrada na folder "${folderName}"`
+      : `Nenhuma list encontrada na folder "${folderName}"`);
   }
 
   return {
@@ -92,6 +100,11 @@ async function loadPlatformTasks() {
 
 async function syncSubtask(task) {
   const info = parseAiosTask(task);
+  if (repositoryUrlOverride) info.repositoryUrl = repositoryUrlOverride;
+
+  // Tasks com evidence_source=github (ex: list "Frontend" do Aicfo, repo externo sem
+  // artefatos AIOS) decidem status só por PR/branch/CI, como as tasks manuais.
+  const githubOnly = !info.isManual && info.evidenceSource === "github";
 
   // Para Tier C (manual), tenta _review_{module}.md como evidência suplementar.
   // Se o review estiver aprovado, usa o mesmo decisor dos stages AIOS — isso permite
@@ -102,11 +115,13 @@ async function syncSubtask(task) {
     ? await collectAiosEvidence({ module: info.moduleKey, stage: "review", projectRoot: info.projectRoot, ...githubArgs })
     : null;
 
-  const evidence = info.isManual
-    ? (manualReviewEvidence?.found
-        ? manualReviewEvidence
-        : { found: false, stage: "manual_implementation", module: info.moduleKey, reason: "tarefa manual - sem artefato AIOS" })
-    : await collectAiosEvidence({ module: info.moduleKey, stage: info.stageKey, projectRoot: info.projectRoot, ...githubArgs });
+  const evidence = githubOnly
+    ? { found: false, stage: info.stageKey, module: info.moduleKey, reason: "evidence_source=github - sem artefato AIOS" }
+    : info.isManual
+      ? (manualReviewEvidence?.found
+          ? manualReviewEvidence
+          : { found: false, stage: "manual_implementation", module: info.moduleKey, reason: "tarefa manual - sem artefato AIOS" })
+      : await collectAiosEvidence({ module: info.moduleKey, stage: info.stageKey, projectRoot: info.projectRoot, ...githubArgs });
 
   const githubEvidence = await collectEvidence(
     {
@@ -126,11 +141,13 @@ async function syncSubtask(task) {
     ? { ...githubEvidence, prs: [{ merged_at: new Date().toISOString(), state: "closed", number: 0, updated_at: new Date().toISOString() }, ...(githubEvidence?.prs ?? [])] }
     : githubEvidence;
 
-  const nextStatus = info.isManual
-    ? (manualReviewEvidence?.found
-        ? decideStatusFromAiosEvidence(evidence, githubEvidenceForManual)
-        : decideStatusForManualTask(githubEvidence))
-    : decideStatusFromAiosEvidence(evidence, githubEvidence);
+  const nextStatus = githubOnly
+    ? decideStatusForManualTask(githubEvidence)
+    : info.isManual
+      ? (manualReviewEvidence?.found
+          ? decideStatusFromAiosEvidence(evidence, githubEvidenceForManual)
+          : decideStatusForManualTask(githubEvidence))
+      : decideStatusFromAiosEvidence(evidence, githubEvidence);
 
   const blocked = isBlockedSignal(evidence, githubEvidence);
   const shouldUpdateStatus = canonicalAiosStatus(info.status) !== nextStatus;
@@ -189,8 +206,10 @@ async function rollupParent(parent, subtaskResults) {
 }
 
 const { source, tasks, listId } = await loadPlatformTasks();
-const parents = tasks.filter((task) => !task.parent);
-const subtasks = tasks.filter((task) => task.parent);
+// Tasks flat (sem parent) com module_role=stage tambem sincronizam — caso da list
+// "Frontend" do Aicfo, onde cada task e um stage standalone sem parent de modulo.
+const parents = tasks.filter((task) => !task.parent && !parseAiosTask(task).isStage);
+const subtasks = tasks.filter((task) => task.parent || parseAiosTask(task).isStage);
 
 const filtered = subtasks.filter((task) => {
   const info = parseAiosTask(task);

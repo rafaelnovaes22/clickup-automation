@@ -77,7 +77,7 @@ export function indexParentsByModuleKey(tasks) {
   const map = new Map();
   for (const task of tasks) {
     if (task.parent) continue;
-    const match = task.name.match(/^([a-z0-9_]+)\s+·/);
+    const match = task.name.match(/^([a-z0-9_-]+)\s+·/);
     if (match) map.set(match[1], task);
   }
   return map;
