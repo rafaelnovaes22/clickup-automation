@@ -258,5 +258,5 @@ Backend de governança que mantém o ClickUp da Novais Digital como espelho do e
 - `.claude/` (CONSTITUTION.md, agents, skills), `GOVERNANCE.md`, `docs/foundry/` — governança/agentes para sessões de IA, não código executável do harness.
 - `scripts/seed-marketing-ai-agents-tasks.mjs` — legacy, sem npm script apontando para ele; candidato a remoção.
 - `scripts/lib/agent-request.mjs:platformRequestTarget` e `:generatingStatus` — exportados mas sem nenhum consumidor no repo.
-- `examples/edix-modules.payload.json` — nome de arquivo pré-rebrand (SchoolPlatform); ainda é o payload usado por `aios-seed-week-field.mjs` e pelo npm script `aios:*`.
+- `examples/school-platform-modules.payload.json` — payload usado por `aios-seed-week-field.mjs` e pelo npm script `aios:*`.
 - `tests/` (tech-tasks, aios-modules, validate) — cobertura offline das libs; não mapeados em estágio de runtime.
