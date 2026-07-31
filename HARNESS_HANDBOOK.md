@@ -195,7 +195,7 @@ Backend de governança que mantém o ClickUp da Novais Digital como espelho do e
 
 ### Seeds de configuração ClickUp
 - **Âncora**: `scripts/seed-clickup-custom-fields.mjs:fieldPayload` · `scripts/seed-clickup-templates.mjs:ensureTemplate` · `scripts/seed-activities.mjs:ensureActivity` · `scripts/aios-seed-week-field.mjs`
-- **Comportamento**: aplicam `config/clickup-custom-fields.json`, `config/clickup-task-templates.json` e `config/activity-catalog.json` nas lists; `aios-seed-week-field` cria/preenche o campo "Semana" nos parents da Plataforma SchoolPlatform a partir de `examples/edix-modules.payload.json` (nome de arquivo legacy).
+- **Comportamento**: aplicam `config/clickup-custom-fields.json`, `config/clickup-task-templates.json` e `config/activity-catalog.json` nas lists; `aios-seed-week-field` cria/preenche o campo "Semana" nos parents da Plataforma SchoolPlatform a partir de `examples/school-platform-modules.payload.json`.
 
 ### Scripts Aicfo específicos
 - **Âncora**: `scripts/generate-aicfo-frontend-list.mjs:FRONTEND_MODULES` (L36) · `scripts/update-aicfo-descriptions.mjs`
