@@ -38,7 +38,7 @@ O Doctor ausente foi incorporado do repositório pessoal `agent-governance-frame
 
 Após a correção, o Doctor executado no ai-jail, com o manifest canônico montado para leitura, resultou em 14 OK, 1 WARN e 0 FAIL. O aviso de drift 0.21.0 para 0.24.0 foi preservado. A Constitution 0.3.0 permaneceu intacta. A atualização integral de ferramentas do framework e o piloto operacional continuam pendentes; não houve promoção de lifecycle.
 
-O Dockerfile usa `npm ci` com lockfile e mantém Node 20, validado localmente em 20.19.6. A configuração Railway usa Dockerfile, healthcheck em `/health` e `npm start` fixo. A variável `WORKER` não inicia o daemon neste serviço. `.dockerignore` exclui ambientes, segredos locais, relatórios e caches. O Docker Desktop local está sem daemon; o build da imagem e o boot remoto devem ser confirmados pela coordenação. [Railway Config as Code](https://docs.railway.com/config-as-code/reference).
+O Dockerfile usa `npm ci` com lockfile, Node 22, `NODE_ENV=production` e usuário `node` sem root. A configuração Railway usa Dockerfile, healthcheck em `/health` e `npm start` fixo. A variável `WORKER` não inicia o daemon neste serviço. `.dockerignore` exclui ambientes, segredos locais, relatórios e caches. O boot de produção exige `CLICKUP_WEBHOOK_SECRET`; definir esse segredo não configura a integração ClickUp nem prova uma automação externa. O Docker Desktop local está sem daemon; o build da imagem e o boot remoto devem ser confirmados pela coordenação. [Railway Config as Code](https://docs.railway.com/config-as-code/reference).
 
 ## Pendências para aceite integral
 
