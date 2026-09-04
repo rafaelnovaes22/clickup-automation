@@ -32,9 +32,11 @@ Manter web e worker separados no Railway permite distinguir disponibilidade HTTP
 
 Esta automação determinística não exige GPU nem LLM para gerar a prévia. A decisão de conservar Node e catálogos existentes reduz custo e dependências sem alterar o contrato. Não houve comparação de preço entre todas as clouds nem benchmark de produção que justifique chamar essa arquitetura de superior a todas as alternativas.
 
-Gates locais: `npm test` passou com 60 testes; `npm run validate` passou; `npm ci --omit=dev --ignore-scripts` passou com o lockfile novo. QA de desktop pela coordenação gerou exatamente quatro tarefas WhatsApp. A coordenação também verificou uma fixture visual estática de 360px; o envio mobile completo ainda não está comprovado.
+Gates locais: `npm test` passou com 63 testes; `npm run validate` passou; `npm ci --omit=dev --ignore-scripts` passou com o lockfile novo. QA de desktop pela coordenação gerou exatamente quatro tarefas WhatsApp. A coordenação também verificou uma fixture visual estática de 360px; o envio mobile completo ainda não está comprovado.
 
-O Doctor ausente foi incorporado do repositório pessoal `agent-governance-framework` sem modificar suas regras. `bash scripts/foundry-doctor.sh --consumer`, no ai-jail, resultou em 13 OK, 7 WARN e 114 FAIL. O manifest copiado antigo ainda declara `canonical: true` e enumera arquivos que não existem nesta aplicação. A auditoria encontrou 112 paths ausentes e dois gates de integração Hermes incompleta. O framework precisa de sincronização própria; o teste funcional verde não significa governança integral aprovada. A Constitution permaneceu intacta.
+O Doctor ausente foi incorporado do repositório pessoal `agent-governance-framework` sem modificar suas regras. O diagnóstico inicial resultou em 13 OK, 7 WARN e 114 FAIL porque o manifest da aplicação era um inventário canônico copiado. A [ADR de enquadramento consumidor](adr/20260904-consumer-governance.md) fundamenta a correção com `canonical=false`, `automation`, `ai_enabled=false` e 26 paths próprios. Os hooks preservam o booleano false e leem o contrato aninhado do projeto. O validador verifica identidade e versões, e o teste do hook comprova que os gates LLM voltam quando AI é habilitada.
+
+Após a correção, o Doctor executado no ai-jail, com o manifest canônico montado para leitura, resultou em 14 OK, 1 WARN e 0 FAIL. O aviso de drift 0.21.0 para 0.24.0 foi preservado. A Constitution 0.3.0 permaneceu intacta. A atualização integral de ferramentas do framework e o piloto operacional continuam pendentes; não houve promoção de lifecycle.
 
 O Dockerfile usa `npm ci` com lockfile e mantém Node 20, validado localmente em 20.19.6. A configuração Railway usa Dockerfile, healthcheck em `/health` e `npm start` fixo. A variável `WORKER` não inicia o daemon neste serviço. `.dockerignore` exclui ambientes, segredos locais, relatórios e caches. O Docker Desktop local está sem daemon; o build da imagem e o boot remoto devem ser confirmados pela coordenação. [Railway Config as Code](https://docs.railway.com/config-as-code/reference).
 
@@ -48,7 +50,7 @@ O Dockerfile usa `npm ci` com lockfile e mantém Node 20, validado localmente em
 | Paginação de comentários | Confirmar comportamento de locks sob mais de 25 comentários recentes ou adicionar armazenamento próprio |
 | Retentativa de job | Evitar sobreposição de ticks e implementar timeout/retry/backoff por fonte |
 | Runtime do worker | Garantir Git instalado na imagem; verificar permissão de leitura sem persistir credenciais |
-| Governance | Sincronizar doctor e demais gates a partir do framework pessoal sem alterar Constitution |
+| Governance | Avaliar atualização da camada Foundry 0.21.0 para 0.24.0; qualquer alteração da Constitution exige processo próprio |
 | Custos/qualidade | Medir tempo por backlog, duplicações, taxa de erro, custo mensal e aceite humano |
 | Interface mobile | Validar 360px com screenshot e jornada completa de envio do formulário |
 

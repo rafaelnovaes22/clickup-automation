@@ -1,0 +1,48 @@
+{
+  "$schema": "https://novais-digital.com.br/foundry/project-config-v1.json",
+  "project_config_version": "0.1.0",
+  "framework_version_required": ">=0.21.0",
+  "constitution_version_required": ">=0.3.0",
+  "project": {
+    "name": "ClickUp Automation",
+    "owner": "Rafael Novaes",
+    "type": "automation",
+    "ai_enabled": false
+  },
+  "lifecycle_stage": "STAGING",
+  "is_internal": true,
+  "economics": {
+    "model": "platform_margin",
+    "cost_to_price_ratio_max": 0.25,
+    "platform_margin_inputs": {
+      "infra_monthly_brl": null,
+      "support_monthly_brl": null,
+      "maintenance_monthly_brl": null,
+      "revenue_monthly_brl": null
+    }
+  },
+  "modules": [
+    {
+      "id": "briefing-preview",
+      "type": "automation-job",
+      "ai_enabled": false,
+      "lifecycle_state": "STAGING",
+      "criticality": "simple",
+      "linked_spec": "docs/briefing-preview.md"
+    },
+    {
+      "id": "clickup-backlog-sync",
+      "type": "automation-job",
+      "ai_enabled": false,
+      "lifecycle_state": "STAGING",
+      "criticality": "standard",
+      "linked_spec": "docs/delivery-map-2026-09-04.md"
+    }
+  ],
+  "_meta": {
+    "last_updated": "2026-09-04",
+    "consumer_repo": "https://github.com/rafaelnovaes22/clickup-automation",
+    "classification_adr": "docs/adr/20260904-consumer-governance.md",
+    "notes": "O runtime gera e sincroniza tarefas por regras e catálogos. Não faz inferência LLM. Piloto e economia permanecem pendentes."
+  }
+}

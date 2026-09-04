@@ -37,10 +37,10 @@ LIFECYCLE_STAGE="unknown"
 ACTIVE_ARTIFACTS=0
 
 if [ -f "$PROJECT_JSON" ]; then
-  PROJECT_TYPE=$(jq -r '.project_type // "unknown"' "$PROJECT_JSON" 2>/dev/null)
-  AI_ENABLED=$(jq -r '.ai_enabled // "unknown"' "$PROJECT_JSON" 2>/dev/null)
+  PROJECT_TYPE=$(jq -r '.project.type // "unknown"' "$PROJECT_JSON" 2>/dev/null)
+  AI_ENABLED=$(jq -r 'if (.project.ai_enabled | type) == "boolean" then .project.ai_enabled else "unknown" end' "$PROJECT_JSON" 2>/dev/null)
   LIFECYCLE_STAGE=$(jq -r '.lifecycle_stage // "unknown"' "$PROJECT_JSON" 2>/dev/null)
-  ACTIVE_ARTIFACTS=$(jq -r '.artifacts | length // 0' "$PROJECT_JSON" 2>/dev/null)
+  ACTIVE_ARTIFACTS=$(jq -r '.modules | length // 0' "$PROJECT_JSON" 2>/dev/null)
 fi
 
 # ─── Agent soul + memory (Foundry-20 self-harness) ─────────────────────

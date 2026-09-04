@@ -11,3 +11,4 @@ __pycache__/
 Thumbs.db
 # Claude Code (configuracao local da maquina do dev, nao versionar)
 .claude/settings.local.json
+docs/foundry/session-gate-reports/

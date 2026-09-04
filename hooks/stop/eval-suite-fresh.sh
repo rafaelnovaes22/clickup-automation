@@ -6,7 +6,7 @@
 _get_ai_enabled() {
   if [ -f "docs/foundry/project.json" ]; then
     if command -v jq &>/dev/null; then
-      jq -r '.project.ai_enabled // true' docs/foundry/project.json 2>/dev/null || echo "true"
+      jq -r 'if (.project.ai_enabled | type) == "boolean" then .project.ai_enabled else true end' docs/foundry/project.json 2>/dev/null || echo "true"
     else
       python3 -c "import json; d=json.load(open('docs/foundry/project.json')); print(str(d.get('project',{}).get('ai_enabled',True)).lower())" 2>/dev/null || echo "true"
     fi

@@ -3,11 +3,15 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { root } from "./lib/env.mjs";
+import { consumerContractErrors } from "./lib/consumer-contract.mjs";
 
 const ALLOWED_DELIVERY_TYPES = new Set(["agentic_saas", "platform", "automation", "hybrid", "any"]);
 const STRICT_DELIVERY_TYPES = new Set(["agentic_saas", "platform", "automation", "hybrid"]);
 
 const jsonFiles = [
+  "docs/foundry/manifest.json",
+  "docs/foundry/project.json",
+  ".claude/settings.json",
   "config/activity-catalog.json",
   "config/aios-module-catalog.json",
   "config/aios-module-functionalities.json",
@@ -72,6 +76,9 @@ function assertDeliveryType(value, label, { allowAny = true } = {}) {
 for (const file of jsonFiles) {
   await readJson(file);
 }
+
+const constitution = await readFile(resolve(root, ".claude/CONSTITUTION.md"), "utf8");
+for (const error of consumerContractErrors(parsed.get("docs/foundry/manifest.json"), parsed.get("docs/foundry/project.json"), parsed.get(".claude/settings.json"), constitution)) fail(error);
 
 const techContract = parsed.get("config/tech-automation-contract.json");
 const blueprint = parsed.get("config/clickup-governance.blueprint.json");
