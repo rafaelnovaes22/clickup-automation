@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-09-04T00:05:51.033Z",
+  "results": [
+    {
+      "job": "guardrails",
+      "pass": true,
+      "llm_surface": false
+    },
+    {
+      "job": "injection",
+      "pass": true,
+      "patterns": 0,
+      "note": "sem superficie LLM"
+    },
+    {
+      "job": "hallucination",
+      "pass": true,
+      "accuracy": 1,
+      "total": 5
+    },
+    {
+      "job": "cost",
+      "pass": true,
+      "costBrl": 0,
+      "ratio": 0
+    }
+  ]
+}
