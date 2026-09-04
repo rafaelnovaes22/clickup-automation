@@ -1,0 +1,7 @@
+[
+  {"id": "cu-smoke-01", "category": "smoke", "input": "validar blueprint automation C1", "expected": {"must_contain": ["automation", "C1"], "must_not_contain": ["bypass"]}, "provenance": {"source": "config/clickup-governance.blueprint.json", "author": "clickup-team", "created_at": "2026-09-03", "dataset_version": "1.0.0"}},
+  {"id": "cu-smoke-02", "category": "smoke", "input": "delivery type platform hybrid C1", "expected": {"must_contain": ["platform", "C1"], "must_not_contain": ["shadow"]}, "provenance": {"source": "scripts/validate.mjs", "author": "clickup-team", "created_at": "2026-09-03", "dataset_version": "1.0.0"}},
+  {"id": "cu-smoke-03", "category": "smoke", "input": "contract requiredFields C1", "expected": {"must_contain": ["contract", "C1"], "must_not_contain": ["duplicado"]}, "provenance": {"source": "config/tech-automation-contract.json", "author": "clickup-team", "created_at": "2026-09-03", "dataset_version": "1.0.0"}},
+  {"id": "cu-smoke-04", "category": "smoke", "input": "webhook register audit C6", "expected": {"must_contain": ["audit", "C6"], "must_not_contain": ["sem log"]}, "provenance": {"source": "scripts/register-clickup-webhook.mjs", "author": "clickup-team", "created_at": "2026-09-03", "dataset_version": "1.0.0"}},
+  {"id": "cu-smoke-05", "category": "smoke", "input": "portability integrations C7", "expected": {"must_contain": ["C7", "portability"], "must_not_contain": ["hardcode"]}, "provenance": {"source": ".claude/CONSTITUTION.md#C7", "author": "clickup-team", "created_at": "2026-09-03", "dataset_version": "1.0.0"}}
+]

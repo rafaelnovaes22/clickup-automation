@@ -233,6 +233,7 @@ export function parseAiosTask(task) {
     projectRoot: fields.get("project_root"),
     artifactPath: fields.get("artifact_path"),
     repositoryUrl: fields.get("repository_url"),
+    evidenceSource: fields.get("evidence_source"),
     week: week ? Number(week) : undefined
   };
 }
