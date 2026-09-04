@@ -133,10 +133,12 @@ Tier rules: Tier A/B modules go through the full 6-stage agent pipeline with hum
 
 ```bash
 npm run validate   # JSON validity + cross-consistency between contracts, catalogs and example payloads
-npm test           # 57 tests (generation, parsing, sync decisions and public briefing journey)
+npm test           # 60 tests (generation, sync, public briefing and safe repository refresh)
 ```
 
 ## Regenerating derived docs
+
+Current delivery map and outstanding production checks: [docs/delivery-map-2026-09-04.md](docs/delivery-map-2026-09-04.md).
 
 ```bash
 npm run contracts:generate   # docs/EVENT_CONTRACTS.md from the template config
