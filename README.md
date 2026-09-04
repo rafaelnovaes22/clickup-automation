@@ -90,6 +90,8 @@ npm start
 
 Endpoints:
 
+- `GET /`: briefing form with a catalog-backed preview of tasks, artifacts and acceptance criteria.
+- `POST /preview`: validates the briefing and renders the complete backlog preview without calling ClickUp or creating tasks. The payload can be copied from the result and reused by the existing generation CLI.
 - `GET /health`
 - `POST /webhooks/clickup` (HMAC signature verified when `CLICKUP_WEBHOOK_SECRET` is set)
 
@@ -131,7 +133,7 @@ Tier rules: Tier A/B modules go through the full 6-stage agent pipeline with hum
 
 ```bash
 npm run validate   # JSON validity + cross-consistency between contracts, catalogs and example payloads
-npm test           # 53 unit tests (generation, parsing, sync decisions)
+npm test           # 57 tests (generation, parsing, sync decisions and public briefing journey)
 ```
 
 ## Regenerating derived docs

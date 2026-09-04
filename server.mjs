@@ -5,6 +5,7 @@ import http from "node:http";
 import { createClickUpClient } from "./scripts/lib/clickup.mjs";
 import { agentRequestToPayload, createTechTasksFromPayload, findAgentRequestTask, generatedStatus, shouldProcessAgentRequest } from "./scripts/lib/agent-request.mjs";
 import { clickUpCredentials, loadLocalEnv } from "./scripts/lib/env.mjs";
+import { serveBriefing } from "./scripts/lib/briefing-web.mjs";
 
 await loadLocalEnv();
 
@@ -131,6 +132,7 @@ async function handleClickUpWebhook(request, response) {
 
 const server = http.createServer(async (request, response) => {
   try {
+    if (await serveBriefing(request, response)) return;
     if (request.method === "GET" && request.url === "/health") {
       jsonResponse(response, 200, { ok: true });
       return;
