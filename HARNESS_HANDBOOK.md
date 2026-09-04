@@ -242,7 +242,10 @@ Backend de governança que mantém o ClickUp da Novais Digital como espelho do e
 - **Status AIOS calculado errado (subtask)**: `scripts/lib/aios-evidence.mjs:collectAiosEvidence`, `scripts/lib/aios-evidence.mjs:decideStatusFromAiosEvidence`, `scripts/sync-aios-status.mjs:syncSubtask`.
 - **Status do parent (rollup) errado**: `scripts/lib/aios-platform.mjs:rollupParentStatus`, `scripts/sync-aios-status.mjs:rollupParent`.
 - **Status tech `[TECH]` calculado errado**: `scripts/lib/github-evidence.mjs:decideStatus`, `scripts/sync-tech-status.mjs:syncTask`.
+<<<<<<< HEAD
 - **Sync de list alternativa / tasks flat (ex: "Frontend" Aicfo)**: `scripts/sync-aios-status.mjs:39-40` (flags `--list=`/`--repository-url=`), `scripts/sync-aios-status.mjs:107` (`githubOnly`, `evidence_source=github`), `scripts/sync-aios-status.mjs:211-212` (tasks flat `module_role=stage`), `scripts/generate-aicfo-frontend-list.mjs` (gerador da list).
+=======
+>>>>>>> origin/master
 - **PR/branch não é encontrado como evidência**: `scripts/lib/github-evidence.mjs:searchTerms`, `scripts/lib/github-evidence.mjs:getMatchingPullRequests`, campo `github_match_terms` na description.
 - **Tasks duplicadas / geração repetida**: `scripts/lib/agent-request.mjs:hasIdempotencyLock`, dedup por nome em `createTechTasksFromPayload`, `scripts/generate-aios-modules.mjs:generate` (skip por nome/marker).
 - **Adicionar nova fonte ao worker de 15 min**: `scripts/sync-all-daemon.mjs:SOURCES` (L19, com `setup` opcional por fonte).
@@ -256,7 +259,14 @@ Backend de governança que mantém o ClickUp da Novais Digital como espelho do e
 ## Não coberto / Não resolvido
 - `hooks/session-start/foundry-context.sh`, `hooks/stop/*.sh` — hooks do Claude Code/Foundry (injeção de contexto, gate report, learning snapshot); não fazem parte do runtime do backend.
 - `.claude/` (CONSTITUTION.md, agents, skills), `GOVERNANCE.md`, `docs/foundry/` — governança/agentes para sessões de IA, não código executável do harness.
+<<<<<<< HEAD
 - `scripts/seed-marketing-ai-agents-tasks.mjs` — legacy, sem npm script apontando para ele; candidato a remoção.
 - `scripts/lib/agent-request.mjs:platformRequestTarget` e `:generatingStatus` — exportados mas sem nenhum consumidor no repo.
 - `examples/school-platform-modules.payload.json` — payload usado por `aios-seed-week-field.mjs` e pelo npm script `aios:*`.
+=======
+- `scripts/generate-aicfo-frontend-list.mjs` (cabeçalho L17-19) referencia flags `--list=` e `--repository-url=` que **não existem** em `sync-aios-status.mjs` — sync da list "Frontend" não está implementado.
+- `scripts/seed-marketing-ai-agents-tasks.mjs` — legacy, sem npm script apontando para ele; candidato a remoção.
+- `scripts/lib/agent-request.mjs:platformRequestTarget` e `:generatingStatus` — exportados mas sem nenhum consumidor no repo.
+- `examples/edix-modules.payload.json` — nome de arquivo pré-rebrand (SchoolPlatform); ainda é o payload usado por `aios-seed-week-field.mjs` e pelo npm script `aios:*`.
+>>>>>>> origin/master
 - `tests/` (tech-tasks, aios-modules, validate) — cobertura offline das libs; não mapeados em estágio de runtime.
