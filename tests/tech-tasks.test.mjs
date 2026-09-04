@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { agentRequestToPayload } from "../scripts/lib/agent-request.mjs";
+import { agentRequestToPayload, isActiveGenerationComment } from "../scripts/lib/agent-request.mjs";
 import { decideStatus } from "../scripts/lib/github-evidence.mjs";
 import { canonicalStatus, parseTechTask, selectedPlatforms, taskDescription, taskName, validatePayload } from "../scripts/lib/tech-tasks.mjs";
 
@@ -111,6 +111,14 @@ test("agentRequestToPayload converts ClickUp custom fields into tech payload", (
 });
 
 let passed = 0;
+
+test("generation locks expire after a failed attempt and match the exact request", () => {
+  const now = Date.parse("2026-09-04T12:00:00Z");
+  const active = { comment_text: "[idempotency-lock] generation_in_progress=task-1", date: String(now - 60_000) };
+  assert.equal(isActiveGenerationComment(active, "task-1", now), true);
+  assert.equal(isActiveGenerationComment(active, "task", now), false);
+  assert.equal(isActiveGenerationComment({ ...active, date: String(now - 31 * 60_000) }, "task-1", now), false);
+});
 
 for (const { name, fn } of tests) {
   try {

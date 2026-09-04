@@ -22,6 +22,7 @@ const platformCatalogPath = resolve(root, "config/tech-platform-catalog.json");
 const contractPath = resolve(root, "config/tech-automation-contract.json");
 
 const IDEMPOTENCY_COMMENT_PREFIX = "[idempotency-lock] generation_in_progress=";
+const GENERATION_LOCK_TTL_MS = 30 * 60 * 1000;
 
 export async function loadTechConfig() {
   return {
@@ -102,14 +103,20 @@ export async function existingTaskNames(clickUp, listId) {
   return new Set(tasks.map((task) => task.name));
 }
 
+/** @param {{comment_text?: string, comment?: string, date?: string|number}} comment @param {string} key @param {number} now @returns {boolean} */
+export function isActiveGenerationComment(comment, key, now = Date.now()) {
+  const text = comment?.comment_text ?? comment?.comment ?? "";
+  if (text !== `${IDEMPOTENCY_COMMENT_PREFIX}${key}`) return false;
+  // ClickUp dates are Unix milliseconds. Old crash markers must not block retries forever.
+  // https://developer.clickup.com/reference/gettaskcomments
+  const createdAt = Number(comment.date);
+  return Number.isFinite(createdAt) && now - createdAt < GENERATION_LOCK_TTL_MS;
+}
+
 async function hasIdempotencyLock(clickUp, taskId, idempotencyKey) {
-  const data = await clickUp.request("GET", `/task/${taskId}/comment`).catch(() => null);
+  const data = await clickUp.request("GET", `/task/${taskId}/comment`);
   const comments = data?.comments ?? [];
-  const marker = `${IDEMPOTENCY_COMMENT_PREFIX}${idempotencyKey}`;
-  return comments.some((comment) => {
-    const text = comment?.comment_text ?? comment?.comment ?? "";
-    return typeof text === "string" && text.includes(marker);
-  });
+  return comments.some((comment) => isActiveGenerationComment(comment, idempotencyKey));
 }
 
 async function placeIdempotencyLock(clickUp, taskId, idempotencyKey) {
@@ -122,6 +129,7 @@ async function placeIdempotencyLock(clickUp, taskId, idempotencyKey) {
 export async function createTechTasksFromPayload(clickUp, teamId, input, { dryRun = false, idempotencyKey = null } = {}) {
   const { platformCatalog, contract } = await loadTechConfig();
   validatePayload(input, contract);
+  const platforms = selectedPlatforms(input, platformCatalog);
 
   if (!dryRun && idempotencyKey && input.client_task_id) {
     const locked = await hasIdempotencyLock(clickUp, input.client_task_id, idempotencyKey);
@@ -131,7 +139,6 @@ export async function createTechTasksFromPayload(clickUp, teamId, input, { dryRu
     await placeIdempotencyLock(clickUp, input.client_task_id, idempotencyKey);
   }
 
-  const platforms = selectedPlatforms(input, platformCatalog);
   const planned = platforms.flatMap((platform) =>
     platform.tasks.map((task) => ({ platform, task }))
   );
