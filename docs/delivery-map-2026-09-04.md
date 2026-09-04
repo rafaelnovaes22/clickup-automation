@@ -32,7 +32,11 @@ Manter web e worker separados no Railway permite distinguir disponibilidade HTTP
 
 Esta automação determinística não exige GPU nem LLM para gerar a prévia. A decisão de conservar Node e catálogos existentes reduz custo e dependências sem alterar o contrato. Não houve comparação de preço entre todas as clouds nem benchmark de produção que justifique chamar essa arquitetura de superior a todas as alternativas.
 
-Gates locais: `npm test` passou com 60 testes; `npm run validate` passou. QA de desktop pela coordenação gerou exatamente quatro tarefas WhatsApp. A tentativa de QA headless 360px foi bloqueada pela revisão automática de ferramentas; não há evidência visual de mobile nesta fatia. `scripts/foundry-doctor.sh` não existe nesta cópia, portanto esse gate não foi reportado como executado.
+Gates locais: `npm test` passou com 60 testes; `npm run validate` passou; `npm ci --omit=dev --ignore-scripts` passou com o lockfile novo. QA de desktop pela coordenação gerou exatamente quatro tarefas WhatsApp. A coordenação também verificou uma fixture visual estática de 360px; o envio mobile completo ainda não está comprovado.
+
+O Doctor ausente foi incorporado do repositório pessoal `agent-governance-framework` sem modificar suas regras. `bash scripts/foundry-doctor.sh --consumer`, no ai-jail, resultou em 13 OK, 7 WARN e 114 FAIL. O manifest copiado antigo ainda declara `canonical: true` e enumera arquivos que não existem nesta aplicação. A auditoria encontrou 112 paths ausentes e dois gates de integração Hermes incompleta. O framework precisa de sincronização própria; o teste funcional verde não significa governança integral aprovada. A Constitution permaneceu intacta.
+
+O Dockerfile usa `npm ci` com lockfile e mantém Node 20, validado localmente em 20.19.6. A configuração Railway usa Dockerfile, healthcheck em `/health` e `npm start` fixo. A variável `WORKER` não inicia o daemon neste serviço. `.dockerignore` exclui ambientes, segredos locais, relatórios e caches. O Docker Desktop local está sem daemon; o build da imagem e o boot remoto devem ser confirmados pela coordenação. [Railway Config as Code](https://docs.railway.com/config-as-code/reference).
 
 ## Pendências para aceite integral
 

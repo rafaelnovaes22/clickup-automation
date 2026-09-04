@@ -1,5 +1,16 @@
 node_modules
 .git
 .env*
+**/.env*
+.venv*
 *.log
 coverage
+evals/**/report*.json
+evals/**/reports
+docs/foundry/session-gate-reports
+.ai-jail
+.claude/settings.local.json
+.foundry-mode
+tmp
+temp
+*.tmp
