@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "id": "fixture-frontend-1",
+      "name": "[FRONTEND] hub — Tela home: lucro liquido + tags + analises anteriores",
+      "description": "**Tela home: lucro liquido + tags + analises anteriores**\n\nFrontend do modulo `hub` da Plataforma Aicfo (onda 1).\n\nControle automatico:\nclient_name=Aicfo\nmodule_key=hub\nstage_key=frontend\nweek=1\nrepository_url=https://github.com/rafaelnovaes22/aicfo-frontend\nevidence_source=github\ngithub_match_terms=Aicfo,hub,frontend\nmodule_role=stage",
+      "status": { "status": "to do" }
+    },
+    {
+      "id": "fixture-frontend-2",
+      "name": "[FRONTEND] kpis — Cards de KPIs (CAC/LTV/payback/margem/burn/runway)",
+      "description": "**Cards de KPIs**\n\nFrontend do modulo `kpis` da Plataforma Aicfo (onda 2).\n\nControle automatico:\nclient_name=Aicfo\nmodule_key=kpis\nstage_key=frontend\nweek=2\nrepository_url=https://github.com/rafaelnovaes22/aicfo-frontend\nevidence_source=github\ngithub_match_terms=Aicfo,kpis,frontend\nmodule_role=stage",
+      "status": { "status": "em desenvolvimento" }
+    }
+  ]
+}

@@ -1,0 +1,364 @@
+{
+  "version": "0.2",
+  "purpose": "Catalogo tecnico para gerar tarefas automaticamente a partir das plataformas/modulos identificados no diagnostico/setup.",
+  "statusFlow": ["a fazer", "em desenvolvimento", "em revisao", "bloqueado", "concluido"],
+  "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
+  "platformDeliveryNotes": "Cada plataforma tecnica declara delivery_types em que ela faz sentido. Ex: ai_agent so existe em agentic_saas/hybrid/ai_enabled. platform_module so existe em platform/hybrid.",
+  "platforms": [
+    {
+      "key": "whatsapp",
+      "label": "WhatsApp",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
+      "defaultOwnerRole": "backend_dev",
+      "tasks": [
+        {
+          "key": "whatsapp_credentials",
+          "title": "Validar credenciais WhatsApp",
+          "artifact": "credential_validation_evidence",
+          "doneWhen": "Token, phone number ID e webhook secret validados."
+        },
+        {
+          "key": "whatsapp_webhook",
+          "title": "Configurar webhook WhatsApp",
+          "artifact": "webhook_url",
+          "doneWhen": "Webhook recebe evento real e responde com sucesso."
+        },
+        {
+          "key": "whatsapp_payload_mapping",
+          "title": "Mapear payload WhatsApp",
+          "artifact": "payload_contract",
+          "doneWhen": "Campos de entrada e eventos suportados documentados."
+        },
+        {
+          "key": "whatsapp_smoke_test",
+          "title": "Rodar smoke test WhatsApp",
+          "artifact": "smoke_test_evidence",
+          "doneWhen": "Mensagem teste percorre fluxo end-to-end."
+        }
+      ]
+    },
+    {
+      "key": "email",
+      "label": "Email",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
+      "defaultOwnerRole": "backend_dev",
+      "tasks": [
+        {
+          "key": "email_inbound_channel",
+          "title": "Configurar canal de email inbound",
+          "artifact": "inbound_email_config",
+          "doneWhen": "Email de entrada gera evento processavel."
+        },
+        {
+          "key": "email_parser",
+          "title": "Implementar parser de email",
+          "artifact": "email_parser_contract",
+          "doneWhen": "Assunto, remetente, corpo e anexos relevantes sao extraidos."
+        },
+        {
+          "key": "email_delivery_test",
+          "title": "Validar entrega e resposta por email",
+          "artifact": "delivery_test_evidence",
+          "doneWhen": "Fluxo de resposta passa em teste com caixa real."
+        }
+      ]
+    },
+    {
+      "key": "crm",
+      "label": "CRM",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
+      "defaultOwnerRole": "backend_dev",
+      "tasks": [
+        {
+          "key": "crm_auth",
+          "title": "Configurar autenticacao CRM",
+          "artifact": "crm_auth_evidence",
+          "doneWhen": "API do CRM autenticada em ambiente de teste."
+        },
+        {
+          "key": "crm_schema_mapping",
+          "title": "Mapear schema CRM",
+          "artifact": "crm_schema_map",
+          "doneWhen": "Campos de lead/deal/contact mapeados para o modelo interno."
+        },
+        {
+          "key": "crm_writeback",
+          "title": "Implementar escrita de resultado no CRM",
+          "artifact": "crm_writeback_evidence",
+          "doneWhen": "Outcome do agente atualiza entidade correta no CRM."
+        }
+      ]
+    },
+    {
+      "key": "node_backend",
+      "label": "Backend Node",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
+      "defaultOwnerRole": "backend_dev",
+      "tasks": [
+        {
+          "key": "backend_ingestion_endpoint",
+          "title": "Criar endpoint de ingestao",
+          "artifact": "api_endpoint_contract",
+          "doneWhen": "Endpoint valida payload, autentica origem e registra evento."
+        },
+        {
+          "key": "backend_domain_model",
+          "title": "Implementar modelo de dominio",
+          "artifact": "domain_model_notes",
+          "doneWhen": "Entidades e estados necessarios estao persistidos."
+        },
+        {
+          "key": "backend_observability",
+          "title": "Adicionar logs e rastreabilidade",
+          "artifact": "observability_dashboard_or_trace",
+          "doneWhen": "Evento pode ser auditado de entrada ate outcome."
+        },
+        {
+          "key": "backend_e2e_test",
+          "title": "Criar teste end-to-end tecnico",
+          "artifact": "e2e_test_result",
+          "doneWhen": "Teste cobre fluxo tecnico principal e passa no CI/local."
+        }
+      ]
+    },
+    {
+      "key": "ai_agent",
+      "label": "Agente de IA",
+      "delivery_types": ["agentic_saas", "hybrid"],
+      "ai_enabled": true,
+      "defaultOwnerRole": "ai_engineer",
+      "tasks": [
+        {
+          "key": "agent_outcome_contract",
+          "title": "Definir contrato de outcome do agente",
+          "artifact": "agent_outcome_contract",
+          "doneWhen": "Outcome, entradas, saidas, limites de responsabilidade e criterio de sucesso estao definidos."
+        },
+        {
+          "key": "agent_behavior_spec",
+          "title": "Especificar comportamento e politica de decisao",
+          "artifact": "agent_behavior_spec",
+          "doneWhen": "Instrucoes, tom, regras de escalonamento, recusas e criterios de decisao estao documentados."
+        },
+        {
+          "key": "agent_tool_contracts",
+          "title": "Mapear ferramentas e integracoes do agente",
+          "artifact": "agent_tool_contracts",
+          "doneWhen": "Cada tool/API necessaria tem contrato, permissao, erro esperado e fallback definidos."
+        },
+        {
+          "key": "agent_context_memory",
+          "title": "Implementar contexto e memoria operacional",
+          "artifact": "agent_context_memory_design",
+          "doneWhen": "Fontes de contexto, janela, recuperacao, retencao e isolamento por cliente estao implementados."
+        },
+        {
+          "key": "agent_prompt_versioning",
+          "title": "Versionar prompts e configuracoes do agente",
+          "artifact": "agent_prompt_version",
+          "doneWhen": "Prompt, modelo, parametros e changelog estao versionados e rastreaveis por deploy."
+        },
+        {
+          "key": "agent_evaluation_suite",
+          "title": "Criar suite de avaliacao do agente",
+          "artifact": "agent_eval_suite",
+          "doneWhen": "Casos felizes, casos limite, criterios de qualidade e regressao automatica estao cobertos."
+        },
+        {
+          "key": "agent_guardrails",
+          "title": "Implementar guardrails e escalonamento humano",
+          "artifact": "agent_guardrail_policy",
+          "doneWhen": "Regras de seguranca, validacao de output, handoff humano e bloqueios criticos funcionam."
+        },
+        {
+          "key": "agent_observability",
+          "title": "Instrumentar traces e metricas do agente",
+          "artifact": "agent_observability_trace",
+          "doneWhen": "Cada execucao registra input, decisao, tool calls, output, latencia, custo e resultado."
+        },
+        {
+          "key": "agent_shadow_pilot",
+          "title": "Rodar piloto SHADOW do agente",
+          "artifact": "agent_shadow_report",
+          "doneWhen": "Minimo de 30 outcomes comparados com humano e gaps priorizados."
+        },
+        {
+          "key": "agent_assisted_promotion",
+          "title": "Preparar promocao para ASSISTED",
+          "artifact": "agent_assisted_gate",
+          "doneWhen": "Threshold de qualidade, SLA, riscos e checklist de aprovacao para ASSISTED estao fechados."
+        }
+      ]
+    },
+    {
+      "key": "frontend_web",
+      "label": "Frontend Web",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
+      "defaultOwnerRole": "frontend_dev",
+      "tasks": [
+        {
+          "key": "frontend_user_flow",
+          "title": "Mapear fluxo de usuario",
+          "artifact": "user_flow_spec",
+          "doneWhen": "Fluxo principal, estados vazios, erros e sucesso estao documentados."
+        },
+        {
+          "key": "frontend_ui_shell",
+          "title": "Implementar estrutura visual da tela",
+          "artifact": "ui_screen_implementation",
+          "doneWhen": "Tela responsiva renderiza layout base sem dados reais."
+        },
+        {
+          "key": "frontend_api_integration",
+          "title": "Integrar frontend com API",
+          "artifact": "api_integration_evidence",
+          "doneWhen": "Tela consome endpoint real ou mock contratual e trata loading/erro/sucesso."
+        },
+        {
+          "key": "frontend_form_validation",
+          "title": "Implementar validacao de formularios",
+          "artifact": "form_validation_rules",
+          "doneWhen": "Campos obrigatorios, mensagens de erro e submissao invalida estao cobertos."
+        },
+        {
+          "key": "frontend_responsive_review",
+          "title": "Validar responsividade desktop/mobile",
+          "artifact": "responsive_screenshots",
+          "doneWhen": "Tela foi verificada em viewport desktop e mobile sem quebra visual."
+        },
+        {
+          "key": "frontend_e2e_test",
+          "title": "Criar teste E2E do fluxo",
+          "artifact": "frontend_e2e_test_result",
+          "doneWhen": "Teste cobre o fluxo principal e passa local/CI."
+        }
+      ]
+    },
+    {
+      "key": "frontend_dashboard",
+      "label": "Dashboard Frontend",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
+      "defaultOwnerRole": "frontend_dev",
+      "tasks": [
+        {
+          "key": "dashboard_metric_contract",
+          "title": "Definir contrato das metricas",
+          "artifact": "dashboard_metric_contract",
+          "doneWhen": "Cada card tem fonte, filtro, periodo e estado vazio definidos."
+        },
+        {
+          "key": "dashboard_visual_implementation",
+          "title": "Implementar visualizacao do dashboard",
+          "artifact": "dashboard_ui",
+          "doneWhen": "Dashboard renderiza cards/tabelas/graficos com dados de exemplo."
+        },
+        {
+          "key": "dashboard_data_integration",
+          "title": "Integrar dashboard aos dados reais",
+          "artifact": "dashboard_data_evidence",
+          "doneWhen": "Metricas batem com fonte de dados validada."
+        },
+        {
+          "key": "dashboard_ceo_review",
+          "title": "Validar leitura executiva do dashboard",
+          "artifact": "ceo_review_notes",
+          "doneWhen": "CEO consegue responder a pergunta do dashboard em ate 30 segundos."
+        }
+      ]
+    },
+    {
+      "key": "external_api",
+      "label": "API externa",
+      "delivery_types": ["agentic_saas", "platform", "automation", "hybrid"],
+      "defaultOwnerRole": "backend_dev",
+      "tasks": [
+        {
+          "key": "external_api_contract",
+          "title": "Documentar contrato da API externa",
+          "artifact": "external_api_contract",
+          "doneWhen": "Auth, endpoints, rate limits e erros conhecidos documentados."
+        },
+        {
+          "key": "external_api_client",
+          "title": "Implementar client da API externa",
+          "artifact": "api_client_module",
+          "doneWhen": "Client cobre chamadas necessarias com retry e tratamento de erro."
+        },
+        {
+          "key": "external_api_integration_test",
+          "title": "Validar integracao com API externa",
+          "artifact": "integration_test_result",
+          "doneWhen": "Fluxo principal passa contra sandbox ou credencial real autorizada."
+        }
+      ]
+    },
+    {
+      "key": "platform_module",
+      "label": "Modulo de plataforma",
+      "delivery_types": ["platform", "hybrid"],
+      "defaultOwnerRole": "delivery_engineer",
+      "tasks": [
+        {
+          "key": "platform_environment_setup",
+          "title": "Provisionar ambiente do modulo",
+          "artifact": "environment_provisioning_evidence",
+          "doneWhen": "Ambiente isolado provisionado com configs do cliente e acesso restrito."
+        },
+        {
+          "key": "platform_migrations",
+          "title": "Rodar migrations e seed",
+          "artifact": "migrations_evidence",
+          "doneWhen": "Schema atual aplicado e seed inicial inserido. Rollback testado."
+        },
+        {
+          "key": "platform_smoke_test",
+          "title": "Smoke test tecnico do modulo",
+          "artifact": "module_smoke_test_evidence",
+          "doneWhen": "Fluxos criticos do modulo respondem sem erro em ambiente isolado."
+        },
+        {
+          "key": "platform_data_validation",
+          "title": "Validar consistencia de dados vs legado",
+          "artifact": "legacy_vs_new_comparison",
+          "doneWhen": "Comparacao automatizada legado x nova roda dentro do erro maximo aceito."
+        },
+        {
+          "key": "platform_observability",
+          "title": "Configurar observabilidade do modulo",
+          "artifact": "platform_observability_setup",
+          "doneWhen": "Logs estruturados, metricas e alertas ativados com runbook minimo."
+        },
+        {
+          "key": "platform_acceptance_criteria",
+          "title": "Documentar criterios de aceite operacional",
+          "artifact": "operational_acceptance_criteria",
+          "doneWhen": "Criterios escritos e revisados com cliente; condicao de aceite explicita."
+        },
+        {
+          "key": "platform_pilot_run",
+          "title": "Operacao assistida em piloto com usuario interno",
+          "artifact": "pilot_open_note",
+          "doneWhen": "Modulo rodando contra usuarios reais em paralelo ao legado, com canal de feedback."
+        },
+        {
+          "key": "platform_human_signoff",
+          "title": "Coletar aceite humano operacional",
+          "artifact": "human_operational_signoff",
+          "doneWhen": "Cliente e Tech Lead assinam aceite com base nos criterios documentados."
+        },
+        {
+          "key": "platform_canonical_cutover",
+          "title": "Promover modulo para CANONICAL",
+          "artifact": "canonical_cutover_note",
+          "doneWhen": "Modulo virou fonte canonica; legado paralelo desligado ou agendado."
+        },
+        {
+          "key": "platform_rollback_plan",
+          "title": "Definir e validar plano de rollback",
+          "artifact": "rollback_plan",
+          "doneWhen": "Procedimento de rollback documentado e testado em staging."
+        }
+      ]
+    }
+  ]
+}

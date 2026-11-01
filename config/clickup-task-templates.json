@@ -1,0 +1,534 @@
+{
+  "version": "0.2",
+  "deliveryTypes": ["agentic_saas", "platform", "automation", "hybrid"],
+  "deliveryTypeNotes": "Cada template declara delivery_type. Templates agentic exigem prompts/eval/SHADOW; templates platform exigem rollout/smoke/piloto/aceite.",
+  "templates": [
+    {
+      "key": "agent_request",
+      "name": "[TEMPLATE] Solicitacao de agente",
+      "delivery_type": "agentic_saas",
+      "target": {
+        "space": "05 Institucional Novais Digital",
+        "list": "Solicitacoes de agente",
+        "desiredStatus": "rascunho"
+      },
+      "description": [
+        "Entidade: Solicitacao de agente.",
+        "Quando usar: CEO/comercial quer iniciar a criacao de um agente de IA.",
+        "Objetivo: capturar escopo de negocio em campos simples, sem exigir linguagem tecnica.",
+        "Resultado esperado: status 'escopo pronto' dispara a geracao do backlog tecnico correspondente.",
+        "Status desejado: rascunho."
+      ],
+      "fields": [
+        { "key": "client_name", "label": "Cliente", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "business_problem", "label": "Problema de negocio", "type": "long_text", "required": true, "example": "Comercial demora para qualificar leads e perde timing." },
+        { "key": "expected_outcome", "label": "Outcome esperado", "type": "long_text", "required": true, "example": "Lead qualificado com score e proximo passo sugerido." },
+        { "key": "agent_type", "label": "Tipo de agente", "type": "select", "required": true, "options": ["SDR", "suporte", "cobranca", "atendimento", "operacao", "analise", "outro"] },
+        { "key": "primary_channel", "label": "Canal principal", "type": "select", "required": true, "options": ["whatsapp", "email", "crm", "site", "dashboard", "api", "outro"] },
+        { "key": "technical_platforms", "label": "Plataformas tecnicas", "type": "text", "required": true, "example": "ai_agent,whatsapp,node_backend" },
+        { "key": "autonomy_level", "label": "Nivel de autonomia", "type": "select", "required": true, "options": ["somente sugerir", "executar com aprovacao", "executar autonomo", "nao sei"] },
+        { "key": "human_handoff_rule", "label": "Quando chamar humano", "type": "long_text", "required": true, "example": "Quando o lead pedir desconto, contrato ou falar com diretor." },
+        { "key": "success_metric", "label": "Metrica de sucesso", "type": "text", "required": false, "example": "% leads qualificados corretamente" },
+        { "key": "delivery_due_date", "label": "Prazo desejado", "type": "date", "required": true, "example": "2026-05-15" },
+        { "key": "tech_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "AI Engineer" },
+        { "key": "repository_url", "label": "Repositorio", "type": "url", "required": false, "example": "https://github.com/novais-digital/novais-digital" },
+        { "key": "environment", "label": "Ambiente", "type": "select", "required": true, "options": ["dev", "staging", "prod"] }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Solicitacao de agente" },
+        { "trigger": "custom_fields preenchidos", "action": "Validar escopo minimo" },
+        { "trigger": "status=escopo pronto", "action": "Gerar payload tecnico e disparar tech.task.generate" }
+      ],
+      "subtasks": [
+        "Preencher cliente, problema e outcome",
+        "Selecionar tipo de agente e canal principal",
+        "Definir autonomia e regra de handoff humano",
+        "Confirmar plataformas tecnicas",
+        "Marcar status como escopo pronto"
+      ]
+    },
+    {
+      "key": "lead_new",
+      "name": "[TEMPLATE] Lead novo",
+      "delivery_type": "any",
+      "target": {
+        "space": "01 Pipeline Comercial",
+        "list": "Leads",
+        "desiredStatus": "novo"
+      },
+      "description": [
+        "Entidade: Lead.",
+        "Quando usar: primeiro contato comercial, indicacao, evento ou form externo.",
+        "Objetivo: registrar origem, dor percebida e proximo passo.",
+        "Campos minimos: empresa, contato, origem, contexto, dono comercial.",
+        "Status desejado: novo."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "contact_name", "label": "Contato principal", "type": "text", "required": true, "example": "Maria Silva" },
+        { "key": "contact_email", "label": "Email", "type": "email", "required": false, "example": "maria@novais-digital.com" },
+        { "key": "contact_phone", "label": "Telefone/WhatsApp", "type": "phone", "required": false, "example": "+55 11 99999-9999" },
+        { "key": "source", "label": "Origem", "type": "select", "required": true, "options": ["indicacao", "evento", "outbound", "inbound", "parceiro", "manual"] },
+        { "key": "pain_summary", "label": "Dor percebida", "type": "long_text", "required": true, "example": "Time perde muito tempo qualificando leads manualmente." },
+        { "key": "commercial_owner", "label": "Dono comercial", "type": "person_or_text", "required": true, "example": "Rafael" },
+        { "key": "next_step_date", "label": "Data do proximo passo", "type": "date", "required": false, "example": "2026-05-08" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Lead na lista Leads" },
+        { "trigger": "source=indicacao", "action": "Adicionar tag revisao-humana" },
+        { "trigger": "next_step_date preenchido", "action": "Definir due date da task" }
+      ],
+      "subtasks": [
+        "Registrar origem e contexto do lead",
+        "Definir dono comercial",
+        "Agendar ou tentar primeira conversa"
+      ]
+    },
+    {
+      "key": "diagnostic_sold",
+      "name": "[TEMPLATE] Diagnostico Fase 0 vendido",
+      "delivery_type": "any",
+      "target": {
+        "space": "01 Pipeline Comercial",
+        "list": "Diagnosticos Fase 0",
+        "desiredStatus": "vendido"
+      },
+      "description": [
+        "Entidade: Diagnostico Fase 0.",
+        "Quando usar: pagamento ou aceite comercial confirmado.",
+        "Objetivo: conduzir diagnostico pago em 5 dias uteis.",
+        "Resultado esperado: relatorio 5-10pp + sessao de devolucao.",
+        "Status desejado: vendido."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "lead_task_id", "label": "Task do lead", "type": "clickup_task_id", "required": false, "example": "86abc123" },
+        { "key": "diagnostic_fee", "label": "Fee do diagnostico", "type": "currency_brl", "required": true, "example": 8000 },
+        { "key": "payment_confirmed_at", "label": "Pagamento confirmado em", "type": "datetime", "required": true, "example": "2026-05-01T14:00:00-03:00" },
+        { "key": "client_ceo_name", "label": "CEO do cliente", "type": "text", "required": true, "example": "Maria Silva" },
+        { "key": "client_ceo_email", "label": "Email do CEO", "type": "email", "required": false, "example": "maria@novais-digital.com" },
+        { "key": "start_date", "label": "Data de inicio", "type": "date", "required": true, "example": "2026-05-04" },
+        { "key": "delivery_date", "label": "Data de devolucao", "type": "date", "required": true, "example": "2026-05-08" },
+        { "key": "diagnostic_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "Tech Lead" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Diagnostico Fase 0" },
+        { "trigger": "task_created", "action": "Criar 6 subtasks padrao D+1 a D+5" },
+        { "trigger": "lead_task_id preenchido", "action": "Relacionar/linkar task de lead" },
+        { "trigger": "delivery_date preenchido", "action": "Definir due date da devolucao" }
+      ],
+      "subtasks": [
+        "D+1 - Sessao estruturada 90min com CEO",
+        "D+1 - Entrevistas 30min com 2-3 pessoas-chave",
+        "D+2 - Auditoria express de dados e ferramentas",
+        "D+3 - Analise de 3 candidatos e criterios SaaS2",
+        "D+4 - Redacao do relatorio",
+        "D+5 - Sessao de devolucao 1h"
+      ]
+    },
+    {
+      "key": "proposal_sent",
+      "name": "[TEMPLATE] Proposta enviada",
+      "delivery_type": "any",
+      "target": {
+        "space": "01 Pipeline Comercial",
+        "list": "Propostas",
+        "desiredStatus": "enviada"
+      },
+      "description": [
+        "Entidade: Proposta.",
+        "Quando usar: cliente aprovou diagnostico e pediu proposta SaaS2.",
+        "Objetivo: negociar escopo, pricing, cap, SLA e clausula de outcome.",
+        "Resultado esperado: assinatura ou rejeicao registrada.",
+        "Status desejado: enviada."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "diagnostic_task_id", "label": "Task do diagnostico", "type": "clickup_task_id", "required": true, "example": "86diag123" },
+        { "key": "sku", "label": "SKU proposto", "type": "text", "required": true, "example": "Qualificacao de Leads SaaS2" },
+        { "key": "platform_fee", "label": "Fee plataforma mensal", "type": "currency_brl", "required": true, "example": 3000 },
+        { "key": "outcome_price", "label": "Preco por outcome", "type": "currency_brl", "required": true, "example": 80 },
+        { "key": "monthly_cap", "label": "Cap mensal", "type": "currency_brl", "required": true, "example": 12000 },
+        { "key": "sla_threshold", "label": "SLA threshold", "type": "percent", "required": true, "example": 90 },
+        { "key": "proposal_url", "label": "Link da proposta", "type": "url", "required": false, "example": "https://..." },
+        { "key": "valid_until", "label": "Validade da proposta", "type": "date", "required": true, "example": "2026-05-20" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Proposta" },
+        { "trigger": "proposal_url preenchido", "action": "Adicionar link na descricao" },
+        { "trigger": "valid_until preenchido", "action": "Definir due date de follow-up" },
+        { "trigger": "status=assinada", "action": "Disparar template setup_created" }
+      ],
+      "subtasks": [
+        "Validar clausula de outcome",
+        "Validar pricing plataforma + outcome + cap",
+        "Enviar proposta final",
+        "Coletar assinatura digital",
+        "Confirmar setup fee"
+      ]
+    },
+    {
+      "key": "setup_created",
+      "name": "[TEMPLATE] Setup tecnico iniciado",
+      "delivery_type": "any",
+      "target": {
+        "space": "02 Implantacao",
+        "list": "Setups em andamento",
+        "desiredStatus": "kickoff"
+      },
+      "description": [
+        "Entidade: Setup.",
+        "Quando usar: proposta assinada e setup fee confirmado.",
+        "Objetivo: preparar cliente para SHADOW.",
+        "Resultado esperado: canal conectado, baseline capturado, prompts aprovados e smoke test verde.",
+        "Status desejado: kickoff."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
+        { "key": "proposal_task_id", "label": "Task da proposta", "type": "clickup_task_id", "required": true, "example": "86prop123" },
+        { "key": "setup_fee", "label": "Setup fee", "type": "currency_brl", "required": true, "example": 15000 },
+        { "key": "setup_owner", "label": "Responsavel pelo setup", "type": "person_or_text", "required": true, "example": "Delivery" },
+        { "key": "entry_channel", "label": "Canal de entrada", "type": "select", "required": true, "options": ["whatsapp", "email", "webhook", "form", "outro"] },
+        { "key": "kickoff_date", "label": "Data do kickoff", "type": "datetime", "required": true, "example": "2026-05-06T10:00:00-03:00" },
+        { "key": "target_shadow_date", "label": "Data alvo para SHADOW", "type": "date", "required": true, "example": "2026-05-15" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Setup tecnico" },
+        { "trigger": "task_created", "action": "Criar 6 subtasks padrao de setup" },
+        { "trigger": "target_shadow_date preenchido", "action": "Definir due date do setup" },
+        { "trigger": "status=shadow ligado", "action": "Disparar template shadow_active" }
+      ],
+      "subtasks": [
+        "Kickoff com cliente",
+        "Coletar briefing institucional",
+        "Mapear processo agent-ready",
+        "Conectar canal de entrada",
+        "Capturar baseline cost humano",
+        "Aprovar prompts iniciais e rodar smoke test"
+      ]
+    },
+    {
+      "key": "shadow_active",
+      "name": "[TEMPLATE] SHADOW ativo",
+      "delivery_type": "agentic_saas",
+      "target": {
+        "space": "02 Implantacao",
+        "list": "SHADOWs ativos",
+        "desiredStatus": "calibrando"
+      },
+      "description": [
+        "Entidade: Subscription em SHADOW.",
+        "Quando usar: setup tecnico completo e agente rodando sem materializar output para cliente.",
+        "Objetivo: coletar 30+ outcomes para comparacao humano-vs-agente.",
+        "Resultado esperado: analise concluida e decisao de promocao para ASSISTED.",
+        "Status desejado: calibrando."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "setup_task_id", "label": "Task do setup", "type": "clickup_task_id", "required": true, "example": "86setup123" },
+        { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": true, "example": "sub_123" },
+        { "key": "agent_name", "label": "Nome do agente", "type": "text", "required": true, "example": "Lead Qualifier" },
+        { "key": "shadow_started_at", "label": "SHADOW iniciado em", "type": "datetime", "required": true, "example": "2026-05-15T09:00:00-03:00" },
+        { "key": "target_outcome_count", "label": "Meta de outcomes", "type": "number", "required": true, "example": 30 },
+        { "key": "langfuse_project_url", "label": "Link Langfuse", "type": "url", "required": false, "example": "https://..." }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task SHADOW" },
+        { "trigger": "target_outcome_count atingido", "action": "Criar alerta para analise humano-vs-agente" },
+        { "trigger": "promocao_solicitada", "action": "Disparar task em Promocoes de modo" }
+      ],
+      "subtasks": [
+        "Acompanhar primeiros outcomes diariamente",
+        "Coletar 30+ outcomes",
+        "Comparar decisao humana vs agente",
+        "Calcular concordancia",
+        "Validar unit economics real",
+        "Solicitar promocao para ASSISTED"
+      ]
+    },
+    {
+      "key": "monthly_audit",
+      "name": "[TEMPLATE] Auditoria mensal",
+      "delivery_type": "agentic_saas",
+      "target": {
+        "space": "04 Saude Operacional",
+        "list": "Auditorias mensais",
+        "desiredStatus": "agendada"
+      },
+      "description": [
+        "Entidade: Auditoria.",
+        "Quando usar: inicio de cada mes para cliente em operacao.",
+        "Objetivo: revisar amostra de outcomes e calcular error rate/SLA.",
+        "Resultado esperado: relatorio anexado a fatura do mes.",
+        "Status desejado: agendada."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": true, "example": "86cli123" },
+        { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": true, "example": "sub_123" },
+        { "key": "billing_month", "label": "Mes de referencia", "type": "month", "required": true, "example": "2026-05" },
+        { "key": "sample_size", "label": "Tamanho da amostra", "type": "number", "required": true, "example": 50 },
+        { "key": "sla_threshold", "label": "SLA threshold", "type": "percent", "required": true, "example": 90 },
+        { "key": "invoice_task_id", "label": "Task da fatura", "type": "clickup_task_id", "required": false, "example": "86fat123" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Auditoria mensal" },
+        { "trigger": "auditoria_concluida", "action": "Atualizar task de fatura com relatorio" },
+        { "trigger": "sla_real < sla_threshold", "action": "Disparar task SLA breach" }
+      ],
+      "subtasks": [
+        "Definir sample 5-10%",
+        "Rodar LLM-as-judge",
+        "Revisar amostra humana",
+        "Calcular SLA agregado",
+        "Anexar relatorio a fatura"
+      ]
+    },
+    {
+      "key": "incident_opened",
+      "name": "[TEMPLATE] Incidente operacional",
+      "delivery_type": "any",
+      "target": {
+        "space": "04 Saude Operacional",
+        "list": "Incidentes",
+        "desiredStatus": "aberto"
+      },
+      "description": [
+        "Entidade: Incidente.",
+        "Quando usar: falha de pipeline, drift, P1/P2/P3 ou ruptura operacional.",
+        "Objetivo: registrar impacto, mitigacao, causa e follow-up.",
+        "Resultado esperado: resolucao e postmortem quando P1/P2.",
+        "Status desejado: aberto."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": false, "example": "Novais Digital Ltda" },
+        { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
+        { "key": "subscription_id", "label": "Subscription ID no backend", "type": "text", "required": false, "example": "sub_123" },
+        { "key": "severity", "label": "Severidade", "type": "select", "required": true, "options": ["P1", "P2", "P3"] },
+        { "key": "incident_source", "label": "Origem do incidente", "type": "select", "required": true, "options": ["pipeline", "drift", "cliente", "auditoria", "manual", "infra"] },
+        { "key": "impact_summary", "label": "Resumo do impacto", "type": "long_text", "required": true, "example": "Outcomes deixaram de ser entregues por 40 minutos." },
+        { "key": "detected_at", "label": "Detectado em", "type": "datetime", "required": true, "example": "2026-05-01T11:30:00-03:00" },
+        { "key": "owner", "label": "Responsavel", "type": "person_or_text", "required": true, "example": "Delivery" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Incidente" },
+        { "trigger": "severity=P1", "action": "Adicionar tag urgente e notificar CEO" },
+        { "trigger": "severity=P1|P2", "action": "Criar subtask de postmortem" },
+        { "trigger": "cliente afetado", "action": "Relacionar/linkar task do cliente" }
+      ],
+      "subtasks": [
+        "Classificar severidade P1/P2/P3",
+        "Registrar impacto e cliente afetado",
+        "Definir responsavel de mitigacao",
+        "Comunicar envolvidos",
+        "Escrever postmortem se P1/P2"
+      ]
+    },
+    {
+      "key": "platform_request",
+      "name": "[TEMPLATE] Solicitacao de plataforma",
+      "delivery_type": "platform",
+      "target": {
+        "space": "05 Institucional Novais Digital",
+        "list": "Solicitacoes de plataforma",
+        "desiredStatus": "rascunho"
+      },
+      "description": [
+        "Entidade: Solicitacao de plataforma multi-modulo.",
+        "Quando usar: CEO/comercial quer iniciar a contratacao de uma plataforma SaaS multi-tenant (delivery_type=platform).",
+        "Objetivo: capturar escopo de produto, sistema legado a substituir e numero de modulos sem exigir linguagem tecnica.",
+        "Resultado esperado: status 'escopo pronto' dispara a criacao de Folder/List AIOS e tasks de rollout por modulo.",
+        "Status desejado: rascunho."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
+        { "key": "business_problem", "label": "Problema de negocio", "type": "long_text", "required": true, "example": "Controles internos em planilhas, sem rastreabilidade e sem integracao com ERP." },
+        { "key": "legacy_system_to_replace", "label": "Sistema legado a substituir", "type": "text", "required": true, "example": "ERP legado + planilhas Excel" },
+        { "key": "module_count", "label": "Numero estimado de modulos", "type": "number", "required": true, "example": 15 },
+        { "key": "recommended_platform_stage", "label": "Stage inicial sugerido", "type": "select", "required": true, "options": ["DRAFT", "STAGING", "PILOT"] },
+        { "key": "subscription_fee", "label": "Mensalidade contratada (R$)", "type": "currency", "required": false, "example": 5000 },
+        { "key": "setup_fee", "label": "Setup fee (R$)", "type": "currency", "required": false, "example": 15000 },
+        { "key": "ai_enabled", "label": "Plataforma usa IA?", "type": "select", "required": true, "options": ["sim", "nao"] },
+        { "key": "tech_owner", "label": "Responsavel tecnico", "type": "person_or_text", "required": true, "example": "Delivery" },
+        { "key": "delivery_due_date", "label": "Prazo de entrega", "type": "date", "required": true, "example": "2026-12-31" },
+        { "key": "repository_url", "label": "Repositorio", "type": "url", "required": false, "example": "https://github.com/novais-digital/novais-digital-platform" },
+        { "key": "environment", "label": "Ambiente inicial", "type": "select", "required": true, "options": ["dev", "staging", "prod"] }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Solicitacao de plataforma" },
+        { "trigger": "custom_fields preenchidos", "action": "Validar escopo minimo (empresa, sistema legado, modulos)" },
+        { "trigger": "status=escopo pronto", "action": "Disparar geracao de Folder AIOS + tasks de rollout por modulo" },
+        { "trigger": "ai_enabled=sim", "action": "Exigir campo observability_url e checklist de prompts/eval em cada rollout" }
+      ],
+      "subtasks": [
+        "Preencher empresa, problema e sistema legado",
+        "Estimar numero de modulos e stage inicial",
+        "Confirmar responsavel tecnico e prazo",
+        "Validar stage inicial com Tech Lead",
+        "Marcar status como escopo pronto"
+      ]
+    },
+    {
+      "key": "platform_rollout",
+      "name": "[TEMPLATE] Plataforma - rollout",
+      "delivery_type": "platform",
+      "target": {
+        "space": "02 Implantacao",
+        "list": "Rollouts em andamento",
+        "desiredStatus": "draft"
+      },
+      "description": [
+        "Entidade: Rollout de plataforma.",
+        "Quando usar: contratacao de plataforma multi-modulo (delivery_type=platform) assinada e setup fee confirmado.",
+        "Objetivo: provisionar ambiente, rodar migrations, smoke test e levar modulo para STAGING.",
+        "Resultado esperado: modulo em STAGING com criterios de aceite operacional definidos, pronto para abrir piloto.",
+        "Status desejado: draft."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
+        { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
+        { "key": "client_task_id", "label": "Task do cliente", "type": "clickup_task_id", "required": false, "example": "86cli123" },
+        { "key": "proposal_task_id", "label": "Task da proposta", "type": "clickup_task_id", "required": true, "example": "86prop123" },
+        { "key": "rollout_owner", "label": "Responsavel pelo rollout", "type": "person_or_text", "required": true, "example": "Delivery" },
+        { "key": "environment", "label": "Ambiente", "type": "select", "required": true, "options": ["dev", "staging", "prod"] },
+        { "key": "kickoff_date", "label": "Data do kickoff", "type": "datetime", "required": true, "example": "2026-05-06T10:00:00-03:00" },
+        { "key": "target_staging_date", "label": "Data alvo para STAGING", "type": "date", "required": true, "example": "2026-05-15" },
+        { "key": "ai_enabled", "label": "Modulo usa IA?", "type": "select", "required": false, "options": ["sim", "nao"] }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Rollout do modulo" },
+        { "trigger": "task_created", "action": "Criar 5 subtasks padrao de rollout" },
+        { "trigger": "target_staging_date preenchido", "action": "Definir due date do rollout" },
+        { "trigger": "status=staging", "action": "Disparar template platform_pilot" }
+      ],
+      "subtasks": [
+        "Provisionar ambiente",
+        "Rodar migrations e seed inicial",
+        "Configurar observabilidade (logs, metricas, alertas)",
+        "Smoke test tecnico do modulo",
+        "Definir criterios de aceite operacional"
+      ]
+    },
+    {
+      "key": "platform_pilot",
+      "name": "[TEMPLATE] Plataforma - piloto ativo",
+      "delivery_type": "platform",
+      "target": {
+        "space": "02 Implantacao",
+        "list": "Pilotos ativos",
+        "desiredStatus": "piloto aberto"
+      },
+      "description": [
+        "Entidade: Plataforma ou modulo em PILOT.",
+        "Quando usar: STAGING aprovado e criterios de aceite operacional definidos.",
+        "Objetivo: rodar contra usuarios reais, comparar dados legado vs nova e coletar evidencia de qualidade operacional.",
+        "Resultado esperado: aceite humano operacional + decisao de promocao para CANONICAL.",
+        "Status desejado: piloto aberto."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
+        { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
+        { "key": "rollout_task_id", "label": "Task do rollout", "type": "clickup_task_id", "required": true, "example": "86roll123" },
+        { "key": "pilot_started_at", "label": "Piloto iniciado em", "type": "datetime", "required": true, "example": "2026-05-15T09:00:00-03:00" },
+        { "key": "pilot_user_count", "label": "Usuarios participantes", "type": "number", "required": true, "example": 5 },
+        { "key": "legacy_system_name", "label": "Sistema legado em paralelo", "type": "text", "required": false, "example": "Sistema X" },
+        { "key": "comparison_target_error_pct", "label": "Erro maximo aceito vs legado (%)", "type": "percent", "required": true, "example": 1 },
+        { "key": "ai_enabled", "label": "Modulo usa IA?", "type": "select", "required": false, "options": ["sim", "nao"] },
+        { "key": "observability_url", "label": "Link de observabilidade", "type": "url", "required": false, "example": "https://..." }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Piloto" },
+        { "trigger": "task_created", "action": "Criar 5 subtasks padrao de piloto" },
+        { "trigger": "comparacao_legado_concluida", "action": "Disparar template platform_acceptance" },
+        { "trigger": "ai_enabled=sim", "action": "Exigir prompts versionados, eval suite e Langfuse antes de aceite" }
+      ],
+      "subtasks": [
+        "Confirmar perfil de usuarios participantes",
+        "Rodar comparacao legado vs plataforma",
+        "Coletar feedback estruturado dos usuarios",
+        "Verificar observabilidade (incidentes, latencia, erros)",
+        "Preparar dossie de aceite humano"
+      ]
+    },
+    {
+      "key": "platform_acceptance",
+      "name": "[TEMPLATE] Plataforma - aceite operacional",
+      "delivery_type": "platform",
+      "target": {
+        "space": "04 Saude Operacional",
+        "list": "Aceites operacionais",
+        "desiredStatus": "aguardando"
+      },
+      "description": [
+        "Entidade: Aceite operacional.",
+        "Quando usar: piloto rodou, comparacao legado vs nova esta dentro do criterio e ha dossie pronto para aceite humano.",
+        "Objetivo: registrar formalmente o aceite humano antes de promover modulo para CANONICAL.",
+        "Resultado esperado: aceite aprovado por usuario interno do cliente + Tech Lead, com evidencia anexada.",
+        "Status desejado: aguardando."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
+        { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
+        { "key": "pilot_task_id", "label": "Task do piloto", "type": "clickup_task_id", "required": true, "example": "86pilot123" },
+        { "key": "acceptance_criteria_doc", "label": "Documento de criterios de aceite", "type": "url", "required": true, "example": "https://..." },
+        { "key": "comparison_evidence", "label": "Evidencia comparacao legado x nova", "type": "url", "required": true, "example": "https://..." },
+        { "key": "client_signoff_owner", "label": "Quem assina pelo cliente", "type": "text", "required": true, "example": "Maria Silva (CFO Novais Digital)" },
+        { "key": "tech_signoff_owner", "label": "Quem assina pela Novais Digital", "type": "person_or_text", "required": true, "example": "Tech Lead" }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Aceite operacional" },
+        { "trigger": "status=aprovado", "action": "Disparar template platform_canonical_promotion" },
+        { "trigger": "status=rejeitado", "action": "Voltar piloto para 'comparando legado vs nova' e listar gaps" }
+      ],
+      "subtasks": [
+        "Validar criterios de aceite com cliente",
+        "Anexar evidencia de comparacao legado x nova",
+        "Coletar assinatura de aceite do cliente",
+        "Coletar assinatura de aceite do Tech Lead",
+        "Registrar decisao na task"
+      ]
+    },
+    {
+      "key": "platform_canonical_promotion",
+      "name": "[TEMPLATE] Plataforma - promocao para CANONICAL",
+      "delivery_type": "platform",
+      "target": {
+        "space": "04 Saude Operacional",
+        "list": "Promocoes de modo",
+        "desiredStatus": "solicitada"
+      },
+      "description": [
+        "Entidade: Promocao PILOT -> CANONICAL.",
+        "Quando usar: aceite operacional aprovado e modulo pronto para virar fonte canonica da operacao.",
+        "Objetivo: registrar decisao formal e mover modulo para 'Fontes canonicas'.",
+        "Resultado esperado: modulo em CANONICAL, sistema legado paralelo agendado para sunset.",
+        "Status desejado: solicitada."
+      ],
+      "fields": [
+        { "key": "company_name", "label": "Empresa", "type": "text", "required": true, "example": "Novais Digital Ltda" },
+        { "key": "platform_name", "label": "Nome da plataforma", "type": "text", "required": true, "example": "Plataforma Novais Digital" },
+        { "key": "module_key", "label": "Modulo", "type": "text", "required": true, "example": "cadastros" },
+        { "key": "acceptance_task_id", "label": "Task do aceite operacional", "type": "clickup_task_id", "required": true, "example": "86acc123" },
+        { "key": "cutover_date", "label": "Data planejada de cutover", "type": "date", "required": true, "example": "2026-06-01" },
+        { "key": "legacy_sunset_plan", "label": "Plano de sunset do legado", "type": "long_text", "required": false, "example": "Manter legado em leitura por 30 dias para auditoria, desligar em 2026-07-01." }
+      ],
+      "activities": [
+        { "trigger": "template_instantiated", "action": "Criar task Promocao para CANONICAL" },
+        { "trigger": "status=aprovada", "action": "Mover modulo para Fontes canonicas no Space 03 Clientes" },
+        { "trigger": "status=aprovada", "action": "Agendar auditoria operacional mensal de consistencia canonical x legado" }
+      ],
+      "subtasks": [
+        "Validar plano de cutover com cliente",
+        "Confirmar plano de sunset do legado",
+        "Aprovar promocao com Tech Lead + CEO",
+        "Mover modulo para Fontes canonicas",
+        "Comunicar time e cliente da entrada em CANONICAL"
+      ]
+    }
+  ]
+}

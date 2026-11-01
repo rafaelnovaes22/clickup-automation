@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "id": "fixture-aios-1",
+      "name": "[AIOS] SchoolPlatform / cadastros / Spec gerada (spec_agent)",
+      "description": "Cliente: SchoolPlatform\nModulo: cadastros\nTier: A\nSemana: 3\nStage: spec\nResponsavel tecnico: Rafael Novaes\nAmbiente: dev\nCliente task: 86fixture\nArtefato esperado: docs/specs/cadastros.md\nDone when: arquivo existe e foi revisado por Rafael\n\nControle automatico:\nclient_name=SchoolPlatform\nclient_task_id=86fixture\nmodule_key=cadastros\nmodule_tier=A\nstage_key=spec\nweek=3\nproject_root=__SMOKE_TEST_ROOT__\nevidence_source=aios+github\nartifact_path=docs/specs/cadastros.md",
+      "status": { "status": "to do" }
+    },
+    {
+      "id": "fixture-aios-2",
+      "name": "[MANUAL] SchoolPlatform / cnab / Implementacao Rafael",
+      "description": "Cliente: SchoolPlatform\nModulo: cnab\nTier: C\nSemana: 9\nStage: manual_implementation\nResponsavel tecnico: Rafael Novaes\nAmbiente: dev\nCliente task: 86fixture\nDone when: PR mergeado em main + CI verde\n\nControle automatico:\nclient_name=SchoolPlatform\nclient_task_id=86fixture\nmodule_key=cnab\nmodule_tier=C\nstage_key=manual_implementation\nweek=9\nproject_root=__SMOKE_TEST_ROOT__\nevidence_source=github",
+      "status": { "status": "to do" }
+    }
+  ]
+}

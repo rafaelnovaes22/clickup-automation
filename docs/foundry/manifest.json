@@ -1,0 +1,295 @@
+{
+  "$schema": "https://novais-digital.com.br/foundry/manifest-v1.json",
+  "manifest_version": "0.21.0",
+  "framework": {
+    "name": "Novais Digital Foundry",
+    "version": "0.21.0",
+    "canonical": false,
+    "framework_version_required": "0.21.0",
+    "constitution_version": "0.3.0",
+    "constitution_path": ".claude/CONSTITUTION.md",
+    "constitution_sha256": "e4c69f3817eac26c"
+  },
+  "principles": [
+    {
+      "id": "C1",
+      "name": "Diagnose-before-build",
+      "scope": "all-categories",
+      "renamed_from_v0_2_0": "Diagnose-before-design",
+      "interpretation_modes": {
+        "agentic_saas": "diagnostic.md por SKU/produto em produção",
+        "platform": "diagnostic.md por módulo PILOT/CANONICAL crítico (financeiro, contrato, LGPD)",
+        "automation": "diagnostic.md por job em produção"
+      }
+    },
+    {
+      "id": "C2",
+      "name": "Outcome-first, never tech-first",
+      "scope": "all-categories",
+      "interpretation_modes": {
+        "agentic_saas": "classified_outcome — categorias com threshold de acurácia",
+        "platform": "operational_action — critério de aceite operacional + audit log entry",
+        "automation": "execution_event — completed_event com payload_schema e log_location"
+      }
+    },
+    {
+      "id": "C3",
+      "name": "Economic viability",
+      "scope": "all-categories",
+      "shadow_exemption": true,
+      "renamed_from_v0_2_0": "Cost ≤ 25% of price",
+      "interpretation_modes": {
+        "ai_enabled_true": "cost_per_outcome (custo de inferência / preço por outcome)",
+        "ai_enabled_false": "platform_margin ((infra + suporte + manutenção) / receita atribuída)"
+      },
+      "default_ratio_max": 0.25
+    },
+    {
+      "id": "C4",
+      "name": "Pilot-before-canonical / Shadow-before-billing",
+      "scope": "all-categories",
+      "renamed_from_v0_2_0": "SHADOW antes de cobrar",
+      "interpretation_modes": {
+        "ai_enabled_true": "SHADOW (≥14d) → ASSISTED → AUTONOMOUS",
+        "ai_enabled_false": "DRAFT → STAGING → PILOT (≥14d crítico, ≥3d simple) → CANONICAL → DEPRECATED"
+      }
+    },
+    {
+      "id": "C5",
+      "name": "Three-tier context",
+      "scope": "all-categories"
+    },
+    {
+      "id": "C6",
+      "name": "Telemetry / auditability by default",
+      "scope": "all-categories",
+      "renamed_from_v0_2_0": "Telemetry-by-default",
+      "interpretation_modes": {
+        "ai_enabled_true": "LLM trace provider obrigatório (Langfuse/equivalente)",
+        "ai_enabled_false": "audit_log_provider + structured_logging_provider obrigatórios"
+      }
+    },
+    {
+      "id": "C7",
+      "name": "Portability over lock-in",
+      "scope": "all-categories",
+      "products_relax": "stack divergente em Beta com plano de migração",
+      "expanded_in_v0_3_0": "Cobre LLMs (src/llm/), infra (src/infra/), integrações (src/integrations/), pagamentos, mensageria"
+    },
+    {
+      "id": "C8",
+      "name": "Configuration over heroic customization",
+      "scope": "all-categories",
+      "renamed_from_v0_2_0": "Anti-customização heroica"
+    }
+  ],
+  "principle_extensions_path": "examples/novais-digital/constitution-extension.md",
+  "artifacts": [
+    {
+      "path": "CLAUDE.md",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "README.md",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "HARNESS_HANDBOOK.md",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": ".claude/CONSTITUTION.md",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": ".claude/settings.json",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "docs/foundry/project.json",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "docs/adr/20260904-consumer-governance.md",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "docs/delivery-map-2026-09-04.md",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "config/clickup-governance.blueprint.json",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "config/tech-platform-catalog.json",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "config/tech-automation-contract.json",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "config/aios-module-catalog.json",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "scripts/validate.mjs",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "scripts/foundry-doctor.sh",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "scripts/lib/agent-request.mjs",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "scripts/lib/briefing-web.mjs",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "scripts/lib/repository-bootstrap.mjs",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "server.mjs",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "hooks/session-start/foundry-context.sh",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "hooks/stop/5-gates-summary.sh",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "hooks/stop/eval-suite-fresh.sh",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": "hooks/stop/learning-snapshot.sh",
+      "type": "consumer_artifact"
+    },
+    {
+      "path": ".claude/skills/L0",
+      "path_kind": "directory",
+      "type": "strategic_context"
+    },
+    {
+      "path": ".claude/skills/L1",
+      "path_kind": "directory",
+      "type": "tactical_context"
+    },
+    {
+      "path": ".claude/agents",
+      "path_kind": "directory",
+      "type": "review_roles"
+    },
+    {
+      "path": "tests",
+      "path_kind": "directory",
+      "type": "executable_acceptance"
+    }
+  ],
+  "external_repos_absorbed": [
+    {
+      "repo": "github/spec-kit",
+      "absorbed": [
+        "Constitution pattern",
+        "Pipeline /diagnose → /promote"
+      ]
+    },
+    {
+      "repo": "vbomfim/sdlc-guardian-agents",
+      "absorbed": [
+        "Spec template structure",
+        "5 quality gates",
+        "Guardian roles"
+      ]
+    },
+    {
+      "repo": "addyosmani/agent-skills",
+      "absorbed": [
+        "Anti-rationalization tables",
+        "Verification gates"
+      ]
+    },
+    {
+      "repo": "aj-geddes/claude-code-bmad-skills",
+      "absorbed": [
+        "Helper pattern (token reduction in L0 only)"
+      ]
+    },
+    {
+      "repo": "carlrannaberg/claudekit",
+      "absorbed": [
+        "File-guard hook",
+        "Secret scan",
+        "Bash deny list"
+      ]
+    },
+    {
+      "repo": "peterkrueck/Claude-Code-Development-Kit",
+      "absorbed": [
+        "Documental structure",
+        "Cross-LLM review pattern"
+      ]
+    },
+    {
+      "repo": "VoltAgent/awesome-claude-code-subagents",
+      "absorbed": [
+        "Smart model routing Opus/Sonnet/Haiku"
+      ]
+    },
+    {
+      "repo": "anthropics/skills",
+      "absorbed": [
+        "Skill format reference (frontmatter)"
+      ]
+    },
+    {
+      "repo": "giuseppe-trisciuoglio/developer-kit",
+      "absorbed": [
+        "Path-scoped auto-activation"
+      ]
+    },
+    {
+      "repo": "alirezarezvani/claude-skills",
+      "absorbed": [
+        "Skill security auditor pattern"
+      ]
+    }
+  ],
+  "external_repos_excluded": [
+    {
+      "repo": "rohitg00/awesome-claude-code-toolkit",
+      "reason": "meta-list, redundant"
+    },
+    {
+      "repo": "feiskyer/claude-code-settings (multi-provider)",
+      "reason": "ADR 001 fixes Claude primary; OpenAI usado apenas para reviewer DeepAgent"
+    },
+    {
+      "repo": "lc-spec-driven",
+      "reason": "repo not found - awaiting confirmation of correct name"
+    }
+  ],
+  "checks_for_reviewer_summary": "Detalhe completo em reviewer/validation-rules.json. Reviewer deve carregar esse arquivo como input primário de checks.",
+  "integrations": {},
+  "consumer": {
+    "name": "ClickUp Automation",
+    "project_id": "clickup-automation",
+    "project_type": "automation",
+    "ai_enabled": false,
+    "owner": "Rafael Novaes"
+  },
+  "_meta": {
+    "last_updated": "2026-09-04",
+    "consumer_repo": "https://github.com/rafaelnovaes22/clickup-automation",
+    "migration_adr": "docs/adr/20260904-consumer-governance.md",
+    "notes": "Inventário consumidor corrigido. A camada instalada continua em 0.21.0/Constitution 0.3.0. Sincronização completa com Foundry 0.24.0/Constitution 0.4.0 pendente. Nenhuma integração Hermes é executada neste repositório."
+  }
+}

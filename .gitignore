@@ -1,0 +1,14 @@
+.env
+.venv/
+.venv-whisper/
+node_modules/
+*.log
+# Local generated caches
+.cache/
+__pycache__/
+# OS/editor noise
+.DS_Store
+Thumbs.db
+# Claude Code (configuracao local da maquina do dev, nao versionar)
+.claude/settings.local.json
+docs/foundry/session-gate-reports/

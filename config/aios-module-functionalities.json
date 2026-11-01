@@ -1,0 +1,591 @@
+{
+  "version": "0.1",
+  "purpose": "Mapeamento de cada modulo da Plataforma SchoolPlatform para suas funcionalidades de produto. Fonte: catalogo de funcionalidades do projeto consumidor.",
+  "modules": {
+    "schema": {
+      "title": "Modelo de dados (Prisma) e isolamento multi-tenant",
+      "summary": "Fundacao da plataforma: schema relacional com isolamento por unidade, autenticacao e perfis de acesso. Pre-requisito para todos os outros modulos.",
+      "features": [
+        "Schema Prisma com modelos para usuario, unidade, jovem, contrato, parcela, etc.",
+        "Isolamento multi-tenant por unidade (todas as queries filtram por unidade do usuario)",
+        "Autenticacao com email/senha e perfil de acesso",
+        "Migrations versionadas e seed inicial",
+        "Estrutura organizacional: grupo de unidades, regiao, departamentos"
+      ]
+    },
+    "cadastros": {
+      "title": "Cadastros gerais (equipes, turnos, perfis, departamentos)",
+      "summary": "Tabelas mestre que sustentam o resto do sistema. Quem nao existe aqui nao opera em nenhum outro modulo.",
+      "features": [
+        "Cadastro de equipes com configuracao de premiacao diaria, semanal e mensal",
+        "Cadastro de turnos (horario de expediente dos operadores por equipe/setor)",
+        "Cadastro de perfis do sistema com parametrizacao de direitos de acesso e copia de acessos para novos usuarios",
+        "Cadastro de tipos de funcao (habilita colaboradores em rankings e relatorios gerenciais)",
+        "Cadastro de ano escolar atribuido aos jovens",
+        "Cadastro de instituicoes de ensino vinculadas ao jovem",
+        "Cadastro de departamentos (setores da unidade para vinculo ao funcionario)",
+        "Grupo de unidades, regiao por unidade, grupos"
+      ]
+    },
+    "jovens": {
+      "title": "Jovens e leads (cadastro, consulta, vinculos)",
+      "summary": "Entidade central do negocio: registro de cada jovem com seus dados pessoais e os vinculos com contrato, CRM, tele-pesquisa e tele-projeto.",
+      "features": [
+        "Listagem de jovens/leads com paginacao e filtros",
+        "Cadastro de jovem/lead com dados pessoais",
+        "Consulta por id ou nome",
+        "Exibicao de idade, responsavel, telefone, endereco, status/acompanhamento CRM e contrato",
+        "Exportacao de listagem (Excel/PDF)",
+        "Vinculo entre jovem, contrato, CRM, tele-pesquisa e tele-projeto"
+      ]
+    },
+    "tele_pesquisa": {
+      "title": "Tele-pesquisa (cadastro de leads com produtividade do operador)",
+      "summary": "Recepcao de leads via telefone. Operadores cadastram jovens, sistema mede produtividade e gera relatorios para o tele-projeto agendar.",
+      "features": [
+        "Cadastro de jovem com validacao por DDD/telefone (evita duplicidade)",
+        "Abas: dados principais, endereco e observacoes gerais",
+        "Geracao de ID do jovem usado pelo Tele-Projeto para agendamento",
+        "Indice de produtividade por operador e hora (acumulado e media por hora)",
+        "Alerta de jovens cadastrados fora do horario do turno",
+        "Listagem e bloqueio de telefones (com responsavel, data e hora)",
+        "Relatorio de cadastro para tele-projeto (filtros: idade, bairro, periodo)",
+        "Relatorio de cadastros por operador (resumido/detalhado, dentro/fora do turno)",
+        "Exportacao Excel/PDF de relatorios"
+      ]
+    },
+    "crm": {
+      "title": "CRM e gestao de leads (funis de venda)",
+      "summary": "Funil comercial: do lead novo ate a matricula. Etapas, campanhas, importacao em massa e dashboards de conversao.",
+      "features": [
+        "Lancamento de etapas no lead (busca por nome/id)",
+        "Acompanhamento de leads",
+        "Funil de vendas, funil organico, funil de conversao",
+        "Filtros por campanha, origem, funcionario de tele-pesquisa e periodo",
+        "Importacao de leads por CSV (download de modelo, selecao de layout, verificacao do arquivo, associacao de campanha/origem/funcionario)",
+        "Cadastro/listagem de campanhas",
+        "Cadastro/listagem de origens",
+        "Cadastro/listagem de etapas"
+      ]
+    },
+    "tele_projeto": {
+      "title": "Tele-projeto e recepcao (agendamentos e atendimento OEDU)",
+      "summary": "Agenda visitas dos jovens cadastrados na tele-pesquisa. Controla recepcao, atendimento OEDU e justificativa de nao comparecimento.",
+      "features": [
+        "Novo agendamento por id do jovem ou busca pelo nome",
+        "Confirmacao dos dados do jovem no agendamento",
+        "Atribuicao da operadora de Tele-Projeto",
+        "Definicao de status, data e horario",
+        "Recepcao: registro de chegada, devolucao da ficha, liberacao da visita, acionamento/campainha",
+        "Atendimento OEDU (codigo do orientador, selecao de turma)",
+        "Cadastro de jovem indicado no ato do comparecimento",
+        "Captura de foto do jovem por webcam",
+        "Justificativa de agendamentos em aberto (categoria, complemento, reagendamento)",
+        "Indice de produtividade do Tele-Projeto (operador, dia, semana, periodo)",
+        "Controle de motivo de nao aceite",
+        "Relatorios: agendamentos, atendimentos, agendados x desistencias"
+      ]
+    },
+    "comercial": {
+      "title": "Comercial (contratos, OEDU, treinamento, premiacoes)",
+      "summary": "Conversao do agendamento em contrato. Atendimento OEDU, impressao de contrato, controle de treinamento Formando Campeoes, fechamentos diarios e premiacoes.",
+      "features": [
+        "Atendimento OEDU libera o jovem para emissao de contrato e finalizacao da venda",
+        "Selecao de turma liberada pelo Pedagogico, plano de curso (Projeto/Irmao) e turma de reuniao de pais",
+        "Status: Fechamento, Fechamento com Sinal, Matriculado",
+        "Definicao da data de integralizacao da matricula (parametro de ate 7 dias)",
+        "Impressao de contratos",
+        "Busca de contrato por jovem id",
+        "Treinamento Formando Campeoes: turma, primeiro/segundo dia, pagamento (dinheiro, cheque, cartao, a pagar)",
+        "Fechamentos comerciais diario, semanal e mensal",
+        "Controle Comercial Diario em tempo real (alimentado por Pesquisa, Projeto e Divulgacao)",
+        "Premiacoes e comissoes (CRUD, filtros, exportacao)",
+        "Relatorio por tempo de espera (chegada, devolucao da ficha, liberacao, atendimento)"
+      ]
+    },
+    "financeiro_basico": {
+      "title": "Financeiro basico (contas, fluxo de caixa, relatorios)",
+      "summary": "Operacao financeira do dia a dia da unidade. Cobranca escritural CNAB e em modulo separado por risco.",
+      "features": [
+        "Contas a receber: lancamento, listagem, filtros (periodo, cliente, conta, status)",
+        "Contas a pagar: lancamento, listagem, filtros (fornecedor, periodo, conta)",
+        "Baixa de parcelas via cartao (selecionar contrato/aluno, baixar varias parcelas de uma vez, registro do numero do cartao, bandeira, parcelas)",
+        "Transferencias entre contas (Caixa Interno x Conta Corrente)",
+        "Cobranca por contrato/nome",
+        "Fechamento financeiro diario por data (impede alteracoes retroativas)",
+        "Reabertura do dia, troca de conta bancaria/master",
+        "Conta financeira como planilha orcamentaria com pai/subcontas (centro de custo)",
+        "Digitacao de previsao financeira por ano/mes (liberacao/bloqueio)",
+        "Fluxo de caixa por periodo e conta bancaria",
+        "Extrato financeiro (definitivo/provisorio, combinando Caixa Interno e Conta Corrente)",
+        "Relatorios: conta financeira, orcamentario, cartao, lucro corporativo, faturamento, arrecadacao, faturamento x fluxo real"
+      ]
+    },
+    "administrativo": {
+      "title": "Administrativo (cancelamento, transferencia, retencao, metas)",
+      "summary": "Operacoes pos-matricula: trancamento, cancelamento com calculo de multa, transferencia entre unidades, controle de retencao e metas de parcelas.",
+      "features": [
+        "Consulta de aluno/contrato com filtros completos (contrato, nome, responsavel, CPF/CNPJ, RG, telefone, matricula, turma, status)",
+        "Consulta exibe dados pessoais, dados do curso, situacao financeira, historicos por departamento",
+        "Trancamento de contrato (data inicio/fim, regra: ate 90 dias)",
+        "Cancelamento com calculo de multa por atraso, juros diarios, multa contratual e valor do cancelamento (a vista ou parcelado)",
+        "Aluno reaparecido/reiniciado (ativa contratos de desaparecidos ou nao iniciados)",
+        "Negativar aluno (registro local, sem transmissao automatica externa)",
+        "Aluno concluido (encerra contrato com modulos pedagogicos cumpridos)",
+        "Crescimento da escola e calculo de retencao (novas matriculas, cancelamentos, retornos, percentual)",
+        "Metas de parcelas v2 (segmentadas por carteiras: Segunda Parcela, Parcela Mes, Super Ativos)",
+        "Solicitacao de transferencia entre unidades (somente apos 1a aula, impede com parcelas em atraso)",
+        "Transferencia migra parcelas e historicos para a nova unidade",
+        "Layout para carteirinha estudantil",
+        "Relatorios: filtro de parcelas, cobranca (com cartas e etiquetas), ranking administrativo"
+      ]
+    },
+    "pedagogico_pt1": {
+      "title": "Pedagogico pt1 (pautas, calendario, dashboard)",
+      "summary": "Nucleo do pedagogico: pauta de chamada aula a aula, calendario escolar, gravacao de notas, dashboard pedagogico. Modulo mais complexo do sistema.",
+      "features": [
+        "Pauta de chamada: controle central de presenca aula a aula e turma a turma",
+        "Abertura semiautomatica de pautas (libera pautas do dia por turma, disciplina, professor, inicio, termino, sala)",
+        "Abertura/edicao manual de pautas",
+        "Consulta de pautas por data",
+        "Indicacao visual de presenca/falta com cores",
+        "Pauta de reuniao de pais (turmas vinculadas no ato da matricula)",
+        "Calendario escolar com digitacao dia a dia",
+        "Calendario pedagogico permite conciliar duas ou mais atividades no mesmo dia",
+        "Atividades com cor especifica no calendario",
+        "Gravacao de notas",
+        "Setar cena (exige contrato, senha e confirmacao)",
+        "Dashboard pedagogico",
+        "Resultados de metricas pedagogicas"
+      ]
+    },
+    "pedagogico_pt2": {
+      "title": "Pedagogico pt2 (ligacoes, reposicoes, trainee, relatorios)",
+      "summary": "Controles pedagogicos auxiliares: ligacoes para pais e alunos, reposicoes, liberacao de turmas, alunos especiais (trainee, desaparecidos).",
+      "features": [
+        "Controle de ligacoes (3 rotinas): reuniao de pais, boas-vindas para alunos novos, alunos faltantes",
+        "Ligacao para reuniao de pais (titulares conforme dias parametrizados, matriculas dos ultimos 30 dias, status Ativo a Iniciar)",
+        "Ligacao de boas-vindas (matriculas do dia anterior + pendencias, dados cadastrais, data/hora reuniao)",
+        "Ligacao para alunos faltantes (lista diaria de ativos que faltaram no dia anterior)",
+        "Reposicao vinculada a falta especifica (filtros: data falta, data reposicao, nome do jovem)",
+        "Reposicao agenda aluno em turma criada para essa finalidade",
+        "Liberacao de turmas (controla vagas para Orientacao Educacional)",
+        "Bloqueio/liberacao de turmas com horarios especificos",
+        "Aluno trainee com validacao de regras (acima de 16 anos, mais de 6 meses de curso)",
+        "Alunos desaparecidos (X dias parametrizados, regra padrao: 8 faltas consecutivas)",
+        "Digitacao de motivo de alunos nao ativos (grava no historico)",
+        "Impressao de etiquetas de aniversariantes (por nome ou dia/mes)",
+        "Relatorios: frequencia e reposicao (detalhado/resumido), pautas (por aluno/turma/ciclo), turma de treinamento"
+      ]
+    },
+    "cnab": {
+      "title": "Cobranca escritural / CNAB (alto risco, sem agentes)",
+      "summary": "Integracao com bancos via arquivos CNAB. Modulo de maior risco tecnico do projeto - implementacao 100% manual, sem suporte de agentes AIOS.",
+      "features": [
+        "Importacao de arquivos bancarios",
+        "Pre-visualizacao de arquivo de cobranca escritural",
+        "Validacao de pendencias de arquivo bancario",
+        "Envio de arquivos de cobranca escritural",
+        "Geracao/download de arquivo bancario",
+        "Reenvio de boletos aguardando retorno",
+        "Status de documentos da cobranca escritural",
+        "Controle de documentos enviados/retornados",
+        "Baixa manual em cobranca escritural",
+        "Importacao apresenta totais (titulos, valor principal, registros no sistema, registros fora)",
+        "Cadastro de banco, conta corrente, ocorrencias bancarias e classificacao financeira"
+      ]
+    },
+    "rh": {
+      "title": "Recursos humanos (empresas, vagas, encaminhamentos)",
+      "summary": "Encaminhamento dos jovens egressos para empresas parceiras. Cadastro de vagas, controle de entrevistas e resultado.",
+      "features": [
+        "Cadastro/listagem de empresas (CNPJ, nome fantasia, razao social, contatos, site)",
+        "Cadastro/listagem de vagas (empresa, titulo, status, data, quantidade, escolaridade)",
+        "Cadastro/listagem de encaminhamentos (jovem para empresa/vaga)",
+        "Controle de resposta do encaminhamento",
+        "Data de resposta, data de inicio, data/hora de entrevista",
+        "Status do encaminhamento e resultado",
+        "Listagem de encaminhamentos com filtros"
+      ]
+    },
+    "utilitarios": {
+      "title": "Utilitarios (usuarios, sessoes, backup, layouts)",
+      "summary": "Funcoes de administracao do sistema: gestao de usuarios e sessoes, backup, troca de senha, layouts e funcoes utilitarias diversas.",
+      "features": [
+        "Cadastro/listagem de usuarios (login, funcionario, nome, perfil)",
+        "Filtros por login, funcionario, nome e perfil",
+        "Controle de perfil e expiracao de senha",
+        "Consulta de sessoes de usuarios",
+        "Filial",
+        "Backup (download e listagem de backups)",
+        "Verifica agendamentos",
+        "Meta de parcelas v2 - verifica",
+        "Reprocessar controle comercial diario",
+        "Layout do contrato",
+        "Transferencia manual",
+        "Troca de senha"
+      ]
+    },
+    "parametros": {
+      "title": "Parametros configuraveis do sistema",
+      "summary": "Painel de regras de negocio configuraveis: regras de agendamento, metas, prazos, regras pedagogicas e financeiras.",
+      "features": [
+        "Aceitar apenas hora cheia (agendamentos)",
+        "Ultima hora do dia para agendamentos",
+        "Quantidade de agendamentos por hora",
+        "Dias permitidos para reagendamento",
+        "Dias permitidos para agendamentos sem justificativa/comparecimento",
+        "Meta diaria de cadastros",
+        "Meta diaria de agendamentos",
+        "Dia inicial da semana, dias uteis considerados, dia de inicio do mes",
+        "Regras de boleto da primeira parcela",
+        "Vencimento da segunda parcela",
+        "Prazo maximo para trancamento",
+        "Faltas consecutivas para considerar aluno desaparecido",
+        "Numero maximo de parcelas para cancelamento",
+        "Percentual minimo do primeiro pagamento do cancelamento",
+        "Periodicidade de parcelas do cancelamento",
+        "Regras de cobranca escritural",
+        "Bloqueio de digitacao de previsao financeira",
+        "Regras de pauta, presenca, reposicao, trainee e alunos desaparecidos",
+        "Baixa da primeira parcela com conta de divida perdoada"
+      ]
+    },
+
+    "auth-tenant": {
+      "title": "Autenticacao e isolamento por empresa",
+      "summary": "Login, sessao e separacao total dos dados de cada empresa cliente. Sem isso, ninguem entra no Aicfo nem garantimos que dados de uma empresa nao vazem para outra.",
+      "features": [
+        "Login com email + senha",
+        "Recuperacao de senha por email",
+        "Sessao persistente com expiracao configuravel",
+        "Isolamento dos dados por empresa (multi-tenant)",
+        "Permissao basica por usuario (admin / editor / leitor)"
+      ]
+    },
+    "workspace-setup": {
+      "title": "Onboarding inicial da empresa",
+      "summary": "Primeiros passos quando o cliente entra: nome da empresa, segmento de atuacao, regime tributario. Personaliza o Aicfo para a realidade dele.",
+      "features": [
+        "Cadastro da empresa: razao social, CNPJ, segmento (agencia, industria, servicos, SaaS, varejo)",
+        "Escolha de regime tributario (Simples / Lucro Presumido / Lucro Real)",
+        "Definicao de plano de contas inicial (template padrao Aicfo)",
+        "Convite de usuarios adicionais",
+        "Personalizacao por segmento (afeta analises e benchmarks futuros)"
+      ]
+    },
+    "billing": {
+      "title": "Cobranca self-serve (Stripe)",
+      "summary": "Cliente escolhe plano, paga com cartao, recebe nota fiscal. Tudo automatico sem time comercial precisar tocar.",
+      "features": [
+        "Checkout com cartao de credito (Stripe)",
+        "Planos: Aicfo Lite / Pro / Business",
+        "Upgrade e downgrade entre planos",
+        "Historico de faturas e recibos",
+        "Cancelamento self-service",
+        "Trial gratuito sem cartao"
+      ]
+    },
+    "tenant-config": {
+      "title": "Configuracoes e permissoes da empresa",
+      "summary": "Cliente customiza preferencias da empresa, gerencia equipe e define quem ve o que. Sem isso, todo usuario tem acesso total.",
+      "features": [
+        "Tela de configuracoes da empresa",
+        "Gerenciamento de usuarios (convidar, remover, alterar permissao)",
+        "Permissoes granulares (financeiro / operacional / leitura)",
+        "Logs de acesso e acoes de cada usuario",
+        "Configuracoes regionais (moeda, fuso, idioma)"
+      ]
+    },
+
+    "ingest": {
+      "title": "Importacao de lancamentos financeiros",
+      "summary": "4 jeitos de o cliente trazer os dados financeiros do mes para dentro do Aicfo: planilha colada, PDF do contador, Excel/CSV ou lancamento manual.",
+      "features": [
+        "Colar planilha com Ctrl+V (detecta colunas automaticamente)",
+        "Upload de PDF do contador (extrai lancamentos do texto)",
+        "Upload Excel/CSV com mapeamento de colunas",
+        "Lancamento manual em formulario",
+        "Validacao de shape minimo (data, descricao, valor)",
+        "Deteccao de duplicatas e conflitos"
+      ]
+    },
+    "classification": {
+      "title": "Classificacao automatica dos lancamentos",
+      "summary": "A IA le cada linha importada e classifica em categorias do DRE (receita, custo variavel, despesa operacional, etc.) sem o cliente precisar arrastar nada manualmente.",
+      "features": [
+        "Classificacao automatica por IA com confidence score",
+        "Categorias DRE padrao Aicfo (~25)",
+        "Aprendizado continuo: classificacoes aceitas viram referencia",
+        "Edicao manual permite o cliente corrigir e o sistema aprende",
+        "Sinalizacao de lancamentos ambiguos que exigem revisao"
+      ]
+    },
+    "dre-narrative": {
+      "title": "DRE Facilitado com narrativa da IA",
+      "summary": "O cliente ve o DRE classico (Receita Bruta -> Lucro Liquido) e, embaixo, 3 cards narrados pela IA explicando o que esta bom, o que esta em alerta e o que e gargalo critico, em linguagem de negocios.",
+      "features": [
+        "DRE classico (Receita -> Deducoes -> Receita Liquida -> Custos -> Margem -> Despesas -> Resultado Operacional -> Lucro Liquido)",
+        "Visualizacao com peso visual por linha (% sobre receita)",
+        "Toggle entre R$, % da receita e comparacao vs. mes anterior",
+        "Card 'Gargalo critico' (vermelho) com pior indicador do mes",
+        "Card 'Atencao' (amarelo) com algo a observar",
+        "Card 'Saudavel' (verde) com o que esta funcionando",
+        "Cada card cita evidencia numerica concreta dos dados do cliente"
+      ]
+    },
+    "action-plan": {
+      "title": "Plano de Acao em 3 horizontes",
+      "summary": "Recomendacoes praticas e quantificadas: o que o CEO deve fazer no curto prazo (ate 3 meses), medio (3 a 6 meses) e longo (acima de 1 ano), com impacto financeiro estimado por acao.",
+      "features": [
+        "3 horizontes: curto / medio / longo prazo",
+        "Acoes categorizadas: reduzir custo / aumentar receita",
+        "Cada acao com prazo, esforco, risco e impacto R$ estimado",
+        "Soma do impacto por horizonte (ex: '+R$ 11.400/mes' no curto prazo)",
+        "Justificativa baseada nos dados reais do cliente"
+      ]
+    },
+    "hub": {
+      "title": "Hub de analise (home do produto)",
+      "summary": "Tela principal quando o cliente entra: lucro liquido do mes, sinais 'gargalos identificados / plano pronto', ultimas analises e botao para iniciar nova analise.",
+      "features": [
+        "Card destaque: lucro liquido + margem do mes atual",
+        "Tags de sinal: '3 gargalos identificados', 'Plano pronto', etc.",
+        "Lista de analises anteriores com lucro e margem por mes",
+        "CTA 'Iniciar nova analise' com 4 caminhos de import",
+        "Composicao rapida do mes (receita, custos, despesas, lucro)"
+      ]
+    },
+    "export": {
+      "title": "Exportacao de relatorios",
+      "summary": "Cliente exporta a analise em formatos prontos para apresentar a socios, investidores ou contador externo.",
+      "features": [
+        "Exportar analise mensal em PDF (capa + DRE + cards + plano)",
+        "Relatorio formatado para investidores (resumo executivo)",
+        "Relatorio para socios (acoes + impacto + riscos)",
+        "Exportacao Excel com lancamentos brutos",
+        "Compartilhamento por link (futuro)"
+      ]
+    },
+
+    "cashflow": {
+      "title": "Fluxo de caixa em tempo real + projecoes",
+      "summary": "Diferente da analise mensal de fechamento, aqui o cliente ve o caixa do dia + projecao de quanto vai entrar e sair nos proximos 7, 30 e 90 dias.",
+      "features": [
+        "Saldo atual de caixa consolidado (todas as contas)",
+        "Projecao 7 dias com proximos vencimentos",
+        "Projecao 30 dias do mes corrente",
+        "Projecao 90 dias do trimestre",
+        "Visualizacao burn rate e runway (quantos meses ate esgotar o caixa)",
+        "Alertas de ruptura iminente"
+      ]
+    },
+    "kpis": {
+      "title": "Indicadores financeiros automaticos",
+      "summary": "CAC, LTV, payback, margem, burn rate, runway calculados automaticamente sem o cliente precisar planilha. Atualizados em tempo real.",
+      "features": [
+        "CAC (Custo de Aquisicao de Cliente)",
+        "LTV (Lifetime Value)",
+        "Payback period",
+        "Margem bruta / liquida / contribuicao",
+        "Burn rate mensal",
+        "Runway (meses de caixa restante)",
+        "Atualizacao automatica conforme novos lancamentos"
+      ]
+    },
+    "score": {
+      "title": "Score de saude financeira da empresa",
+      "summary": "Uma nota unica de 0 a 100 que resume a saude financeira do negocio, calculada a partir de margem, liquidez, endividamento, crescimento e previsibilidade.",
+      "features": [
+        "Score 0-100 com breakdown por dimensao",
+        "Comparacao com meses anteriores",
+        "Explicacao do que esta puxando o score para cima e para baixo",
+        "Sugestoes de quais alavancas mexer para subir o score"
+      ]
+    },
+    "alerts": {
+      "title": "Alertas proativos de risco e metas",
+      "summary": "O Aicfo avisa o cliente automaticamente quando algo sai do esperado: queda de margem, ruptura de caixa proxima, burn rate elevado, meta nao atingida.",
+      "features": [
+        "Alerta de queda de margem (configuravel por threshold)",
+        "Alerta de ruptura de caixa em N dias",
+        "Alerta de burn rate fora do plano",
+        "Alerta de meta financeira nao atingida",
+        "Notificacao por email + in-app"
+      ]
+    },
+    "dashboard-ceo": {
+      "title": "Dashboard executivo simplificado",
+      "summary": "Versao refinada do Hub focada em decisao estrategica: KPIs principais, score de saude, gargalos, acoes sugeridas em uma tela so.",
+      "features": [
+        "5-7 KPIs em destaque (configuravel)",
+        "Score de saude da empresa em destaque",
+        "Gargalos criticos do mes com link para o DRE",
+        "Acoes em andamento (do plano de acao)",
+        "Comparacao tempo real vs. plano"
+      ]
+    },
+
+    "decision-engine": {
+      "title": "Copiloto de decisao financeira",
+      "summary": "Versao mais avancada do plano de acao: a IA nao apenas sugere acoes, mas explica o raciocinio de cada decisao e aprende com o historico do cliente.",
+      "features": [
+        "Recomendacoes com raciocinio explicavel (cite as fontes nos dados)",
+        "Aprendizado do historico de acoes (o que deu certo, o que nao deu)",
+        "Priorizacao automatica por impacto x urgencia",
+        "Simulacao 'e se' de cada recomendacao"
+      ]
+    },
+    "scenarios": {
+      "title": "Simuladores de cenarios",
+      "summary": "Cliente faz 'e se contratar 3 pessoas?', 'e se cortar 20% de marketing?', 'e se vender 30% mais?' e ve o impacto financeiro projetado.",
+      "features": [
+        "Simulador de impacto: contratacao, demissao, investimento, corte",
+        "3 cenarios: pessimista / base / agressivo",
+        "Simulador de crescimento empresarial",
+        "Simulador de estrutura de custos",
+        "Comparacao lado a lado de cenarios"
+      ]
+    },
+    "benchmarking": {
+      "title": "Comparacoes historica e setorial",
+      "summary": "Cliente compara seu desempenho com meses anteriores e (quando houver dados suficientes) com outras empresas do mesmo segmento e porte.",
+      "features": [
+        "Benchmarking interno: este mes vs. 12 meses anteriores",
+        "Benchmarking setorial: vs. media do segmento (anonimizado)",
+        "Indicador 'voce esta acima/abaixo da media'",
+        "Identifica metricas onde a empresa esta mais forte / mais fraca"
+      ]
+    },
+    "conversational-agent": {
+      "title": "Pergunte ao Aicfo em linguagem natural",
+      "summary": "Em vez de procurar na tela, o CEO pergunta 'qual foi minha pior despesa em outubro?', 'meu ROAS esta bom?', 'tenho caixa para contratar?' e a IA responde com base nos dados do cliente.",
+      "features": [
+        "Chat com IA usando dados financeiros do cliente",
+        "Respostas com citacao dos dados que embasam",
+        "Suporta perguntas em portugues coloquial",
+        "Sugestoes de perguntas relevantes ao contexto"
+      ]
+    },
+
+    "integrations-banks": {
+      "title": "Conexao direta com bancos (multi-conta)",
+      "summary": "Cliente conecta seus bancos e o Aicfo puxa lancamentos automaticamente sem precisar importar planilha. Open Finance ou conexao proprietaria por banco.",
+      "features": [
+        "OAuth com Open Finance / Pluggy / Belvo",
+        "Multiplas contas bancarias por empresa",
+        "Sincronizacao automatica diaria",
+        "Conciliacao automatica lancamentos vs. banco",
+        "Suporte aos 10+ maiores bancos do Brasil"
+      ]
+    },
+    "integrations-erp-crm-payroll": {
+      "title": "Conexao com ERP, CRM e folha de pagamento",
+      "summary": "Cliente conecta o sistema que usa hoje (Omie, Tiny, Bling, Pipedrive, etc.) e o Aicfo puxa dados automaticamente.",
+      "features": [
+        "Integracao com ERPs (Omie, Tiny, Bling, ContaAzul)",
+        "Integracao com CRMs (Pipedrive, RD Station, HubSpot)",
+        "Integracao com sistemas de folha de pagamento",
+        "Sincronizacao automatica + reconciliacao"
+      ]
+    },
+    "payment-execution": {
+      "title": "Execucao automatizada de pagamentos",
+      "summary": "Aicfo nao so sugere prioridade de pagamento, mas pode executar (com aprovacao humana) via integracao bancaria. Cliente economiza tempo operacional.",
+      "features": [
+        "Geracao automatica de boletos / Pix",
+        "Execucao de pagamentos agendados",
+        "Aprovacao obrigatoria pelo cliente antes da execucao",
+        "Comprovantes consolidados"
+      ]
+    },
+    "revenue-forecast": {
+      "title": "Previsao de receita futura",
+      "summary": "A IA preve quanto a empresa vai faturar nos proximos meses com base no historico + pipeline de vendas (CRM).",
+      "features": [
+        "Previsao de faturamento 1, 3, 6, 12 meses",
+        "Correlacao vendas pipeline vs. caixa futuro",
+        "Identifica sazonalidade automaticamente",
+        "Gap analysis: previsao vs. meta"
+      ]
+    },
+
+    "tax-suite": {
+      "title": "Suite tributaria inteligente",
+      "summary": "Controle dos tributos a recolher, sugestao do regime tributario ideal, alertas de risco fiscal e simulacao de cenarios (Simples vs. Presumido vs. Real).",
+      "features": [
+        "Calculo automatico de tributos a recolher",
+        "Sugestao de regime tributario ideal (Simples / Presumido / Real)",
+        "Alertas de risco fiscal (limite Simples proximo, etc.)",
+        "Simulacao 'e se mudar de regime?'",
+        "Calendario de obrigacoes tributarias"
+      ]
+    },
+
+    "accounts-management": {
+      "title": "Contas a pagar e a receber",
+      "summary": "Cliente gerencia contas a pagar e receber dentro do Aicfo, recebe priorizacao automatica e previsao de inadimplencia por cliente.",
+      "features": [
+        "Listagem de contas a pagar com vencimento",
+        "Listagem de contas a receber",
+        "Priorizacao inteligente de pagamentos (impacto x urgencia)",
+        "Previsao de inadimplencia por cliente final (score)",
+        "Alertas de boletos vencendo"
+      ]
+    },
+    "bank-reconciliation": {
+      "title": "Conciliacao bancaria automatica",
+      "summary": "Bate cada lancamento do extrato bancario com o lancamento contabil correspondente, sinalizando o que nao bate.",
+      "features": [
+        "Match automatico extrato vs. lancamentos por valor + data",
+        "Sinalizacao de divergencias",
+        "Sugestao de classificacao para lancamentos orfaos",
+        "Relatorio consolidado de conciliacao por mes"
+      ]
+    },
+    "profitability": {
+      "title": "Analise de rentabilidade",
+      "summary": "Cliente ve quanto cada cliente final, produto e canal de vendas contribui para o lucro, nao so para a receita.",
+      "features": [
+        "Rentabilidade por cliente final (ranking)",
+        "Rentabilidade por produto",
+        "Rentabilidade por canal de vendas",
+        "Identificacao dos clientes/produtos/canais que dao prejuizo"
+      ]
+    },
+
+    "anomaly-fraud-detection": {
+      "title": "Deteccao de anomalias e fraudes",
+      "summary": "A IA monitora os lancamentos e sinaliza padroes fora do comum: gastos atipicos, transferencias suspeitas, divergencia entre canais.",
+      "features": [
+        "Deteccao de anomalias estatisticas em lancamentos",
+        "Sinalizacao de fraudes potenciais",
+        "Deteccao de divergencia entre fontes (banco vs. ERP)",
+        "Historico de anomalias com classificacao (verdadeiro positivo / falso alarme)"
+      ]
+    },
+    "audit-governance": {
+      "title": "Auditoria e governanca financeira",
+      "summary": "Cada decisao e acao automatizada do Aicfo fica logada com rastreabilidade total. Cliente pode auditar tudo o que a IA fez.",
+      "features": [
+        "Log completo de todas as acoes da IA",
+        "Justificativa rastreavel de cada recomendacao",
+        "Trilha de auditoria por usuario",
+        "Conformidade LGPD (acesso a dados pessoais)",
+        "Relatorio de governanca mensal"
+      ]
+    },
+
+    "financial-planning": {
+      "title": "Planejamento financeiro anual e orcamentario",
+      "summary": "Cliente cria o plano financeiro anual no inicio do ano e o Aicfo acompanha em tempo real, ajustando o orcamento conforme a empresa evolui.",
+      "features": [
+        "Planejamento anual com metas mensais",
+        "Orcamentario com ajuste dinamico",
+        "Comparacao plano vs. realizado em tempo real",
+        "Alertas de desvio de plano",
+        "Replan trimestral guiado por IA"
+      ]
+    }
+  }
+}
